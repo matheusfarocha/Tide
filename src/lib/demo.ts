@@ -1,4 +1,26 @@
-import type { CoachInsights, Plan, Reading, SessionRecord } from './types'
+import type { BreathTest, CoachInsights, Plan, Reading, SessionRecord } from './types'
+
+// Demo dates are relative to today so streaks and "last 7 days" look right on judging day.
+function daysAgo(n: number, h: number, m: number) {
+  const d = new Date()
+  d.setDate(d.getDate() - n)
+  d.setHours(h, m, 0, 0)
+  return d.toISOString()
+}
+
+export const demoBreathTests: BreathTest[] = [
+  { date: daysAgo(3, 8, 20), reported: 14, observed: 9, lostCount: 2 },
+  { date: daysAgo(1, 8, 15), reported: 11, observed: 10, lostCount: 1 },
+]
+
+/** People who tried TIDE at our table. Person 3: back this with a Convex table. */
+export const demoTable = [
+  { name: 'Maya', score: 83, caught: 4 },
+  { name: 'Judge · Convex', score: 75, caught: 3 },
+  { name: 'Theo', score: 67, caught: 2 },
+  { name: 'Priya', score: 60, caught: 2 },
+  { name: 'Sam', score: 50, caught: 1 },
+]
 
 // Fake data so the UI works before the signal and the coach are wired up.
 
@@ -58,17 +80,17 @@ function synth(lengthSec: number, driftAt: number): Reading[] {
 }
 
 export const demoHistory: SessionRecord[] = [
-  { id: 's1', date: '2026-10-19T08:10:00', lengthSec: 600, readings: synth(600, 150), feelChecks: [
+  { id: 's1', date: daysAgo(3, 8, 10), lengthSec: 600, readings: synth(600, 150), feelChecks: [
     { t: 150, answer: 'focused', sensorState: 'focused', match: true },
     { t: 260, answer: 'focused', sensorState: 'drifting', match: false },
     { t: 420, answer: 'drifting', sensorState: 'focused', match: false },
   ] },
-  { id: 's2', date: '2026-10-20T21:30:00', lengthSec: 480, readings: synth(480, 200), feelChecks: [
+  { id: 's2', date: daysAgo(2, 21, 30), lengthSec: 480, readings: synth(480, 200), feelChecks: [
     { t: 150, answer: 'focused', sensorState: 'focused', match: true },
     { t: 270, answer: 'drifting', sensorState: 'drifting', match: true },
     { t: 400, answer: 'focused', sensorState: 'drowsy', match: false },
   ] },
-  { id: 's3', date: '2026-10-21T08:05:00', lengthSec: 600, readings: synth(600, 240), feelChecks: [
+  { id: 's3', date: daysAgo(1, 8, 5), lengthSec: 600, readings: synth(600, 240), feelChecks: [
     { t: 150, answer: 'focused', sensorState: 'focused', match: true },
     { t: 270, answer: 'drifting', sensorState: 'drifting', match: true },
     { t: 420, answer: 'focused', sensorState: 'focused', match: true },

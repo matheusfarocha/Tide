@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'
-import { Icon, Ring, Screen, Sparkline, TabBar } from '../components/ui'
-import { avgRate, awarenessTrend, focusPct } from '../lib/metrics'
+import { Icon, Ring, Screen, Sparkline, TabBar, stateColor } from '../components/ui'
+import { awarenessTrend, driftsCaught, fmt, focusPct, level, streak, totalMinutes } from '../lib/metrics'
 import { useStore } from '../lib/store'
 
 export function Welcome() {
@@ -27,46 +27,86 @@ export function Home() {
   const s = useStore()
   const nav = useNavigate()
   if (!s.onboarded) return <Welcome />
+
   const awareness = awarenessTrend(s.history)
-  const last = s.history[s.history.length - 1]
   const score = awareness[awareness.length - 1] ?? 0
   const delta = awareness.length > 1 ? score - awareness[awareness.length - 2] : 0
+  const lvl = level(score)
+  const days = streak(s.history)
+  const last = s.history[s.history.length - 1]
+  const p = s.plan
 
   return (
     <Screen className="with-tabs">
-      <div className="wordmark wordmark--sm">TIDE</div>
-      <h1 className="h1">{greeting()}{s.name ? `, ${s.name}` : ''}</h1>
-      <p className="lede">A calmer mind, backed by your data.</p>
+      <header className="home-head">
+        <div className="wordmark wordmark--sm">TIDE</div>
+        <Link to="/profile" className="avatar" aria-label="Profile">{(s.name || 'You')[0].toUpperCase()}</Link>
+      </header>
+
+      <div>
+        <h1 className="h1">{greeting()}{s.name ? `, ${s.name}` : ''}</h1>
+        {days > 0 && <p className="streak"><span className="streak__dot" />{days}-day streak</p>}
+      </div>
 
       {s.coachStatus === 'reviewing' && <CoachReviewing />}
 
-      <section className="card score">
-        <div>
-          <p className="eyebrow">Self-awareness</p>
-          <Ring value={score / 100} size={104}>
-            <strong className="num-lg">{score}</strong><small>/100</small>
-          </Ring>
-        </div>
+      <Link to="/scores" className="card score score--link">
+        <Ring value={score / 100} size={108}>
+          <strong className="num-lg">{score}</strong><small>/100</small>
+        </Ring>
         <div className="score__side">
-          <p className="score__title">{delta >= 0 ? 'Improving' : 'Dipped'}</p>
-          <p className="muted">{delta >= 0 ? '+' : ''}{delta} since last session</p>
-          <Sparkline values={awareness} h={44} />
-          <p className="fine">How often what you felt matched what TIDE saw.</p>
+          <p className="eyebrow">Self-awareness</p>
+          <p className="score__title">Level {lvl.n} · {lvl.name}</p>
+          <p className="muted small">{delta >= 0 ? '+' : ''}{delta} since last session{lvl.next ? ` · ${lvl.toNext} to ${lvl.next}` : ''}</p>
+          <Sparkline values={awareness} h={34} />
         </div>
+      </Link>
+
+      <section className="card next">
+        <div className="row-head">
+          <p className="eyebrow">{s.coachOn ? 'Next session · by your coach' : 'Free session'}</p>
+          {s.coachOn && <Link to="/plan" className="link small">Why →</Link>}
+        </div>
+        <p className="next__title">{s.coachOn ? p.technique : 'Breathe and notice'}</p>
+        <div className="next__meta">
+          <span><Icon name="clock" size={14} />{fmt(s.lengthSec)}</span>
+          {s.coachOn && p.cueTimes.length > 0 && <span><Icon name="bell" size={14} />Cue before your usual drift</span>}
+          <span><Icon name="sun" size={14} />{p.feelCheckTimes.length} Feel Checks</span>
+        </div>
+        <button className="btn btn--primary" onClick={() => nav('/setup')}>Start session <Icon name="arrow" size={18} /></button>
       </section>
 
-      <div className="row-head"><h2 className="h2">Last session</h2><Link to="/progress" className="link">View all →</Link></div>
+      <div className="tiles">
+        <div className="tile"><span className="tile__k">Drifts caught</span><strong className="tile__v">{driftsCaught(s.history)}</strong></div>
+        <div className="tile"><span className="tile__k">Minutes</span><strong className="tile__v">{totalMinutes(s.history)}</strong></div>
+        <div className="tile"><span className="tile__k">Sessions</span><strong className="tile__v">{s.history.length}</strong></div>
+      </div>
+
+      <div className="quick">
+        <Link to="/breath-test" className="card quick__item">
+          <Icon name="lungs" size={22} />
+          <strong>Breath-count test</strong>
+          <small className="muted">60 s focus check</small>
+        </Link>
+        <Link to="/scores" className="card quick__item">
+          <Icon name="trophy" size={22} />
+          <strong>Scoreboard</strong>
+          <small className="muted">Levels and records</small>
+        </Link>
+      </div>
+
       {last && (
-        <div className="tiles">
-          <div className="tile"><span className="tile__k">Focus</span><strong className="tile__v">{focusPct(last.readings)}%</strong></div>
-          <div className="tile"><span className="tile__k">Breathing</span><strong className="tile__v">{avgRate(last.readings)}<small>/min</small></strong></div>
-          <div className="tile"><span className="tile__k">Sessions</span><strong className="tile__v">{s.history.length}</strong></div>
-        </div>
+        <Link to={`/calm-map/${last.id}`} className="card last">
+          <div className="row-head">
+            <p className="eyebrow">Last session</p>
+            <span className="muted small">{focusPct(last.readings)}% focused →</span>
+          </div>
+          <div className="strip" aria-label="Focus timeline of your last session">
+            {last.readings.map((r, i) => <i key={i} style={{ background: stateColor[r.state] }} />)}
+          </div>
+        </Link>
       )}
 
-      <button className="btn btn--primary" onClick={() => nav(s.coachOn ? '/plan' : '/setup')}>
-        {s.coachOn ? 'Start your next session' : 'Start a session'} <Icon name="arrow" size={18} />
-      </button>
       <TabBar />
     </Screen>
   )

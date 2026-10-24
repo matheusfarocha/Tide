@@ -9,7 +9,11 @@ npm install
 npm run dev
 ```
 
-Open the printed URL on your laptop. To use it on a phone, open the **Network** URL. Phones need HTTPS for the camera, so use the deployed link (Vercel) or a tunnel.
+Open the printed URL on your laptop.
+
+**On your phone (same Wi-Fi):** run `npm run phone`, open the `https://192.168…` Network URL on the phone, and tap through the certificate warning (Advanced → Proceed). HTTPS is needed for the camera.
+
+**On any phone (deployed):** `npx vercel` from this folder gives a real HTTPS link. `vercel.json` already handles routes like `/coach`.
 
 ## Screens
 
@@ -25,6 +29,8 @@ Open the printed URL on your laptop. To use it on a phone, open the **Network** 
 | `/insights` | AI coach summary, takeaways, patterns |
 | `/plan` | Next session designed by the coach, with the fading support meter |
 | `/progress` | Self-awareness, focus, stillness trends + session history |
+| `/scores` | Scoreboard: level, records, milestones, today's table leaderboard |
+| `/breath-test` | 60 s breath-counting focus test (Levinson et al., 2014) |
 | `/profile` | Coach on/off switch, privacy, reset demo data |
 | `/coach` | **Laptop coach view** for the judging table (live wave, stats, Feel Checks) |
 

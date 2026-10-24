@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import { demoHistory, demoInsights, demoPlan, firstPlan } from './demo'
-import type { CoachInsights, FeelCheck, Goal, Plan, Reading, SessionRecord } from './types'
+import { demoBreathTests, demoHistory, demoInsights, demoPlan, firstPlan } from './demo'
+import type { BreathTest, CoachInsights, FeelCheck, Goal, Plan, Reading, SessionRecord } from './types'
 
 // App-wide state. Person 3 replaces the fake coach run and localStorage with Convex queries/mutations.
 
@@ -14,6 +14,7 @@ interface Store {
   coachOn: boolean
   plan: Plan
   history: SessionRecord[]
+  breathTests: BreathTest[]
   insights: CoachInsights | null
   coachStatus: CoachStatus
   calibrationRate?: number
@@ -23,10 +24,11 @@ interface Store {
   setCalibration(rate: number): void
   finishSession(readings: Reading[], feelChecks: FeelCheck[]): SessionRecord
   resetDemo(): void
+  addBreathTest(t: BreathTest): void
 }
 
 const Ctx = createContext<Store | null>(null)
-const KEY = 'tide.v1'
+const KEY = 'tide.v2'
 
 function load() {
   try {
@@ -46,18 +48,19 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [coachOn, setCoachOn] = useState<boolean>(saved?.coachOn ?? true)
   const [history, setHistory] = useState<SessionRecord[]>(saved?.history ?? demoHistory)
   const [insights, setInsights] = useState<CoachInsights | null>(saved?.insights ?? demoInsights)
+  const [breathTests, setBreathTests] = useState<BreathTest[]>(saved?.breathTests ?? demoBreathTests)
   const [plan, setPlan] = useState<Plan>(saved?.plan ?? demoPlan)
   const [coachStatus, setCoachStatus] = useState<CoachStatus>('idle')
   const [calibrationRate, setCalibration] = useState<number | undefined>()
 
   useEffect(() => {
     try {
-      localStorage.setItem(KEY, JSON.stringify({ name, goal, lengthSec, onboarded, coachOn, history: history.slice(-12), insights, plan }))
+      localStorage.setItem(KEY, JSON.stringify({ name, goal, lengthSec, onboarded, coachOn, history: history.slice(-12), breathTests: breathTests.slice(-12), insights, plan }))
     } catch { /* storage is a convenience only */ }
-  }, [name, goal, lengthSec, onboarded, coachOn, history, insights, plan])
+  }, [name, goal, lengthSec, onboarded, coachOn, history, breathTests, insights, plan])
 
   const store = useMemo<Store>(() => ({
-    name, goal, lengthSec, onboarded, coachOn, history, insights, coachStatus, calibrationRate,
+    name, goal, lengthSec, onboarded, coachOn, history, breathTests, insights, coachStatus, calibrationRate,
     plan: coachOn ? plan : firstPlan,
     setProfile(p) {
       setName(p.name)
@@ -89,13 +92,15 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       }
       return rec
     },
+    addBreathTest(t) { setBreathTests((b) => [...b, t]) },
     resetDemo() {
       setHistory(demoHistory)
+      setBreathTests(demoBreathTests)
       setInsights(demoInsights)
       setPlan(demoPlan)
       setCoachStatus('idle')
     },
-  }), [name, goal, lengthSec, onboarded, coachOn, history, insights, plan, coachStatus, calibrationRate])
+  }), [name, goal, lengthSec, onboarded, coachOn, history, breathTests, insights, plan, coachStatus, calibrationRate])
 
   return <Ctx.Provider value={store}>{children}</Ctx.Provider>
 }

@@ -2,6 +2,8 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { StoreProvider } from './lib/store'
+import { BreathTest } from './screens/BreathTest'
+import { Scores } from './screens/Scores'
 import { Calibrate } from './screens/Calibrate'
 import { Insights, PlanScreen, Profile, Progress } from './screens/Coach'
 import { CoachView } from './screens/CoachView'
@@ -29,6 +31,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path="/progress" element={<Progress />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/coach" element={<CoachView />} />
+          <Route path="/scores" element={<Scores />} />
+          <Route path="/breath-test" element={<BreathTest />} />
         </Routes>
       </BrowserRouter>
     </StoreProvider>

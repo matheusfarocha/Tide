@@ -51,4 +51,12 @@ export interface CoachInsights {
   patterns: { title: string; detail: string; sessions: string }[]
 }
 
-export type Goal = 'stress' | 'focus' | 'habit' | 'sleep'
+/** Breath-counting focus test (Levinson et al., 2014), checked against camera-detected breaths. */
+export interface BreathTest {
+  date: string
+  reported: number   // breaths the person tapped
+  observed: number   // breaths TIDE detected
+  lostCount: number  // times they pressed "Lost count"
+}
+
+export type Goal ='stress' | 'focus' | 'habit' | 'sleep'

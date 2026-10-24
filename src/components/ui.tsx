@@ -52,7 +52,8 @@ const P = {
   mic: 'M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zM6 11a6 6 0 0 0 12 0M12 17v4',
   lock: 'M6 11h12v10H6zM8 11V8a4 4 0 0 1 8 0v3',
   share: 'M12 3v12M7 8l5-5 5 5M5 14v6h14v-6',
-  lungs: 'M12 4v8M12 12c-2 0-3-2-5-2-2 0-3 3-3 6 0 3 1 4 3 4 3 0 5-2 5-5M12 12c2 0 3-2 5-2 2 0 3 3 3 6 0 3-1 4-3 4-3 0-5-2-5-5',
+  trophy: 'M8 4h8v5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 21h8M10 17h4v4h-4z',
+  lungs:'M12 4v8M12 12c-2 0-3-2-5-2-2 0-3 3-3 6 0 3 1 4 3 4 3 0 5-2 5-5M12 12c2 0 3-2 5-2 2 0 3 3 3 6 0 3-1 4-3 4-3 0-5-2-5-5',
 }
 export type IconName = keyof typeof P
 export function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
@@ -88,7 +89,7 @@ export function TopBar({ back, close, title, right }: { back?: boolean | string;
 }
 
 export function TabBar() {
-  const tabs: [string, IconName, string][] = [['/', 'home', 'Home'], ['/insights', 'spark', 'Insights'], ['/progress', 'chart', 'Progress'], ['/profile', 'user', 'Profile']]
+  const tabs: [string, IconName, string][] = [['/', 'home', 'Home'], ['/scores', 'trophy', 'Scores'], ['/insights', 'spark', 'Coach'], ['/progress', 'chart', 'Progress'], ['/profile', 'user', 'Profile']]
   return (
     <nav className="tabbar">
       {tabs.map(([to, icon, label]) => (
