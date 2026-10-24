@@ -7,7 +7,7 @@
 
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
-import { internalAction, internalMutation, internalQuery } from "./_generated/server";
+import { env, internalAction, internalMutation, internalQuery } from "./_generated/server";
 import { agentUrls } from "./coach";
 import { EXAMPLE_COACH_PLAN } from "../shared/fixtures";
 import { selfAwarenessScore, sessionFeatureVector } from "../shared/scoring";
@@ -181,5 +181,38 @@ export const checkTools = internalAction({
         b.findings?.map((f: any) => `${f.externalId}: ${String(f.title ?? f.citation).slice(0, 90)}`)),
       withoutKey: (await fetch(sessionUrl.replace(/&key=[^&]*/, ""))).status,
     };
+  },
+});
+
+/**
+ * Checks each configured CREAO app ID + capi_ key by asking for a run that doesn't exist:
+ * 404 RUN_NOT_FOUND means the pair is valid. Starts nothing, spends no credits, prints no keys.
+ *   npx convex run devCoach:checkCreao
+ */
+export const checkCreao = internalAction({
+  args: {},
+  returns: v.any(),
+  handler: async () => {
+    const pairs = {
+      analyst: [env.CREAO_ANALYST_APP_ID, env.CREAO_ANALYST_API_KEY],
+      coach: [env.CREAO_COACH_APP_ID, env.CREAO_COACH_API_KEY],
+    };
+    const out: Record<string, unknown> = {};
+    for (const [stage, [appId, key]] of Object.entries(pairs)) {
+      if (!appId || !key) { out[stage] = "not set"; continue; }
+      const res = await fetch(
+        `https://agent.creao.ai/api/v1/apps/${encodeURIComponent(appId.trim())}/runs/00000000-0000-4000-8000-000000000000`,
+        { headers: { authorization: `Bearer ${key.trim()}` } },
+      );
+      const body = (await res.text()).slice(0, 200);
+      out[stage] = {
+        status: res.status,
+        body,
+        ok: res.status === 404 && body.includes("RUN_NOT_FOUND"),
+        keyLooksRight: key.startsWith("capi_"),
+        whitespace: appId !== appId.trim() || key !== key.trim(),
+      };
+    }
+    return out;
   },
 });
