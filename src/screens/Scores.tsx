@@ -1,15 +1,17 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Icon, Screen, TabBar, Tabs, TopBar, type IconName } from '../components/ui'
+import { Icon, Screen, TabBar, Tabs, TopBar, depthOf, type IconName } from '../components/ui'
 import { demoTable } from '../lib/demo'
 import { awarenessTrend, breathAccuracy, driftsCaught, focusPct, level, LEVELS, streak, totalMinutes } from '../lib/metrics'
 import { useStore } from '../lib/store'
+import { useTide } from '../lib/tide'
 
 // "Meditation has no scoreboard. TIDE gives it one."
 
 export function Scores() {
   const s = useStore()
   const [tab, setTab] = useState<'you' | 'table'>('you')
+  useTide(depthOf('/scores'))
   const aware = awarenessTrend(s.history)
   const score = aware[aware.length - 1] ?? 0
   const lvl = level(score)
@@ -40,9 +42,9 @@ export function Scores() {
   const table = [...demoTable, { name: s.name || 'You', score, caught, you: true }].sort((a, b) => b.score - a.score)
 
   return (
-    <Screen dim className="with-tabs">
-      <TopBar title="Scoreboard" />
-      <Tabs value={tab} onChange={setTab} options={[['you', 'You'], ['table', 'Today’s table']]} />
+    <Screen className="with-tabs">
+      <TopBar title="scores" />
+      <Tabs value={tab} onChange={setTab} options={[['you', 'you'], ['table', 'today’s table']]} />
 
       {tab === 'you' ? (
         <>
@@ -85,7 +87,7 @@ export function Scores() {
             ))}
           </div>
 
-          <Link to="/breath-test" className="btn btn--ghost"><Icon name="lungs" size={18} /> Take the breath-count test</Link>
+          <Link to="/breath-test" className="btn btn--ghost">take the breath-count test</Link>
         </>
       ) : (
         <>

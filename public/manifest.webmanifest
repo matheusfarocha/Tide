@@ -3,6 +3,6 @@
   "short_name": "TIDE",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#141b33",
-  "theme_color": "#141b33"
+  "background_color": "#03050c",
+  "theme_color": "#03050c"
 }

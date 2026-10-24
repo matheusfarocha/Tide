@@ -1,21 +1,29 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Icon, Screen, TopBar } from '../components/ui'
+import { Screen } from '../components/ui'
 import { publish } from '../lib/live'
 import { fmt } from '../lib/metrics'
+import { startOcean, stopOcean } from '../lib/ocean'
 import { createFakeSignal } from '../lib/signal'
 import { useStore } from '../lib/store'
+import { useTide, useTideCtl } from '../lib/tide'
 import type { FeelAnswer, FeelCheck, MindState, Reading } from '../lib/types'
 import { interpret, listen, speak } from '../lib/voice'
 
-// The plan-driven session runner. Swap createFakeSignal for Person 1's real SignalSource.
+// The plan-driven session runner. The tide on screen is the person's real breath.
+// Swap createFakeSignal for Person 1's real SignalSource.
 
 const matches = (a: FeelAnswer, s: MindState) =>
   a === 'focused' ? s === 'focused' || s === 'settling' : a === 'drifting' ? s === 'drifting' || s === 'drowsy' || s === 'restless' : false
 
+const STATE_TEXT: Record<MindState, string> = {
+  settling: 'settling', focused: 'steady', drifting: 'wandering', drowsy: 'sleepy', restless: 'restless',
+}
+
 export function Session() {
   const store = useStore()
   const nav = useNavigate()
+  const tide = useTideCtl()
   const length = store.lengthSec
   const plan = store.plan
   const scale = length / plan.lengthSec
@@ -25,29 +33,41 @@ export function Session() {
   const signal = useMemo(() => createFakeSignal({ lengthSec: length }), [length])
   const readings = useRef<Reading[]>([])
   const feelChecks = useRef<FeelCheck[]>([])
-  const orb = useRef<HTMLDivElement>(null)
   const lastV = useRef(0)
+  const answered = useRef(true)
+  const elapsedRef = useRef(0)
+  const pausedRef = useRef(false)
 
   const [elapsed, setElapsed] = useState(0)
   const [paused, setPaused] = useState(false)
   const [voiceOn, setVoiceOn] = useState(true)
+  const [seaOn, setSeaOn] = useState(store.soundOn)
   const [reading, setReading] = useState<Reading | null>(null)
   const [phase, setPhase] = useState<'in' | 'out'>('in')
   const [asking, setAsking] = useState(false)
   const [result, setResult] = useState<FeelCheck | null>(null)
   const [cue, setCue] = useState<string | null>(null)
-  const pausedRef = useRef(false)
+  const [hud, setHud] = useState(true)
+  const hudTimer = useRef(0)
   pausedRef.current = paused
-  const elapsedRef = useRef(0)
+
+  useTide(0.5, reading?.state ?? 'settling')
+
+  const showHud = useCallback(() => {
+    setHud(true)
+    clearTimeout(hudTimer.current)
+    hudTimer.current = window.setTimeout(() => setHud(false), 4500)
+  }, [])
 
   const say = useCallback((t: string) => { if (voiceOn) speak(t) }, [voiceOn])
 
   useEffect(() => {
+    if (store.soundOn) startOcean()
     signal.start()
     publish({ kind: 'start', lengthSec: length })
     const offB = signal.onBreath((v) => {
       if (pausedRef.current) return
-      orb.current?.style.setProperty('--b', String(v))
+      tide.pushBreath(Math.max(-1, Math.min(1, v)))
       const p = v > lastV.current ? 'in' : 'out'
       lastV.current = v
       setPhase((old) => (old === p ? old : p))
@@ -66,11 +86,16 @@ export function Session() {
       setElapsed(elapsedRef.current)
     }, 1000)
     say('Close your eyes. Let your breath settle on its own.')
-    return () => { offB(); offR(); clearInterval(clock); signal.stop(); window.speechSynthesis?.cancel() }
+    showHud()
+    return () => {
+      offB(); offR(); clearInterval(clock); signal.stop()
+      window.speechSynthesis?.cancel()
+      clearTimeout(hudTimer.current)
+      tide.setCalm(false)
+      stopOcean()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signal])
-
-  const answered = useRef(true)
 
   const record = useCallback((answer: FeelAnswer, spoken?: string) => {
     if (answered.current) return
@@ -79,13 +104,16 @@ export function Session() {
     const fc: FeelCheck = { t: elapsedRef.current, spoken, answer, sensorState, match: matches(answer, sensorState) }
     feelChecks.current.push(fc)
     publish({ kind: 'feel', f: fc })
+    navigator.vibrate?.(fc.match ? [12, 60, 12] : 30)
+    tide.ripple(window.innerWidth / 2, fc.match ? 2.4 : 1)
     setAsking(false)
     setResult(fc)
-    setTimeout(() => setResult(null), 3200)
-  }, [])
+    setTimeout(() => { setResult(null); tide.setCalm(false) }, 3600)
+  }, [tide])
 
   const runFeelCheck = useCallback(async () => {
     answered.current = false
+    tide.setCalm(true)
     setAsking(true)
     publish({ kind: 'asking' })
     say('Focused, or drifting?')
@@ -94,16 +122,16 @@ export function Session() {
     await new Promise((r) => setTimeout(r, 1800))
     const heard = await listen(9000)
     if (heard) record(interpret(heard), heard)
-  }, [record, say])
+  }, [record, say, tide])
 
   // Scheduled events from the coach's plan.
   useEffect(() => {
     if (feelTimes.includes(elapsed)) runFeelCheck()
     if (cueTimes.includes(elapsed)) {
-      const text = 'Gently bring your attention back to your breath.'
+      const text = 'Come back to your breath.'
       setCue(text)
       say(text)
-      setTimeout(() => setCue(null), 5000)
+      setTimeout(() => setCue(null), 6000)
     }
     if (elapsed >= length) end()
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -116,59 +144,64 @@ export function Session() {
     nav('/results', { state: { id: rec.id }, replace: true })
   }
 
-  const stateText: Record<MindState, string> = {
-    settling: 'Settling in', focused: 'Steady', drifting: 'Wandering', drowsy: 'Getting sleepy', restless: 'Restless',
+  const toggleSea = () => {
+    if (seaOn) stopOcean(); else startOcean()
+    setSeaOn(!seaOn)
+    store.setSoundOn(!seaOn)
   }
+
+  const cueText = cue ?? (paused ? 'Paused.' : elapsed < 8 ? 'Close your eyes.' : phase === 'in' ? 'in…' : 'out…')
 
   return (
     <Screen className="session">
-      <TopBar close="/" title={<><small className="muted">{store.coachOn ? plan.technique : 'Free session'}</small><span>{fmt(elapsed)} / {fmt(length)}</span></>} />
-
-      <div className="orb-wrap">
-        <div ref={orb} className="orb">
-          <svg className="orb__wave" viewBox="0 0 200 60" preserveAspectRatio="none">
-            <path d="M0 30 Q25 10 50 30 T100 30 T150 30 T200 30" />
-          </svg>
-        </div>
-        <p className="orb__text">{cue ?? (elapsed < 8 ? 'Close your eyes.' : phase === 'in' ? 'Breathe in' : 'Breathe out')}</p>
-        {reading && <p className="state-pill"><i style={{ background: `var(--st-${reading.state})` }} />{stateText[reading.state]}</p>}
+      <div className="session__hud" onClick={showHud}>
+        <span>{fmt(elapsed)} / {fmt(length)}</span>
+        {reading && <span className="session__state" style={{ color: `var(--st-${reading.state})` }}><i style={{ background: 'currentColor' }} />{STATE_TEXT[reading.state]}</span>}
       </div>
 
-      <div className="card metrics">
-        <div><span className="muted">Breathing</span><strong>{reading?.rate.toFixed(1) ?? '–'}<small>/min</small></strong></div>
-        <div><span className="muted">Stillness</span><strong>{reading ? (reading.stillness > 0.8 ? 'High' : reading.stillness > 0.6 ? 'Medium' : 'Low') : '–'}</strong></div>
-        <div><span className="muted">Posture</span><strong>{reading ? (reading.posture > 0.75 ? 'Good' : 'Slumping') : '–'}</strong></div>
+      <p className="session__cue" onClick={showHud} aria-live="polite">{cueText}</p>
+      <p className="fine">{store.coachOn ? plan.technique.toLowerCase() : 'free session'}</p>
+
+      <div className="spacer" onClick={showHud} />
+
+      <div className="metrics" onClick={showHud}>
+        <div><span>breath</span><strong>{reading?.rate.toFixed(1) ?? '—'}<small>/m</small></strong></div>
+        <div><span>still</span><strong>{reading ? Math.round(reading.stillness * 100) : '—'}<small>%</small></strong></div>
+        <div><span>posture</span><strong>{reading ? Math.round(reading.posture * 100) : '—'}<small>%</small></strong></div>
       </div>
 
-      <div className="controls">
-        <button className="ctl" onClick={() => setVoiceOn((v) => !v)} aria-label={voiceOn ? 'Mute voice' : 'Unmute voice'}>
-          <Icon name={voiceOn ? 'vol' : 'mute'} /><span>{voiceOn ? 'Voice on' : 'Muted'}</span>
-        </button>
-        <button className="ctl ctl--main" onClick={() => setPaused((p) => !p)} aria-label={paused ? 'Resume' : 'Pause'}>
-          <Icon name={paused ? 'play' : 'pause'} size={26} />
-        </button>
-        <button className="ctl" onClick={end} aria-label="End session"><Icon name="stop" /><span>End</span></button>
+      <div className={`controls${hud ? '' : ' is-hidden'}`}>
+        <button className="ctl" onClick={() => { setVoiceOn((v) => !v); showHud() }}>{voiceOn ? 'voice on' : 'voice off'}</button>
+        <button className="ctl" onClick={() => { toggleSea(); showHud() }}>{seaOn ? 'sea on' : 'sea off'}</button>
+        <button className="ctl" onClick={() => { setPaused((p) => !p); showHud() }}>{paused ? 'resume' : 'pause'}</button>
+        <button className="ctl" onClick={end}>end</button>
       </div>
+      {!hud && <p className="tap-hint" onClick={showHud}>tap for controls</p>}
 
       {(asking || result) && (
-        <div className="sheet" role="dialog" aria-label="Feel Check">
-          <div className="sheet__orb" />
-          <h2 className="h1 center">Feel Check</h2>
+        <div className="feel" role="dialog" aria-label="Feel Check">
+          <p className="feel__q">Focused,<br />or drifting?<small>{asking ? 'say it out loud · or tap' : ''}</small></p>
           {asking ? (
             <>
-              <p className="lede center"><Icon name="mic" size={16} /> Say it out loud, eyes closed. Or tap.</p>
-              <div className="options">
-                <button className="option" onClick={() => record('focused')}><Icon name="sun" size={26} /><span><b>Focused</b><small>Present with my breath</small></span></button>
-                <button className="option" onClick={() => record('drifting')}><Icon name="cloud" size={26} /><span><b>Drifting</b><small>My mind wandered</small></span></button>
-                <button className="option" onClick={() => record('unsure')}><Icon name="q" size={26} /><span><b>Not sure</b><small>Hard to tell</small></span></button>
+              <div className="feel__halves">
+                <button className="feel__half feel__half--focus" onClick={() => record('focused')}><b>focused</b><small>present with my breath</small></button>
+                <button className="feel__half feel__half--drift" onClick={() => record('drifting')}><b>drifting</b><small>my mind wandered</small></button>
               </div>
+              <button className="feel__unsure" onClick={() => record('unsure')}>not sure</button>
             </>
           ) : result && (
-            <div className="verdict">
-              <div><span className="muted">You felt</span><strong>{result.answer === 'none' ? 'No answer' : result.answer}</strong>{result.spoken && <small>“{result.spoken}”</small>}</div>
-              <div><span className="muted">TIDE saw</span><strong>{result.sensorState}</strong></div>
-              <p className={`verdict__tag ${result.match ? 'ok' : 'miss'}`}>{result.match ? 'You caught it ✓' : result.answer === 'none' ? 'Logged as quiet' : 'Not quite. Keep noticing.'}</p>
-            </div>
+            <>
+              <div className={`verdict${result.match ? ' is-match' : ''}`}>
+                <div className="verdict__line verdict__line--felt" style={{ color: result.answer === 'drifting' ? 'var(--st-drifting)' : 'var(--st-focused)' }}>
+                  <i /><span>you felt · <b>{result.answer === 'none' ? 'quiet' : result.answer}</b>{result.spoken ? ` “${result.spoken}”` : ''}</span>
+                </div>
+                <div className="verdict__line verdict__line--saw" style={{ color: `var(--st-${result.sensorState})` }}>
+                  <i /><span>tide saw · <b>{result.sensorState}</b></span>
+                </div>
+                <p className={`verdict__tag ${result.answer === 'none' ? 'muted' : result.match ? 'ok' : 'miss'}`}>{result.match ? 'You caught it.' : result.answer === 'none' ? 'Logged as quiet.' : 'Not quite. Keep noticing.'}</p>
+              </div>
+              <span />
+            </>
           )}
         </div>
       )}

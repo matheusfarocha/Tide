@@ -1,28 +1,7 @@
-import { useEffect, useRef, type ReactNode } from 'react'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
+import { requestTilt, useTideCtl } from '../lib/tide'
 import type { FeelCheck, MindState, Reading } from '../lib/types'
-
-/* ---------- Background: dusk over the ocean ---------- */
-export function Scene({ dim = false }: { dim?: boolean }) {
-  return (
-    <div className={`scene${dim ? ' scene--dim' : ''}`} aria-hidden>
-      <div className="scene__sun" />
-      <svg className="scene__land" viewBox="0 0 400 300" preserveAspectRatio="none">
-        <path d="M0 170 C60 150 90 160 130 140 C170 120 200 150 250 150 C300 150 340 130 400 145 L400 300 L0 300 Z" fill="#2a3150" opacity=".55" />
-        <path d="M0 210 C50 200 70 185 110 190 C150 195 160 215 210 205 L210 300 L0 300 Z" fill="#1a2038" opacity=".9" />
-        <path d="M260 220 C300 200 330 205 400 190 L400 300 L230 300 Z" fill="#161b30" opacity=".95" />
-        <rect y="185" width="400" height="115" fill="url(#sea)" opacity=".5" />
-        <defs>
-          <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#f2b48a" stopOpacity=".55" />
-            <stop offset="1" stopColor="#141b33" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-      </svg>
-      <div className="scene__veil" />
-    </div>
-  )
-}
 
 /* ---------- Icons (inline, stroke) ---------- */
 const P = {
@@ -65,10 +44,12 @@ export function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
 }
 
 /* ---------- Layout ---------- */
-export function Screen({ children, dim, className = '' }: { children: ReactNode; dim?: boolean; className?: string }) {
+export function Screen({ children, className = '' }: { children: ReactNode; dim?: boolean; className?: string }) {
+  const tide = useTideCtl()
+  // Every page change sends a tide sweeping up the screen and back.
+  useEffect(() => { tide.pulse() }, [tide])
   return (
     <div className="shell">
-      <Scene dim={dim} />
       <main className={`screen ${className}`}>{children}</main>
     </div>
   )
@@ -88,18 +69,113 @@ export function TopBar({ back, close, title, right }: { back?: boolean | string;
   )
 }
 
-export function TabBar() {
-  const tabs: [string, IconName, string][] = [['/', 'home', 'Home'], ['/scores', 'trophy', 'Scores'], ['/insights', 'spark', 'Coach'], ['/progress', 'chart', 'Progress'], ['/profile', 'user', 'Profile']]
+/** Depth for each top-level screen. Going deeper raises the tide. */
+export const DEPTHS: [string, string, number][] = [
+  ['/', 'today', 0.42],
+  ['/scores', 'scores', 0.6],
+  ['/insights', 'coach', 0.66],
+  ['/progress', 'log', 0.72],
+  ['/profile', 'you', 0.52],
+]
+export const depthOf = (path: string) => DEPTHS.find((d) => d[0] === path)?.[2] ?? 0.45
+
+/** Navigation as a tide gauge on the right edge. */
+export function TideGauge() {
+  const { pathname } = useLocation()
   return (
-    <nav className="tabbar">
-      {tabs.map(([to, icon, label]) => (
-        <NavLink key={to} to={to} end className={({ isActive }) => `tabbar__item${isActive ? ' is-active' : ''}`}>
-          <Icon name={icon} size={22} />
-          <span>{label}</span>
+    <nav className="gauge" aria-label="Sections">
+      <span className="gauge__staff" aria-hidden />
+      {DEPTHS.map(([to, label]) => (
+        <NavLink key={to} to={to} end className={({ isActive }) => `gauge__mark${isActive ? ' is-active' : ''}`} aria-current={pathname === to ? 'page' : undefined}>
+          <span className="gauge__label">{label}</span>
+          <span className="gauge__tick" aria-hidden />
         </NavLink>
       ))}
     </nav>
   )
+}
+export const TabBar = TideGauge
+
+/** Press and hold: the tide surges up, then fires. Enter/Space or a screen reader click fires at once. */
+export function HoldButton({ label, onDone, ms = 1300 }: { label: string; onDone: () => void; ms?: number }) {
+  const tide = useTideCtl()
+  const [p, setP] = useState(0)
+  const raf = useRef(0)
+  const start = useRef(0)
+
+  const stop = () => {
+    cancelAnimationFrame(raf.current)
+    setP(0)
+    tide.surge(0)
+  }
+  const begin = () => {
+    start.current = performance.now()
+    const step = () => {
+      const v = Math.min(1, (performance.now() - start.current) / ms)
+      setP(v)
+      tide.surge(v)
+      if (v >= 1) {
+        navigator.vibrate?.(18)
+        tide.ripple(window.innerWidth / 2, 2.2)
+        tide.surge(0)
+        setP(0)
+        onDone()
+        return
+      }
+      raf.current = requestAnimationFrame(step)
+    }
+    raf.current = requestAnimationFrame(step)
+  }
+  useEffect(() => () => { cancelAnimationFrame(raf.current); tide.surge(0) }, [tide])
+
+  const C = 2 * Math.PI * 34
+  return (
+    <button
+      className={`hold${p > 0 ? ' is-holding' : ''}`}
+      onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); requestTilt(); begin() }}
+      onPointerUp={stop}
+      onPointerCancel={stop}
+      onClick={(e) => { if (e.detail === 0) onDone() /* keyboard or screen reader */ }}
+      onContextMenu={(e) => e.preventDefault()}
+    >
+      <svg width="80" height="80" viewBox="0 0 80 80" aria-hidden>
+        <circle cx="40" cy="40" r="34" className="hold__track" />
+        <circle cx="40" cy="40" r="34" className="hold__fill" strokeDasharray={C} strokeDashoffset={C * (1 - p)} transform="rotate(-90 40 40)" />
+        <circle cx="40" cy="40" r={6 + p * 10} className="hold__core" />
+      </svg>
+      <span className="hold__label">{label}</span>
+    </button>
+  )
+}
+
+/** A number that counts up like live telemetry. */
+export function Counter({ value, ms = 1400 }: { value: number; ms?: number }) {
+  const [v, setV] = useState(0)
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { setV(value); return }
+    const t0 = performance.now()
+    let raf = 0
+    const step = () => {
+      const p = Math.min(1, (performance.now() - t0) / ms)
+      setV(Math.round(value * (1 - Math.pow(1 - p, 3))))
+      if (p < 1) raf = requestAnimationFrame(step)
+    }
+    raf = requestAnimationFrame(step)
+    return () => cancelAnimationFrame(raf)
+  }, [value, ms])
+  return <>{v}</>
+}
+
+/** Text that writes itself in, like the coach is speaking. */
+export function Typewriter({ text, speed = 16 }: { text: string; speed?: number }) {
+  const [n, setN] = useState(0)
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { setN(text.length); return }
+    setN(0)
+    const id = setInterval(() => setN((v) => (v >= text.length ? (clearInterval(id), v) : v + 1)), speed)
+    return () => clearInterval(id)
+  }, [text, speed])
+  return <span aria-label={text}><span aria-hidden>{text.slice(0, n)}</span><span className="caret" aria-hidden /></span>
 }
 
 export function Tabs<T extends string>({ value, options, onChange }: { value: T; options: [T, string][]; onChange: (v: T) => void }) {
@@ -190,7 +266,7 @@ export function LiveWave({ subscribe, height = 90, seconds = 12, color = '#7fe0f
 
 /* ---------- Calm Map ---------- */
 export const stateColor: Record<MindState, string> = {
-  settling: '#9aa6c7', focused: '#6fd6a8', drifting: '#f0a35e', drowsy: '#b293f5', restless: '#f07a8a',
+  settling: '#b0c4e8', focused: '#7fe7ff', drifting: '#ffb570', drowsy: '#bea8ff', restless: '#ff7e8c',
 }
 
 type Lane = { key: 'rate' | 'stillness' | 'posture' | 'tension'; label: string; color: string; invert?: boolean }

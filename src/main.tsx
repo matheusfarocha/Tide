@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { StoreProvider } from './lib/store'
+import { TideProvider } from './lib/tide'
 import { BreathTest } from './screens/BreathTest'
 import { Scores } from './screens/Scores'
 import { Calibrate } from './screens/Calibrate'
@@ -17,6 +18,7 @@ import './styles.css'
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <StoreProvider>
+      <TideProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -35,6 +37,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path="/breath-test" element={<BreathTest />} />
         </Routes>
       </BrowserRouter>
+      </TideProvider>
     </StoreProvider>
   </React.StrictMode>,
 )

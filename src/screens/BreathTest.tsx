@@ -4,6 +4,7 @@ import { Icon, Screen, TopBar } from '../components/ui'
 import { breathAccuracy } from '../lib/metrics'
 import { createFakeSignal } from '../lib/signal'
 import { useStore } from '../lib/store'
+import { useTide } from '../lib/tide'
 import type { BreathTest as Result } from '../lib/types'
 
 // Breath-counting focus test (Levinson et al., 2014). You tap on each exhale while counting silently;
@@ -22,6 +23,7 @@ export function BreathTest() {
   const [result, setResult] = useState<Result | null>(null)
   const observed = useRef(0)
   const signal = useMemo(() => createFakeSignal({ lengthSec: DURATION, targetRate: 9 + Math.random() * 3 }), [])
+  useTide(stage === 'run' ? 0.12 : 0.3)
 
   useEffect(() => {
     if (stage !== 'run') return
@@ -46,7 +48,7 @@ export function BreathTest() {
   }, [left, stage, taps, lost, addBreathTest])
 
   if (stage === 'intro') return (
-    <Screen dim>
+    <Screen>
       <TopBar back />
       <p className="eyebrow">Focus test · 60 seconds</p>
       <h1 className="h1">Count your breaths</h1>
@@ -78,7 +80,7 @@ export function BreathTest() {
 
   const acc = result ? breathAccuracy(result) : 0
   return (
-    <Screen dim>
+    <Screen>
       <TopBar close="/" title="Breath-count test" />
       <section className="card score">
         <div className="big-acc"><strong className="num-xl">{acc}%</strong><span className="muted">accuracy</span></div>

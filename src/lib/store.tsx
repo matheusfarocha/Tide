@@ -12,6 +12,8 @@ interface Store {
   lengthSec: number
   onboarded: boolean
   coachOn: boolean
+  soundOn: boolean
+  setSoundOn(v: boolean): void
   plan: Plan
   history: SessionRecord[]
   breathTests: BreathTest[]
@@ -50,17 +52,18 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [insights, setInsights] = useState<CoachInsights | null>(saved?.insights ?? demoInsights)
   const [breathTests, setBreathTests] = useState<BreathTest[]>(saved?.breathTests ?? demoBreathTests)
   const [plan, setPlan] = useState<Plan>(saved?.plan ?? demoPlan)
+  const [soundOn, setSoundOn] = useState<boolean>(saved?.soundOn ?? true)
   const [coachStatus, setCoachStatus] = useState<CoachStatus>('idle')
   const [calibrationRate, setCalibration] = useState<number | undefined>()
 
   useEffect(() => {
     try {
-      localStorage.setItem(KEY, JSON.stringify({ name, goal, lengthSec, onboarded, coachOn, history: history.slice(-12), breathTests: breathTests.slice(-12), insights, plan }))
+      localStorage.setItem(KEY, JSON.stringify({ name, goal, lengthSec, onboarded, coachOn, soundOn, history: history.slice(-12), breathTests: breathTests.slice(-12), insights, plan }))
     } catch { /* storage is a convenience only */ }
-  }, [name, goal, lengthSec, onboarded, coachOn, history, breathTests, insights, plan])
+  }, [name, goal, lengthSec, onboarded, coachOn, soundOn, history, breathTests, insights, plan])
 
   const store = useMemo<Store>(() => ({
-    name, goal, lengthSec, onboarded, coachOn, history, breathTests, insights, coachStatus, calibrationRate,
+    name, goal, lengthSec, onboarded, coachOn, soundOn, setSoundOn, history, breathTests, insights, coachStatus, calibrationRate,
     plan: coachOn ? plan : firstPlan,
     setProfile(p) {
       setName(p.name)
@@ -100,7 +103,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       setPlan(demoPlan)
       setCoachStatus('idle')
     },
-  }), [name, goal, lengthSec, onboarded, coachOn, history, breathTests, insights, plan, coachStatus, calibrationRate])
+  }), [name, goal, lengthSec, onboarded, coachOn, soundOn, history, breathTests, insights, plan, coachStatus, calibrationRate])
 
   return <Ctx.Provider value={store}>{children}</Ctx.Provider>
 }
