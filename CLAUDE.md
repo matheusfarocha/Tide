@@ -18,17 +18,20 @@ owns what. Read the relevant section before building any feature.
   and training tool.
 
 ## Layout
-- `app/`: web app (Vite + React + TypeScript), opened in the phone browser
+- `src/`, `index.html`, `public/`: web app at the repo root (Vite + React +
+  TypeScript), opened in the phone browser
 - `convex/`: Convex backend (schema, functions, actions, HTTP endpoints)
 - `shared/types.ts`: shared data contracts between modules
 - `docs/PLAN.md`: the plan
 
 ## Commands
-- `npm run typecheck`: typechecks `shared/` and `convex/`; fails if
+- `npm run dev` / `npm run phone`: the web app (phone mode serves HTTPS for the camera)
+- `npm run build`: typecheck + Vite build (what Vercel runs)
+- `npm run typecheck`: typechecks `src/`, `shared/` and `convex/`; fails if
   `convex/validators.ts` drifts from `shared/types.ts`
 - `npx tsx scripts/fake-session.ts`: sanity-check the fake session data
 - `npx tsx scripts/smoke-convex.ts`: end-to-end test of the Convex backend (dev deployment)
-- `npx convex dev`: keep running in its own terminal; pushes `convex/` on save
+- `npx convex dev` (or `npm run convex`): keep running in its own terminal; pushes `convex/` on save
   to the cloud dev deployment `tacit-moose-727` (team `param-mans`, project `tide`)
 - `cd apify/tide-research && npm install && node src/main.js`: run the
   Research Actor locally (results in its `storage/datasets/default/`)
