@@ -20,6 +20,7 @@ export type _Contract = [
   Assert<Same<Infer<typeof V.vSignalReading>, S.SignalReading>>,
   Assert<Same<Infer<typeof V.vFeelCheck>, S.FeelCheck>>,
   Assert<Same<Infer<typeof V.vSessionPlan>, S.SessionPlan>>,
+  Assert<Same<Infer<typeof V.vPlanCitation>, S.PlanCitation>>,
   Assert<Same<Infer<typeof V.vSessionSummary>, S.SessionSummary>>,
   Assert<Same<Infer<typeof V.vCalibration>, S.Calibration>>,
   Assert<Same<Infer<typeof V.vBreathCountTest>, S.BreathCountTest>>,
