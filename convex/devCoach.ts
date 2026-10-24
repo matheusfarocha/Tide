@@ -9,6 +9,7 @@ import { v } from "convex/values";
 import { internal } from "./_generated/api";
 import { env, internalAction, internalMutation, internalQuery } from "./_generated/server";
 import { agentUrls } from "./coach";
+import { asPlan, asSummary } from "./coachParse";
 import { EXAMPLE_COACH_PLAN } from "../shared/fixtures";
 import { selfAwarenessScore, sessionFeatureVector } from "../shared/scoring";
 import type { SessionSummary, TimeInState } from "../shared/types";
@@ -214,5 +215,32 @@ export const checkCreao = internalAction({
       };
     }
     return out;
+  },
+});
+
+/**
+ * Checks an agent's final JSON the way Convex will read it, before saving the agent:
+ * shape (SessionSummary / SessionPlan) and whether each cited paper is in the library.
+ *   npx convex run devCoach:checkReply '{"json": {...}}'
+ */
+export const checkReply = internalQuery({
+  args: { json: v.any() },
+  returns: v.any(),
+  handler: async (ctx, { json }) => {
+    const plan = json?.plan ? asPlan(json.plan) : null;
+    const citations = [];
+    for (const c of plan?.citations ?? []) {
+      const found = await ctx.db
+        .query("techniques")
+        .withIndex("by_externalId", (q) => q.eq("externalId", c.externalId))
+        .unique();
+      citations.push({ externalId: c.externalId, inLibrary: !!found, title: found?.title ?? null });
+    }
+    return {
+      // null: this reply has no summary to check (a coach reply carries only the plan).
+      summaryOk: json?.summary ? asSummary(json.summary) !== null : json?.plan ? null : asSummary(json) !== null,
+      planOk: json?.plan ? plan !== null : null,
+      citations,
+    };
   },
 });
