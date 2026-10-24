@@ -1,0 +1,8 @@
+{
+  "name": "TIDE",
+  "short_name": "TIDE",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#141b33",
+  "theme_color": "#141b33"
+}

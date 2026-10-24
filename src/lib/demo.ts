@@ -1,0 +1,76 @@
+import type { CoachInsights, Plan, Reading, SessionRecord } from './types'
+
+// Fake data so the UI works before the signal and the coach are wired up.
+
+export const firstPlan: Plan = {
+  lengthSec: 300,
+  cueTimes: [],
+  feelCheckTimes: [120, 240],
+  fadingLevel: 0,
+  technique: 'Baseline assessment',
+  focusArea: 'Learn your normal',
+  reasons: ['Your first session is a fixed baseline, like a fitness test.'],
+}
+
+export const demoPlan: Plan = {
+  lengthSec: 480,
+  cueTimes: [210],
+  feelCheckTimes: [150, 300, 420],
+  fadingLevel: 0.3,
+  technique: 'Breath counting with longer intervals',
+  focusArea: 'Posture and breathing consistency',
+  reasons: ['You usually drift around minute 4.', 'Your posture slips after minute 6.'],
+}
+
+export const demoInsights: CoachInsights = {
+  summary:
+    'You usually drift around minute 4. Your breathing gets shallower and your posture slips a little. Mornings go better than nights.',
+  takeaways: [
+    'Focused for 62% of the session.',
+    'Your mind often drifts around minute 4.',
+    'Breathing turns irregular when you drift.',
+    'More focused in the mornings.',
+  ],
+  patterns: [
+    { title: 'Drift at minute 4', detail: 'In 4 of your last 5 sessions.', sessions: 'Oct 19–23' },
+    { title: 'Mornings win', detail: '+18% focus before 10 AM.', sessions: '6 sessions' },
+    { title: 'Posture slips late', detail: 'Head drops after ~7 min.', sessions: '3 sessions' },
+  ],
+}
+
+function synth(lengthSec: number, driftAt: number): Reading[] {
+  const out: Reading[] = []
+  for (let t = 0; t < lengthSec; t += 5) {
+    const drifting = t > driftAt && t < driftAt + 80
+    out.push({
+      t,
+      breathPhase: Math.sin(t / 1.4),
+      rate: drifting ? 8.6 + Math.random() : 6.4 + Math.random() * 0.6,
+      regularity: drifting ? 0.5 + Math.random() * 0.1 : 0.85 + Math.random() * 0.1,
+      stillness: drifting ? 0.55 + Math.random() * 0.1 : 0.9 + Math.random() * 0.05,
+      posture: t > lengthSec * 0.8 ? 0.65 : 0.9,
+      tension: drifting ? 0.45 : 0.2,
+      state: t < 50 ? 'settling' : drifting ? 'drifting' : 'focused',
+      signalOk: true,
+    })
+  }
+  return out
+}
+
+export const demoHistory: SessionRecord[] = [
+  { id: 's1', date: '2026-10-19T08:10:00', lengthSec: 600, readings: synth(600, 150), feelChecks: [
+    { t: 150, answer: 'focused', sensorState: 'focused', match: true },
+    { t: 260, answer: 'focused', sensorState: 'drifting', match: false },
+    { t: 420, answer: 'drifting', sensorState: 'focused', match: false },
+  ] },
+  { id: 's2', date: '2026-10-20T21:30:00', lengthSec: 480, readings: synth(480, 200), feelChecks: [
+    { t: 150, answer: 'focused', sensorState: 'focused', match: true },
+    { t: 270, answer: 'drifting', sensorState: 'drifting', match: true },
+    { t: 400, answer: 'focused', sensorState: 'drowsy', match: false },
+  ] },
+  { id: 's3', date: '2026-10-21T08:05:00', lengthSec: 600, readings: synth(600, 240), feelChecks: [
+    { t: 150, answer: 'focused', sensorState: 'focused', match: true },
+    { t: 270, answer: 'drifting', sensorState: 'drifting', match: true },
+    { t: 420, answer: 'focused', sensorState: 'focused', match: true },
+  ] },
+]
