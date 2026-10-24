@@ -80,7 +80,7 @@ export function Results() {
         <span className="readout-big__meta"><b>focused</b><span className="fine">{fmt(rec.lengthSec)} · {drift !== null ? `first drift ${fmt(drift)}` : 'no drift'}</span></span>
       </div>
 
-      <div>
+      <div className="card">
         <TideChart readings={rec.readings} feelChecks={rec.feelChecks} />
         <Legend />
       </div>
@@ -92,7 +92,7 @@ export function Results() {
       </div>
 
       {rec.feelChecks.length > 0 && (
-        <div>
+        <div className="card">
           <div className="row-head"><p className="eyebrow">feel checks</p><span className="pill">{answered.filter((f) => f.match).length}/{answered.length || 0} caught · {selfAwareness(rec.feelChecks)}%</span></div>
           {rec.feelChecks.map((f, i) => (
             <div key={i} className="fc-row">
@@ -145,7 +145,7 @@ export function CalmMapScreen() {
     <Screen>
       <TopBar back title="calm map" />
       <Tabs value={lens} onChange={setLens} options={[['all', 'overview'], ['rate', 'breath'], ['stillness', 'movement'], ['posture', 'posture']]} />
-      <div>
+      <div className="card">
         <CalmMap readings={rec.readings} feelChecks={rec.feelChecks} lanes={lanes as any} />
         <Legend />
       </div>

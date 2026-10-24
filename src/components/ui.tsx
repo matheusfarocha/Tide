@@ -43,6 +43,32 @@ export function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
   )
 }
 
+/* ---------- Brand ---------- */
+
+/** The mark: the moon that pulls the tide, over the water it moves. */
+export function Mark({ size = 28, draw = false }: { size?: number; draw?: boolean }) {
+  const id = useRef(`m${Math.random().toString(36).slice(2, 8)}`).current
+  return (
+    <svg className={`mark${draw ? ' mark--draw' : ''}`} width={size} height={size} viewBox="0 0 48 48" aria-hidden>
+      <defs>
+        <mask id={id}><rect width="48" height="48" fill="#fff" /><circle cx="28" cy="13" r="6.6" fill="#000" /></mask>
+      </defs>
+      <circle className="mark__moon" cx="24" cy="16" r="7" mask={`url(#${id})`} />
+      <path className="mark__wave" d="M6 31 C11.5 26.5, 17.5 26.5, 24 31 S36.5 35.5, 42 31" pathLength={1} />
+      <path className="mark__wave mark__wave--2" d="M11 38 C15 35, 19.5 35, 24 38 S33 41, 37 38" pathLength={1} />
+    </svg>
+  )
+}
+
+export function Lockup({ size = 22 }: { size?: number }) {
+  return (
+    <span className="lockup" aria-label="tide">
+      <Mark size={size + 6} />
+      <span className="lockup__word" style={{ fontSize: size }}>tide</span>
+    </span>
+  )
+}
+
 /* ---------- Layout ---------- */
 export function Screen({ children, className = '' }: { children: ReactNode; dim?: boolean; className?: string }) {
   const tide = useTideCtl()

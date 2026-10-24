@@ -29,7 +29,7 @@ export function Insights() {
       <TopBar title="coach" />
       {!s.coachOn ? <CoachOff /> : s.coachStatus === 'reviewing' ? <CoachReviewing /> : s.insights && (
         <>
-          <p className="summary"><Typewriter text={s.insights.summary} /></p>
+          <div className="card"><p className="eyebrow"><Icon name="spark" size={12} /> coach summary</p><p className="summary"><Typewriter text={s.insights.summary} /></p></div>
           <Tabs value={tab} onChange={setTab} options={[['insights', 'takeaways'], ['patterns', 'patterns']]} />
           {tab === 'insights' ? (
             <ol className="takeaways">
@@ -76,7 +76,7 @@ export function PlanScreen() {
           <div key={k} className="list__row"><Icon name={icon} /><div><span className="fine">{k}</span><strong>{v}</strong></div></div>
         ))}
       </div>
-      <div>
+      <div className="card">
         <div className="row-head"><p className="eyebrow">coach support</p><span className="mono small">{support}%</span></div>
         <div className="meter"><i style={{ width: `${support}%` }} /></div>
         <p className="fine">support fades as you improve, until you notice on your own.</p>
@@ -138,11 +138,11 @@ export function Profile() {
           <button role="switch" aria-checked={s.soundOn} aria-label="Sound of the sea" className={`switch${s.soundOn ? ' is-on' : ''}`} onClick={() => { if (s.soundOn) stopOcean(); s.setSoundOn(!s.soundOn) }}><i /></button>
         </div>
       </div>
-      <div>
+      <div className="card">
         <p className="eyebrow"><Icon name="lock" size={12} /> privacy</p>
         <p className="muted small">Video is processed on your phone and never stored or uploaded. Only the numbers leave it. Spoken answers are not saved.</p>
       </div>
-      <div>
+      <div className="card">
         <p className="eyebrow">not medical advice</p>
         <p className="muted small">TIDE is a wellness and training tool. It doesn’t diagnose or treat anything.</p>
       </div>

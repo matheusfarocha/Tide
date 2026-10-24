@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom'
-import { Counter, HoldButton, Icon, Screen, Sparkline, TideGauge, depthOf, stateColor } from '../components/ui'
+import { Counter, HoldButton, Icon, Lockup, Screen, Sparkline, TideGauge, depthOf, stateColor } from '../components/ui'
 import { awarenessTrend, driftsCaught, fmt, level, streak, totalMinutes } from '../lib/metrics'
 import { startOcean } from '../lib/ocean'
 import { useStore } from '../lib/store'
@@ -11,15 +11,15 @@ export function Welcome() {
   return (
     <Screen className="welcome">
       <div className="welcome__top">
-        <span className="wordmark">tide</span>
-        <span className="fine">v0.1 · cal hacks</span>
+        <Lockup size={24} />
+        <span className="fine">cal hacks 13</span>
       </div>
       <div className="welcome__body">
         <h1 className="display">Your mind drifts.<br /><em>Learn to feel it.</em></h1>
-        <p className="lede">A meditation coach that watches your breath, then teaches you to notice your own wandering, and slowly steps back.</p>
+        <p className="lede">A meditation coach that watches your breath, teaches you to notice your own wandering, then steps back.</p>
       </div>
       <div className="welcome__foot">
-        <HoldButton label="hold to begin" onDone={() => nav('/onboard')} />
+        <HoldButton label="hold to begin" onDone={() => nav('/intro')} />
         <p className="fine"><Icon name="lock" size={12} /> video never leaves your phone</p>
       </div>
     </Screen>
@@ -53,7 +53,7 @@ export function Home() {
   return (
     <Screen className="with-tabs">
       <header className="home-head">
-        <span className="wordmark">tide</span>
+        <Lockup size={20} />
       </header>
 
       <div>
@@ -63,39 +63,37 @@ export function Home() {
 
       {s.coachStatus === 'reviewing' && <CoachReviewing />}
 
-      <div className="home-sea">
-        <Link to="/scores" className="readout-big">
+      <Link to="/scores" className="card hero" aria-label={`Self-awareness ${score}. Open scores.`}>
+        <div className="readout-big">
           <span className="num-xl"><Counter value={score} /></span>
           <span className="readout-big__meta">
             <b>self-awareness</b>
             <span className="fine">lvl {lvl.n} {lvl.name.toLowerCase()} · {delta >= 0 ? '+' : ''}{delta}</span>
           </span>
-        </Link>
-        <Sparkline values={awareness} h={28} />
-
-        <div className="telemetry">
-          <div><span>caught</span><strong>{driftsCaught(s.history)}</strong></div>
-          <div><span>minutes</span><strong>{totalMinutes(s.history)}</strong></div>
-          <div><span>sessions</span><strong>{s.history.length}</strong></div>
         </div>
-
+        <Sparkline values={awareness} h={30} />
         {last && (
-          <Link to={`/calm-map/${last.id}`} aria-label="Open your last session">
+          <div>
             <p className="eyebrow">last session</p>
             <div className="strip">{last.readings.map((r, i) => <i key={i} style={{ background: stateColor[r.state] }} />)}</div>
-          </Link>
+          </div>
         )}
+      </Link>
 
-        <div className="next-line">
-          <p className="eyebrow">{s.coachOn ? 'next · designed by your coach' : 'free session'}</p>
-          <p className="next-line__title">{s.coachOn ? p.technique : 'Breathe and notice'}</p>
-          <span className="next-line__meta">{fmt(s.lengthSec)} · {p.feelCheckTimes.length} feel checks{s.coachOn && p.cueTimes.length ? ' · cue before your usual drift' : ''}</span>
-        </div>
-
-        <HoldButton label="hold to begin" onDone={begin} />
-        <Link to="/breath-test" className="link center">breath-count test →</Link>
+      <div className="telemetry">
+        <div><span>caught</span><strong>{driftsCaught(s.history)}</strong></div>
+        <div><span>minutes</span><strong>{totalMinutes(s.history)}</strong></div>
+        <div><span>sessions</span><strong>{s.history.length}</strong></div>
       </div>
 
+      <section className="card next-card" aria-label="Next session">
+        <p className="eyebrow">{s.coachOn ? 'next · designed by your coach' : 'free session'}</p>
+        <p className="next-line__title">{s.coachOn ? p.technique : 'Breathe and notice'}</p>
+        <span className="next-line__meta">{fmt(s.lengthSec)} · {p.feelCheckTimes.length} feel checks{s.coachOn && p.cueTimes.length ? ' · cue before your usual drift' : ''}</span>
+        <HoldButton label="hold to begin" onDone={begin} />
+      </section>
+
+      <Link to="/breath-test" className="link center">breath-count test →</Link>
       <TideGauge />
     </Screen>
   )

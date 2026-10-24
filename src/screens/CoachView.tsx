@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { CalmMap, Legend, LiveWave, stateColor } from '../components/ui'
+import { CalmMap, Legend, LiveWave, Mark, stateColor } from '../components/ui'
 import { subscribe } from '../lib/live'
 import { fmt } from '../lib/metrics'
 import { useStore } from '../lib/store'
@@ -40,7 +40,7 @@ export function CoachView() {
     <div className="shell shell--wide">
       <main className="coachview">
         <header className="coachview__head">
-          <div className="wordmark">tide · coach view</div>
+          <span className="lockup"><Mark size={30} /><span className="lockup__word" style={{ fontSize: 24 }}>tide</span><span className="fine">· coach view</span></span>
           <span className={`live-dot ${status}`}>{status === 'live' ? `live · ${fmt(r?.t ?? 0)}` : status === 'ended' ? 'session ended' : 'waiting for phone…'}</span>
           <label className="toggle-inline">
             coach
