@@ -1,474 +1,510 @@
-# **TIDE — Cal Hacks 13.0 Build Plan**
+# TIDE — Cal Hacks 13.0 Build Plan
 
-## **The idea**
+Oct 24, 2026 · @param
+
+## The idea
 
 We are building TIDE, a meditation coach that sees when your mind wanders and trains you to notice it yourself. The text below is our original idea, with three updates from planning: Feel Checks are answered by voice, the coach runs on CREAO agents, and accuracy is checked without any phone on the body.
 
 **One-line pitch:** "Muse tells you when your mind wanders. TIDE teaches you to notice it yourself, then gets out of the way."
 
-### **TIDE: A Meditation Coach That Can See When Your Mind Wanders**
+### TIDE: A Meditation Coach That Can See When Your Mind Wanders
 
 Meditation is a skill with no scoreboard. TIDE gives it one, and then teaches you to feel it yourself.
 
-### **The Problem**
+### The Problem
 
 The hardest part of meditation is invisible. Your mind drifts off, and you don't notice for minutes. Beginners can't tell whether they're focused, distracted or half-asleep. No one gives them feedback, so they never improve and they quit. Meditation apps make it worse because they play the same script to everyone, without knowing anything about the person listening.
 
 **Named community:** first-year college students dealing with exam stress who tried a meditation app and gave up. That's us, so we test it on each other all weekend.
 
-### **Proposed Solution**
+### Proposed Solution
 
 You prop your phone on a stand about an arm's length away, close your eyes and meditate. TIDE watches quietly. It reads the signals your body gives off as your attention changes:
 
-* **Breathing:** rate, depth and regularity, from small movements of the chest and shoulders.  
-* **Stillness:** fidgeting and restless micro-movements tend to show up when the mind wanders.  
-* **Posture:** a slumping spine or dropping head signals drowsiness.  
-* **Face:** tension in the jaw and brow, and eyelid flutter.
+- **Breathing:** rate, depth and regularity, from small movements of the chest and shoulders.
+- **Stillness:** fidgeting and restless micro-movements tend to show up when the mind wanders.
+- **Posture:** a slumping spine or dropping head signals drowsiness.
+- **Face:** tension in the jaw and brow, and eyelid flutter.
 
 From these signals, TIDE builds a **Calm Map**: a timeline of your session showing when you settled in, when you drifted, when you got sleepy, and when you came back.
 
-### **How it trains you (the core innovation)**
+### How it trains you (the core innovation)
 
-1. **Feel Checks: training self-awareness.** A few times per session, a soft voice asks, "Focused or drifting?" You answer out loud, eyes still closed, and TIDE compares your answer with what the sensors saw. At first your answers won't match the data well. With practice, they match more and more, which means you are learning to feel your own state. Meditation is fundamentally about building that awareness, and TIDE is the first coach that can measure it. (Show the "self-awareness score" rising over sessions.)  
-2. **Pattern tracking across sessions.** The TIDE coach (our CREAO agents) reads your Calm Maps over days and finds your patterns. For example: "You usually drift around minute 4." "Mornings go better than nights." "Your posture collapses after 8 minutes."  
-3. **A personalized training plan with fading support.** The next session targets your weak point. For example, it gives a gentle cue at minute 3:30, just before you usually drift. As you improve, TIDE gradually removes those cues so you build the skill yourself and don't come to depend on the app.  
+1. **Feel Checks: training self-awareness.** A few times per session, a soft voice asks, "Focused or drifting?" You answer out loud, eyes still closed, and TIDE compares your answer with what the sensors saw. At first your answers won't match the data well. With practice, they match more and more, which means you are learning to feel your own state. Meditation is fundamentally about building that awareness, and TIDE is the first coach that can measure it. (Show the "self-awareness score" rising over sessions.)
+2. **Pattern tracking across sessions.** The TIDE coach (our CREAO agents) reads your Calm Maps over days and finds your patterns. For example: "You usually drift around minute 4." "Mornings go better than nights." "Your posture collapses after 8 minutes."
+3. **A personalized training plan with fading support.** The next session targets your weak point. For example, it gives a gentle cue at minute 3:30, just before you usually drift. As you improve, TIDE gradually removes those cues so you build the skill yourself and don't come to depend on the app.
 4. **A breath-counting focus test.** Mindfulness research uses breath counting as a measure of attention: you silently count breaths and tap at a set number. Because TIDE can see your real breaths, it can check whether your count matches, giving you an objective focus score that improves over time. Cite: Levinson et al., "A mind you can count on: validating breath counting as a behavioral measure of mindfulness," Frontiers in Psychology, 2014 ([paper](https://www.frontiersin.org/articles/10.3389/fpsyg.2014.01202/text)).
 
-### **Privacy**
+### Privacy
 
 Video is processed on the phone and never stored or uploaded. Only the metrics leave the device. We say this in the pitch, because a camera watching you meditate needs this answer.
 
-### **Validating that it works**
+### Validating that it works
 
-* **Paced-breathing check (live, for the demo):** a circle on screen expands and shrinks at exactly 6 breaths per minute. The judge breathes along with it for 30 seconds, and TIDE's reading should land near 6\. Because the true rate is known, this proves accuracy right in front of the judge.  
-* **Tap-labelled recordings (for our numbers):** on Saturday, record about 20 short sessions of teammates. A second teammate watches each one and taps a button on every inhale. Compare TIDE's breath count with the taps, and put the average error on the Devpost page.  
-* **If we have time:** show that the regular camera and the depth camera agree with each other.
+- **Paced-breathing check (live, for the demo):** a circle on screen expands and shrinks at exactly 6 breaths per minute. The judge breathes along with it for 30 seconds, and TIDE's reading should land near 6. Because the true rate is known, this proves accuracy right in front of the judge.
+- **Tap-labelled recordings (for our numbers):** on Saturday, record about 20 short sessions of teammates. A second teammate watches each one and taps a button on every inhale. Compare TIDE's breath count with the taps, and put the average error on the Devpost page.
+- **If we have time:** show that the regular camera and the depth camera agree with each other.
 
-### **Demo Moment**
+### Demo Moment
 
 A judge sits down, puts on noise-cancelling headphones, closes their eyes and meditates for 90 seconds. On a second screen, the team and other judges watch their breathing wave, stillness and focus timeline live. Midway, TIDE asks, "Focused or drifting?" The judge answers out loud, and their answer appears next to what the sensors saw. Afterwards, the judge gets their own Calm Map, and the CREAO coach starts designing their next session. Then we switch to a teammate's history from the weekend, showing patterns found and their self-awareness score improving across sessions.
 
-## **What already exists and why TIDE is different**
+## What already exists and why TIDE is different
 
 The basic concept is not unique, but one part of it is genuinely new, and we build the pitch around that part.
 
-### **What already exists**
+### What already exists
 
 A phone or device watching you meditate and telling you when your attention drifts has been done several times:
 
-* [Muse headband](https://choosemuse.com/muse-S/): a brain-sensing (EEG) headband that gives real-time neurofeedback for meditation. A calm mind sounds like peaceful weather, and a wandering mind triggers storm sounds. It costs about \$249, and the app tracks progress over time with points and milestones.  
-* [A phone-camera meditation app from a university research team (ITMO)](https://news.itmo.ru/en/news/10416/): it uses a phone camera to detect body movements and breathing rate, and gives points for staying relaxed and takes them away for sudden changes.  
-* [A US patent](https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/12133730) for an AI system that judges whether someone is being mindful from video of them.  
-* [Dhyana Metrics](https://appgoblin.info/apps/6752203465): an iOS app that claims to detect mind-wandering and guide you back, using finger pressure.
+- [Muse headband](https://choosemuse.com/muse-S/): a brain-sensing (EEG) headband that gives real-time neurofeedback for meditation. A calm mind sounds like peaceful weather, and a wandering mind triggers storm sounds. It costs about $249, and the app tracks progress over time with points and milestones.
+- [A phone-camera meditation app from a university research team (ITMO)](https://news.itmo.ru/en/news/10416/): it uses a phone camera to detect body movements and breathing rate, and gives points for staying relaxed and takes them away for sudden changes.
+- [A US patent](https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/12133730) for an AI system that judges whether someone is being mindful from video of them.
+- [Dhyana Metrics](https://appgoblin.info/apps/6752203465): an iOS app that claims to detect mind-wandering and guide you back, using finger pressure.
 
 If we pitch TIDE as "the camera tracks your breathing and tells you when you drift," a judge who knows Muse will think "so, Muse without the headband." That's an improvement, but not something new.
 
-### **What is genuinely new**
+### What is genuinely new
 
-1. **TIDE trains you to notice drifting yourself.** Every product above tells you *when* your mind wandered, so you depend on the device to know. TIDE's Feel Checks build your own ability to catch it. A University of Wisconsin team validated breath counting as a measure of mindfulness: breath-counting skill was associated with more meta-awareness, less mind wandering and better mood, and 4 weeks of breath-counting training improved mindfulness and reduced mind wandering compared with control groups ([Levinson et al., 2014](https://www.frontiersin.org/articles/10.3389/fpsyg.2014.01202/text)).  
-2. **The key stat for the pitch:** when people lose count, they don't realize it about two-thirds of the time ([source](https://yogauonline.com/?p=14175)). That blind spot is exactly what TIDE trains.  
-3. **Upgrading a research test with a camera.** In the original study, participants pressed one key on each breath and a different key on every ninth breath. That test only measures what people *report* about their breathing. TIDE's camera sees the actual breaths, so it can check whether each report matches reality. As far as we know, nobody has combined the validated test with contactless breath sensing.  
-4. **Built to make itself unnecessary.** TIDE removes its cues as you improve, unlike apps designed to keep you hooked. That directly answers Anthropic's "where could it go wrong" criterion and Microsoft's "responsible design" criterion.  
+1. **TIDE trains you to notice drifting yourself.** Every product above tells you *when* your mind wandered, so you depend on the device to know. TIDE's Feel Checks build your own ability to catch it. A University of Wisconsin team validated breath counting as a measure of mindfulness: breath-counting skill was associated with more meta-awareness, less mind wandering and better mood, and 4 weeks of breath-counting training improved mindfulness and reduced mind wandering compared with control groups ([Levinson et al., 2014](https://www.frontiersin.org/articles/10.3389/fpsyg.2014.01202/text)).
+2. **The key stat for the pitch:** when people lose count, they don't realize it about two-thirds of the time ([source](https://yogauonline.com/?p=14175)). That blind spot is exactly what TIDE trains.
+3. **Upgrading a research test with a camera.** In the original study, participants pressed one key on each breath and a different key on every ninth breath. That test only measures what people *report* about their breathing. TIDE's camera sees the actual breaths, so it can check whether each report matches reality. As far as we know, nobody has combined the validated test with contactless breath sensing.
+4. **Built to make itself unnecessary.** TIDE removes its cues as you improve, unlike apps designed to keep you hooked. That directly answers Anthropic's "where could it go wrong" criterion and Microsoft's "responsible design" criterion.
 5. **No hardware.** You need just a phone, not a headband.
 
 We mention Muse ourselves in the pitch. Judges trust a team that knows the competition, and naming it makes the difference obvious.
 
-### **What makes it impressive at the judging table**
+### What makes it impressive at the judging table
 
-* Real computer vision running live on the judge's own body, with no contact.  
-* Proof of accuracy: the paced-breathing check and our tap-labelled error numbers.  
-* A measurable training result: the gap between what you feel and what the sensors see shrinks across sessions.  
-* Research behind it, with a published, validated study to cite.
+- Real computer vision running live on the judge's own body, with no contact.
+- Proof of accuracy: the paced-breathing check and our tap-labelled error numbers.
+- A measurable training result: the gap between what you feel and what the sensors see shrinks across sessions.
+- Research behind it, with a published, validated study to cite.
 
-### **Honest risks**
+### Honest risks
 
-* **We can't show weeks of improvement in 36 hours.** Record many short sessions from each teammate over the weekend and show those trends, labelled honestly as weekend data.  
-* **Camera-based "drift" detection is noisy.** Lean on the Feel Checks and the breath-counting test as the real measurements, and present the sensor model as getting better with each label.  
-* **The cash ceiling is lower than a finance idea would have.** The realistic targets are listed in the sponsor track playbook below.
+- **We can't show weeks of improvement in 36 hours.** Record many short sessions from each teammate over the weekend and show those trends, labelled honestly as weekend data.
+- **Camera-based "drift" detection is noisy.** Lean on the Feel Checks and the breath-counting test as the real measurements, and present the sensor model as getting better with each label.
+- **The cash ceiling is lower than a finance idea would have.** The realistic targets are listed in the sponsor track playbook below.
 
-## **System architecture**
+## System architecture
 
 TIDE runs two loops joined by Convex: a body loop that reacts in milliseconds during the session, and a CREAO coach loop that runs for minutes after it and designs the next session.
 
-![TIDE architecture · body loop and coach loop, joined by Convex][image1]
-
-TIDE architecture · body loop and coach loop, joined by Convex
+&#91;embedded content: TIDE architecture · body loop and coach loop, joined by Convex\]
 
 Everything time-critical stays in the top band; CREAO only ever runs between sessions, which is why its minutes-long runs never slow the meditation down.
 
-### **Tech stack**
+### Tech stack
 
 | Layer | Choice | Why |
-| :---- | :---- | :---- |
-| Phone app | Web app (React \+ Vite) opened in the phone browser | Fastest to build; no app store; installs to the home screen |
-| Vision | MediaPipe Tasks Vision: Pose Landmarker \+ Face Landmarker (with blendshapes) | Runs on the phone, so video never leaves it |
+| --- | --- | --- |
+| Phone app | Web app (React + Vite) opened in the phone browser | Fastest to build; no app store; installs to the home screen |
+| Vision | MediaPipe Tasks Vision: Pose Landmarker + Face Landmarker (with blendshapes) | Runs on the phone, so video never leaves it |
 | Backend | Convex | Database, real-time queries, actions, HTTP endpoints, scheduled functions, vector search |
 | Coach | CREAO agents on agent.creao.ai, started by Convex through the API Trigger | Async runs; the plan comes back by webhook |
-| Voice | Cartesia Sonic 3.5 (speech) \+ Ink 2 (speech-to-text) | Called through the server; keys never in the browser |
+| Research data | Our own Apify Actor (Europe PMC + PubMed) and an Apify Store review scraper | The cited research library behind the coach; evidence for the pitch |
+| Voice | Cartesia Sonic 3.5 (speech) + Ink 2 (speech-to-text) | Called through the server; keys never in the browser |
 | Real-time reasoning | Claude, called from Convex actions | Interprets spoken answers and phrases cues |
 | Coach view | A second route of the same web app, opened on the laptop | A live Convex query |
 | Hosting | Any static host for the web app (for example Vercel); Convex cloud for the backend | Judges open one link |
 
-### **Session flow**
+### Session flow
 
-1. **Framing guide:** the phone shows where to sit so shoulders and face are in frame.  
-2. **Paced-breathing check (30 s):** the circle at 6 breaths per minute; TIDE's reading is saved as a calibration.  
-3. **Baseline (first 60 s):** TIDE learns this person's normal breathing, stillness and posture for this session.  
-4. **Meditation, run from the coach's plan:** breath-timed voice cues and spoken Feel Checks at the planned times.  
-5. **Calm Map:** shown as soon as the session ends.  
+1. **Framing guide:** the phone shows where to sit so shoulders and face are in frame.
+2. **Paced-breathing check (30 s):** the circle at 6 breaths per minute; TIDE's reading is saved as a calibration.
+3. **Baseline (first 60 s):** TIDE learns this person's normal breathing, stillness and posture for this session.
+4. **Meditation, run from the coach's plan:** breath-timed voice cues and spoken Feel Checks at the planned times.
+5. **Calm Map:** shown as soon as the session ends.
 6. **Coach run:** CREAO analyzes the session and designs the next one; the app shows progress until the plan arrives.
 
-### **Breath signal pipeline (Person 1\)**
+### Breath signal pipeline (Person 1)
 
 Starting values below are guesses to tune on our own recordings.
 
-1. Each frame: shoulder and upper-body landmarks from Pose, blendshapes (brow, jaw, blink) from Face.  
-2. Breath signal: vertical motion of the shoulders and upper chest, with slow drift removed.  
-3. Band-pass filter to the breathing range (start around 6–40 breaths per minute).  
-4. Each inhale \= a peak; breathing rate from the last \~30 seconds; regularity \= how much breath-to-breath intervals vary.  
-5. Stillness \= body motion outside the breathing range; drowsiness \= head drop and shoulders slumping; tension \= brow and jaw blendshapes.  
-6. States (settling, focused, drifting, drowsy, restless) \= simple rules against the session baseline, refined by each Feel Check label.
+1. Each frame: shoulder and upper-body landmarks from Pose, blendshapes (brow, jaw, blink) from Face.
+2. Breath signal: vertical motion of the shoulders and upper chest, with slow drift removed.
+3. Band-pass filter to the breathing range (start around 6–40 breaths per minute).
+4. Each inhale = a peak; breathing rate from the last \~30 seconds; regularity = how much breath-to-breath intervals vary.
+5. Stillness = body motion outside the breathing range; drowsiness = head drop and shoulders slumping; tension = brow and jaw blendshapes.
+6. States (settling, focused, drifting, drowsy, restless) = simple rules against the session baseline, refined by each Feel Check label.
 
-### **Data model (Convex tables)**
+### Data model (Convex tables)
 
 | Table | One row per | Key fields |
-| :---- | :---- | :---- |
+| --- | --- | --- |
 | users | Person | name, CREAO threadId, current self-awareness score |
 | sessions | Session | user, plan used, start, end, status, Analyst summary |
 | samples | Reading during a session | session, time, breath phase, rate, stillness, posture, face, state |
 | feelChecks | Feel Check | session, time, spoken text, answer, sensor state, match |
-| plans | Coach-designed session | user, cue times, Feel Check times, fading level, technique, length, reasons |
+| plans | Coach-designed session | user, cue times, Feel Check times, fading level, technique, length, reasons, citations |
 | coachRuns | CREAO run | session, run ID, share link, status |
 | calibrations | Paced-breathing or tap-label check | session, true rate or tap count, measured value, error |
 | breathCountTests | Breath-counting focus test | session, reported count, observed count |
+| techniques | Research finding from the Apify Actor | technique, population, outcome, short summary, citation link, embedding |
 
-## **How the CREAO coach works**
+## How the CREAO coach works
 
 CREAO agents are TIDE's coach: after every session they analyze it and design the next one, so the app cannot train anyone without them. CREAO runs take minutes and don't stream, so CREAO never sits in the real-time loop; it only runs between sessions.
 
-**Track:** Best AI-First Disruptor (\$2,500 \+ CREAO Launchpad). The test is "remove the agent, and the product stops working." We do not enter One-Person Company (it wants an org chart of business agents) or Team Empowerment (it wants agents connecting a team).
+**Track:** Best AI-First Disruptor ($2,500 + CREAO Launchpad). The test is "remove the agent, and the product stops working." We do not enter One-Person Company (it wants an org chart of business agents) or Team Empowerment (it wants agents connecting a team).
 
-### **CREAO's one requirement**
+### CREAO's one requirement
 
-* At least one CREAO agent does the core work of the project, built on agent.creao.ai.  
-* The Devpost README includes a share link to one of the agent's runs and the agent ID (shown on its page).  
-* The agent is shown running in the demo.
+- At least one CREAO agent does the core work of the project, built on agent.creao.ai.
+- The Devpost README includes a share link to one of the agent's runs and the agent ID (shown on its page).
+- The agent is shown running in the demo.
 
-### **The two agents**
+### The two agents
 
 | Agent | Input | What it does | Output |
-| :---- | :---- | :---- | :---- |
+| --- | --- | --- | --- |
 | Session Analyst | The finished session timeline: breath, stillness, posture, detected state, each spoken Feel Check answer next to the sensor reading | Runs Python in its sandbox to compute when drifting started, the self-awareness gap (how often the answer disagreed with the sensors) and breath-count accuracy | Session summary for the Calm Map |
-| Coach & Plan Designer | Session summary \+ the user's full history, fetched through our Convex HTTP endpoints given to it as tools | Finds patterns, each claim citing the sessions behind it; designs the next session | Next-session plan as JSON: cue times, Feel Check times, fading level, technique, length |
+| Coach & Plan Designer | Session summary + the user's full history, fetched through our Convex HTTP endpoints given to it as tools | Finds patterns, each claim citing the sessions behind it; designs the next session | Next-session plan as JSON: cue times, Feel Check times, fading level, technique, length |
 
-* Install numpy and scipy in the Analyst's sandbox, then save the agent with **Create Agent**. Packages installed in chat only last for that conversation.  
-* Use one **threadId per user**, so the coach keeps memory across that person's sessions.  
-* **Upgrade:** connect Google Calendar so the coach books the next session at the user's best time ("Mornings go better for you, so tomorrow 8:10 AM is scheduled"). Set the agent's write permission to automatic.
+- Install numpy and scipy in the Analyst's sandbox, then save the agent with **Create Agent**. Packages installed in chat only last for that conversation.
+- Use one **threadId per user**, so the coach keeps memory across that person's sessions. The coach also searches the Apify research library, so every technique in a plan carries a citation.
+- **Upgrade:** connect Google Calendar so the coach books the next session at the user's best time ("Mornings go better for you, so tomorrow 8:10 AM is scheduled"). Set the agent's write permission to automatic.
 
-### **The flow**
+### The flow
 
-1. The session ends, and Convex saves it.  
-2. A Convex action, running server-side with the capi\_ key stored in Convex environment variables, starts the CREAO pipeline asynchronously.  
-3. The app immediately shows "Your coach is reviewing your session…" as a progress card. Never hold a request open waiting for the run.  
-4. The agents finish and send the plan to a Convex HTTP webhook.  
-5. Convex's real-time queries push it to the app: new insights on the Calm Map, plus "Your next session, designed for you."  
+1. The session ends, and Convex saves it.
+2. A Convex action, running server-side with the `capi_` key stored in Convex environment variables, starts the CREAO pipeline asynchronously.
+3. The app immediately shows "Your coach is reviewing your session…" as a progress card. Never hold a request open waiting for the run.
+4. The agents finish and send the plan to a Convex HTTP webhook.
+5. Convex's real-time queries push it to the app: new insights on the Calm Map, plus "Your next session, designed for you."
 6. The next session runs entirely from that plan.
 
-### **Making "remove the agent and it dies" literally true**
+### Making "remove the agent and it dies" literally true
 
-* Every training session is created by the coach agent. The only fixed session is the first one, a baseline assessment like a fitness test.  
-* The demo has a **"Coach off" switch**. With it off there is no next session, no insights and no fading plan, just a breathing graph. Say their line out loud: "Remove the agent, and this product dies." Then turn it back on.
+- Every training session is created by the coach agent. The only fixed session is the first one, a baseline assessment like a fitness test.
+- The demo has a **"Coach off" switch**. With it off there is no next session, no insights and no fading plan, just a breathing graph. Say their line out loud: "Remove the agent, and this product dies." Then turn it back on.
 
-### **CREAO judging rubric, mapped to TIDE**
+### CREAO judging rubric, mapped to TIDE
 
 | Criterion | Weight | How TIDE scores |
-| :---- | :---- | :---- |
+| --- | --- | --- |
 | AI as foundation | 30% | Agent-designed sessions; the "Coach off" switch proves it |
 | Depth on CREAO | 25% | 2 agents, our Convex API as tools, Python analysis, per-user threadId, webhooks, Calendar connector |
 | Originality and ambition | 20% | Training self-awareness of drifting, not a chatbot wrapper |
 | Track fit | 15% | The app runs on the agent's output from end to end |
 | Demo and storytelling | 10% | The pitch says exactly what CREAO does: "CREAO is TIDE's coach" |
 
-### **CREAO limits to respect**
+### CREAO limits to respect
 
-* **Runs take minutes:** design for async, show progress, no live token streaming on the API Trigger.  
-* **Credits:** one pipeline run per session, and no agent may start itself. Top-ups at the CREAO booth or their Discord.  
-* **Keys stay on the server:** the capi\_ key never goes in browser code, phone code or the public repo.  
-* **First step tonight:** sign up with the hackathon link, build the coach by chatting, save it with Create Agent, and make the first API call within the hour to learn how long runs really take.  
-* **Ask at the booth:** can CREAO agents run on Claude? If yes, the coach counts toward the Anthropic track too.
+- **Runs take minutes:** design for async, show progress, no live token streaming on the API Trigger.
+- **Credits:** one pipeline run per session, and no agent may start itself. Top-ups at the CREAO booth or their Discord.
+- **Keys stay on the server:** the `capi_` key never goes in browser code, phone code or the public repo.
+- **First step tonight:** sign up with the hackathon link, build the coach by chatting, save it with Create Agent, and make the first API call within the hour to learn how long runs really take.
+- **Ask at the booth:** can CREAO agents run on Claude? If yes, the coach counts toward the Anthropic track too.
 
-## **Sponsor track playbook**
+## Sponsor track playbook
 
-We enter 7 tracks with one project: Convex, Mana, CREAO, Anthropic, Microsoft, Cartesia and the Cal Hacks prizes. If Devpost limits how many sponsor tracks we can enter, use the priority order in the table.
+We enter 8 tracks with one project: Convex, Mana, CREAO, Apify, Anthropic, Microsoft, Cartesia and the Cal Hacks prizes. If Devpost limits how many sponsor tracks we can enter, use the priority order in the table.
 
 | Priority | Track | Prize | Our one-line angle |
-| :---- | :---- | :---- | :---- |
-| 1 | Convex | \$5,000 | Convex is TIDE's nervous system: live stream, coach view, scheduled analysis |
-| 2 | Mana.space | \$5,000 | Planned and built with Mana from day one, chats public |
-| 3 | CREAO: Best AI-First Disruptor | \$2,500 \+ Launchpad | CREAO agents are the coach; remove them and TIDE dies |
-| 4 | Anthropic | \$5,000 Claude credits \+ 1 year Claude Max 20x \+ office hours | Named community we belong to; Claude reads spoken Feel Checks in real time |
-| 5 | Microsoft Grand Prize \+ Customer Impact Award | Surface laptop per member \+ FDE tech talk \+ mentorship | Production-minded wellness agent with measurable results |
-| 6 | Cartesia | Meta glasses (TBD) | Two-way voice is the only way to use Feel Checks |
+| --- | --- | --- | --- |
+| 1 | Convex | $5,000 | Convex is TIDE's nervous system: live stream, coach view, scheduled analysis |
+| 2 | Mana.space | $5,000 | Planned and built with Mana from day one, chats public |
+| 3 | CREAO: Best AI-First Disruptor | $2,500 + Launchpad | CREAO agents are the coach; remove them and TIDE dies |
+| 4 | Apify | $5,000 across 5 places ($2,000 / $1,000 / $800 / $400 / $400) + $400 Best Actor | Our own Actor builds the research library behind every coaching decision |
+| 5 | Anthropic | $5,000 Claude credits + 1 year Claude Max 20x + office hours | Named community we belong to; Claude reads spoken Feel Checks in real time |
+| 6 | Microsoft Grand Prize + Customer Impact Award | Surface laptop per member + FDE tech talk + mentorship | Production-minded wellness agent with measurable results |
+| 7 | Cartesia | Meta glasses (TBD) | Two-way voice is the only way to use Feel Checks |
 | — | Cal Hacks: Overall, Most Technically Complex, People-First, Most Creative, Hacker's Choice | MacBook Air, keyboard, Apple Watch, Instax, mouse | Judged automatically; a strong live demo wins these |
 
-### **Convex (\$5,000)**
+### Convex ($5,000)
 
 Make Convex the backbone, not a database we call once.
 
-* **Live metrics stream:** the phone writes breath, stillness and state readings a few times per second.  
-* **Live coach view:** the second screen at the table updates instantly through reactive queries. This is our most visible Convex moment.  
-* **Scheduled functions:** when a session ends, Convex automatically starts the CREAO pipeline.  
-* **Actions:** call Claude, Cartesia and CREAO from the server, with all keys in Convex environment variables.  
-* **HTTP endpoints:** the CREAO agents' tools (fetch history) and the webhook that receives the plan.  
-* **Vector search:** "find my past sessions that looked like this one."  
-* **Pitch line:** "Convex is the nervous system of TIDE," while the coach view updates live.
+- **Live metrics stream:** the phone writes breath, stillness and state readings a few times per second.
+- **Live coach view:** the second screen at the table updates instantly through reactive queries. This is our most visible Convex moment.
+- **Scheduled functions:** when a session ends, Convex automatically starts the CREAO pipeline.
+- **Actions:** call Claude, Cartesia and CREAO from the server, with all keys in Convex environment variables.
+- **HTTP endpoints:** the CREAO agents' tools (fetch history) and the webhook that receives the plan.
+- **Vector search:** "find my past sessions that looked like this one."
+- **Pitch line:** "Convex is the nervous system of TIDE," while the coach view updates live.
 
-### **Mana.space (\$5,000)**
+### Mana.space ($5,000)
 
-Judged on how we built it: meaningful use of Mana 30%, usefulness 25%, originality 25%, execution 20%, plus up to \+10 if the project lives inside Mana as an app or agent a judge can open.
+Judged on how we built it: meaningful use of Mana 30%, usefulness 25%, originality 25%, execution 20%, plus up to +10 if the project lives inside Mana as an app or agent a judge can open.
 
-* Plan the architecture, state model and UI in Mana chats starting tonight, and keep every chat public.  
-* On Devpost, link 1–2 Mana pages or chats where Mana planned, wrote or debugged code.  
-* In the demo, show one moment where Mana changed what we built or how fast.  
-* **Ask the Mana booth:** can the coach dashboard live inside Mana? That is the \+10 bonus.
+- Plan the architecture, state model and UI in Mana chats starting tonight, and keep every chat public.
+- On Devpost, link 1–2 Mana pages or chats where Mana planned, wrote or debugged code.
+- In the demo, show one moment where Mana changed what we built or how fast.
+- **Ask the Mana booth:** can the coach dashboard live inside Mana? That is the +10 bonus.
 
-### **CREAO (\$2,500 \+ Launchpad)**
+### CREAO ($2,500 + Launchpad)
 
 Full plan in "How the CREAO coach works" above. Required: agent built on agent.creao.ai, agent ID and a run share link in the README, the agent shown running in the demo.
 
-### **Anthropic**
+### Apify ($5,000 across 5 places + $400 Best Actor)
+
+The Apify team confirmed that using Apify to gather our data counts. They judge meaningful use of Apify plus overall project quality, and a separate $400 Best Actor award goes to an Actor built for this event.
+
+**1. The TIDE Research Actor (core, built this weekend).** Our own Actor collects open-access research on breath-focused meditation, mind wandering and breath counting through the public Europe PMC and PubMed APIs. For each paper it extracts the technique, who was studied, the outcome and the citation link, and stores a short summary plus the link, never the full text.
+
+- Results go into a Convex `techniques` table with vector search.
+- The CREAO coach searches this library when it designs a plan, so every technique in a plan carries a citation, shown in the app as "Why this session".
+- It strengthens our Anthropic answer to "where could it go wrong": the coach can't invent a technique, it can only pick from cited research.
+- We enter it for the $400 Best Actor award.
+
+**2. Why beginners quit (evidence, about 1 hour).** Run an existing Apify Store app-review scraper on the top meditation apps, then have Claude group the reasons people say they stopped. Put the counts on Devpost as a chart. This is our customer-understanding evidence for Microsoft and Anthropic. Report totals; don't quote long reviews.
+
+**3. Exam-aware coaching (stretch).** An Actor reads a university's public academic calendar for final-exam dates, and the coach gives shorter, more frequent sessions during exam weeks. This ties straight to our named community.
+
+**How it connects:** the Apify API token lives in Convex environment variables; a Convex action starts the Actor run and saves the dataset items. Refresh the library on a schedule, not once per session.
+
+**Required for us:** a README section explaining which Actors we use and where, with a link to our Research Actor; the demo shows "Why this session" citations that came from the Actor.
+
+**Ask the Apify booth:** does the Best Actor have to be published in the Apify Store?
+
+### Anthropic
 
 | Their criterion | How TIDE shows it |
-| :---- | :---- |
+| --- | --- |
 | A named community | First-year college students with exam stress who quit meditation apps |
 | A real problem | We live it. Interview about 10 hackers this weekend and quote 2–3 on Devpost |
 | It works: one thing done well, usable on Monday | A deployed link judges can open on their own phone |
 | Thoughtful use of Claude | Claude interprets spoken Feel Check answers ("uh… kind of floaty?" → drifting) and phrases cues in real time. Failure modes we name: misreading calm as drowsy, over-reading noisy data. Every claim cites its sessions, and Claude never gives medical or mental-health advice |
 
-### **Microsoft Grand Prize \+ Customer Impact Award**
+### Microsoft Grand Prize + Customer Impact Award
 
 One project competes for both; they share criteria. Frame TIDE as a production-minded AI agent.
 
 | Their criterion | How TIDE shows it |
-| :---- | :---- |
+| --- | --- |
 | Customer understanding | Interview quotes and the reasons people quit meditation apps |
 | Measurable usefulness | Breath-count accuracy, and the self-awareness gap shrinking across sessions |
 | Path from prototype to production | Installable web app, video processed on the phone, per-user cost estimate, next step is a larger validation study |
 | Responsible design | No video stored, wellness only (no medical claims), support fades so users don't depend on the app |
 | End-to-end functionality | Session → Calm Map → coach plan → next session, working live |
 
-### **Cartesia (Meta glasses, TBD)**
+### Cartesia (Meta glasses, TBD)
 
 Voice must be core, not a feature added for the demo. TIDE uses it in both directions.
 
-* **Speaking:** a Sonic 3.5 voice guide with cues timed to the user's breath.  
-* **Listening:** users keep their eyes closed, so they *say* "focused," "drifting" or "sleepy" through Ink 2 speech-to-text. Ink 2 has built-in turn detection and is built for noisy rooms.  
-* **Edge cases we handle:** no answer is logged as a possible sign of drowsiness or deep focus; unclear answers go to Claude; room noise is handled by Ink.  
-* **Responsibility:** it works fully eyes-closed, so it's accessible to blind and low-vision users; audio is used only for the answer and is never stored.  
-* **Required:** 2-minute demo-first presentation, README with Cartesia features used and known limitations, source access for judges, no API keys or secrets in the repo.
+- **Speaking:** a Sonic 3.5 voice guide with cues timed to the user's breath.
+- **Listening:** users keep their eyes closed, so they *say* "focused," "drifting" or "sleepy" through Ink 2 speech-to-text. Ink 2 has built-in turn detection and is built for noisy rooms.
+- **Edge cases we handle:** no answer is logged as a possible sign of drowsiness or deep focus; unclear answers go to Claude; room noise is handled by Ink.
+- **Responsibility:** it works fully eyes-closed, so it's accessible to blind and low-vision users; audio is used only for the answer and is never stored.
+- **Required:** 2-minute demo-first presentation, README with Cartesia features used and known limitations, source access for judges, no API keys or secrets in the repo.
 
-### **Cal Hacks prizes**
+### Cal Hacks prizes
 
-* Let people at neighbouring tables try it during judging, which helps Hacker's Choice.  
-* For Most Technically Complex, lead with the stack: real-time computer vision → breath signal → state model → two-way voice loop → agent-designed sessions.
+- Let people at neighbouring tables try it during judging, which helps Hacker's Choice.
+- For Most Technically Complex, lead with the stack: real-time computer vision → breath signal → state model → two-way voice loop → agent-designed sessions.
 
-### **Optional, only if it costs almost nothing**
+### Optional, only if it costs almost nothing
 
-* **Notability:** keep our process notes, sketches and brainstorm audio there. Small prize.  
-* **Moss:** its "Social Post: best engagement" prize is free to try with a post about TIDE.  
-* **Figma:** if their track only asks us to design in Figma, design the UI there. Ask at their booth.
+- **Notability:** keep our process notes, sketches and brainstorm audio there. Small prize.
+- **Moss:** its "Social Post: best engagement" prize is free to try with a post about TIDE.
+- **Figma:** if their track only asks us to design in Figma, design the UI there. Ask at their booth.
 
-### **Tracks we skip, and why**
+### Tracks we skip, and why
 
 | Track | Why we skip it |
-| :---- | :---- |
+| --- | --- |
 | Factory Droid SDK | CREAO already is the core coach agent; two core agents would conflict |
 | Meta | Judged on strengthening human connection; TIDE is solo practice |
 | SpacetimeDB | Convex fills the same role and pays more |
 | Fetch.ai | The whole workflow must run inside an ASI:One chat; a camera app can't |
 | Hyphenate, CRS, Capital One Nessie, Coinbase x402, Visa | Finance and shopping only |
-| Apify | No real scraping need |
 | SpaceXAI | Requires space data, Cursor and the Grok API |
 | Armadin, Bitdeer, Elastic, Atlassian, Bright Data | Off-topic, criteria unpublished, or would compete with Claude |
 
-## **Team roles and task split (3 people)**
+## Team roles and task split (3 people)
 
 Three people, three lanes (signal, app and backend), one owner each.
 
 Each person also owns the evidence and sponsor items closest to their own code, so nobody waits on anyone after Saturday 9 AM. Write each person's name in the table.
 
 | Person | Lane | Owns | Sponsor tracks they carry | Booths to visit |
-| :---- | :---- | :---- | :---- | :---- |
+| --- | --- | --- | --- | --- |
 | 1 (name) | Signal & evidence | Vision, breath signal and state model; accuracy numbers; interviews; the Devpost write-up | Cal Hacks Most Technically Complex, Microsoft, Anthropic (community and quotes), Mana | Mana, Figma |
 | 2 (name) | App, voice & demo | Every screen, the plan-driven session runner, voice playback and mic in the app, replay mode, demo video, pitch | Convex (live coach view), Cartesia, Cal Hacks prizes | — |
 | 3 (name) | Backend, agents & submission | Convex, CREAO agents, Claude and Cartesia server calls, README, the final Devpost submission | Convex, CREAO, Anthropic (Claude use) | CREAO |
 
-### **How the three lanes stay unblocked**
+### How the three lanes stay unblocked
 
-* **Agree the Convex schema by 3 AM.** The data model table above is the contract between all three lanes.  
-* **Person 2 builds against fake data** (a fake breath stream and a fake plan) until Person 1's signal and Person 3's coach are ready.  
-* **Everyone plans and debugs in Mana** with public chats; Person 1 collects the links for Devpost.  
-* **Staggered sleep tonight** so someone is always building: Person 3 sleeps 3–7 AM, Person 1 4–8 AM, Person 2 5–9 AM.
+- **Agree the Convex schema by 3 AM.** The data model table above is the contract between all three lanes.
+- **Person 2 builds against fake data** (a fake breath stream and a fake plan) until Person 1's signal and Person 3's coach are ready.
+- **Everyone plans and debugs in Mana** with public chats; Person 1 collects the links for Devpost.
+- **Staggered sleep tonight** so someone is always building: Person 3 sleeps 3–7 AM, Person 1 4–8 AM, Person 2 5–9 AM.
 
-### **Person 1: Signal & evidence**
+### Person 1: Signal & evidence
 
-* ☐ MediaPipe Pose Landmarker \+ Face Landmarker running in the phone browser  
-* ☐ Breath waveform from shoulder and upper-chest motion, filtered to the breathing range  
-* ☐ Inhale detection, breathing rate and regularity score  
-* ☐ Stillness, posture and head-drop, and face tension (brow, jaw, eyelid) scores  
-* ☐ Session baseline from the first 60 seconds; state rules (settling, focused, drifting, drowsy, restless)  
-* ☐ A simple signal module Person 2 can call: one reading per second with every score and the state  
-* ☐ Paced-breathing check reads about 6 per minute  
-* ☐ Breath-counting focus test logic: compare the user's taps with detected breaths  
-* ☐ Record \~20 tap-labelled sessions and compute the average error  
-* ☐ Interview \~10 hackers while recording them; collect 2–3 quotes  
-* ☐ Devpost story: problem, community, accuracy numbers, quotes, Levinson et al. 2014 citation  
-* ☐ Collect the Mana links; visit the Mana and Figma booths Saturday morning  
-* ☐ Stretch: depth-camera mode
+- [ ] MediaPipe Pose Landmarker + Face Landmarker running in the phone browser
+- [ ] Breath waveform from shoulder and upper-chest motion, filtered to the breathing range
+- [ ] Inhale detection, breathing rate and regularity score
+- [ ] Stillness, posture and head-drop, and face tension (brow, jaw, eyelid) scores
+- [ ] Session baseline from the first 60 seconds; state rules (settling, focused, drifting, drowsy, restless)
+- [ ] A simple signal module Person 2 can call: one reading per second with every score and the state
+- [ ] Paced-breathing check reads about 6 per minute
+- [ ] Breath-counting focus test logic: compare the user's taps with detected breaths
+- [ ] Record \~20 tap-labelled sessions and compute the average error
+- [ ] Interview \~10 hackers while recording them; collect 2–3 quotes
+- [ ] Devpost story: problem, community, accuracy numbers, quotes, Levinson et al. 2014 citation
+- [ ] Collect the Mana links; visit the Mana and Figma booths Saturday morning
+- [ ] Stretch: depth-camera mode
 
-### **Person 2: App, voice & demo**
+### Person 2: App, voice & demo
 
-* ☐ Web app the phone opens by link (install to home screen)  
-* ☐ Framing guide and the paced-breathing circle  
-* ☐ Session runner that follows the coach's plan: cue times, Feel Check times, length  
-* ☐ Sonic voice cues played on the user's breath; mic capture for spoken Feel Check answers  
-* ☐ Two big on-screen buttons as the Feel Check fallback  
-* ☐ Calm Map after each session  
-* ☐ Live coach view on the laptop  
-* ☐ "Your coach is reviewing your session…" progress card  
-* ☐ History screen: self-awareness score and breath-count accuracy over sessions  
-* ☐ "Coach off" switch and the breath-counting focus test screen  
-* ☐ Replay mode that plays back a recorded session if Wi-Fi drops  
-* ☐ Demo video; lead the pitch rehearsals
+- [ ] Web app the phone opens by link (install to home screen)
+- [ ] Framing guide and the paced-breathing circle
+- [ ] Session runner that follows the coach's plan: cue times, Feel Check times, length
+- [ ] Sonic voice cues played on the user's breath; mic capture for spoken Feel Check answers
+- [ ] Two big on-screen buttons as the Feel Check fallback
+- [ ] Calm Map after each session
+- [ ] Live coach view on the laptop
+- [ ] "Your coach is reviewing your session…" progress card
+- [ ] History screen: self-awareness score and breath-count accuracy over sessions
+- [ ] "Coach off" switch and the breath-counting focus test screen
+- [ ] Replay mode that plays back a recorded session if Wi-Fi drops
+- [ ] Demo video; lead the pitch rehearsals
 
-### **Person 3: Backend, agents & submission**
+### Person 3: Backend, agents & submission
 
-* ☐ Convex project, schema and deployed backend  
-* ☐ Live metrics write path and reactive queries for the coach view  
-* ☐ Scheduled function that starts the CREAO pipeline when a session ends  
-* ☐ HTTP endpoints: history tools for the agents, webhook for the plan  
-* ☐ CREAO Session Analyst agent (Python, numpy and scipy saved with Create Agent)  
-* ☐ CREAO Coach & Plan Designer agent with a per-user threadId  
-* ☐ Server-side Cartesia calls: Sonic speech and Ink 2 speech-to-text (keys never in the browser)  
-* ☐ Claude action that interprets spoken Feel Check answers  
-* ☐ Vector search over past sessions  
-* ☐ Visit the CREAO booth: run times, credits, and whether agents can run on Claude  
-* ☐ README: setup, architecture, known limitations, CREAO agent IDs and run link, Cartesia and Convex features used; no keys in the repo  
-* ☐ Final Devpost submission by 8:30 AM Sunday  
-* ☐ Stretch: Google Calendar connector on the coach
+- [ ] Convex project, schema and deployed backend
+- [ ] Live metrics write path and reactive queries for the coach view
+- [ ] Scheduled function that starts the CREAO pipeline when a session ends
+- [ ] HTTP endpoints: history tools for the agents, webhook for the plan
+- [ ] CREAO Session Analyst agent (Python, numpy and scipy saved with Create Agent)
+- [ ] CREAO Coach & Plan Designer agent with a per-user threadId
+- [ ] Server-side Cartesia calls: Sonic speech and Ink 2 speech-to-text (keys never in the browser)
+- [ ] Claude action that interprets spoken Feel Check answers
+- [ ] Vector search over past sessions
+- [ ] Visit the CREAO booth: run times, credits, and whether agents can run on Claude
+- [ ] README: setup, architecture, known limitations, CREAO agent IDs and run link, Cartesia and Convex features used; no keys in the repo
+- [ ] Final Devpost submission by 8:30 AM Sunday
+- [ ] Stretch: Google Calendar connector on the coach
 
-## **Timeline to the deadline**
+### Apify tasks
+
+Owner: (name), whoever hits their first milestone first. About 3 hours in total.
+
+- [ ] Apify account; API token stored in Convex environment variables
+- [ ] Build the TIDE Research Actor: Europe PMC + PubMed APIs → technique, population, outcome, citation link, short summary
+- [ ] Convex action that runs the Actor and saves results to `techniques` with embeddings
+- [ ] Coach tool that searches the research library; every plan technique carries a citation
+- [ ] "Why this session" citation card in the app (with Person 2)
+- [ ] Run an Apify Store review scraper on the top meditation apps; Claude groups the quit reasons; chart for Devpost
+- [ ] Visit the Apify booth: Best Actor requirements
+- [ ] Stretch: exam-calendar Actor
+
+## Timeline to the deadline
 
 The full loop must work by 6 PM Saturday, so the rest of the time goes to data, accuracy numbers, polish and rehearsal. Devpost closes at 9:00 AM Sunday; we submit by 8:30.
 
-![Build timeline · Saturday 1 AM to Sunday judging][image2]
-
-Build timeline · Saturday 1 AM to Sunday judging
+&#91;embedded content: Build timeline · Saturday 1 AM to Sunday judging\]
 
 If a gate slips, cut from the bottom of the build order (depth mode first, then the focus test), never the demo moment.
 
-### **Done-when for each gate**
+### Done-when for each gate
 
 **All keys work (Sat 9 AM)**
 
-* ☐ Repo created; Convex project deployed  
-* ☐ CREAO account made with the hackathon link; coach agent saved; first API call returned  
-* ☐ Cartesia and Claude keys stored in Convex environment variables  
-* ☐ MediaPipe Pose running in a phone browser  
-* ☐ Mana chats started and public  
-* ☐ Sleep in two shifts so someone is always building
+- [ ] Repo created; Convex project deployed
+- [ ] CREAO account made with the hackathon link; coach agent saved; first API call returned
+- [ ] Cartesia and Claude keys stored in Convex environment variables
+- [ ] MediaPipe Pose running in a phone browser
+- [ ] Mana chats started and public
+- [ ] Sleep in two shifts so someone is always building
 
 **M1: breath wave live (Sat 1 PM)**
 
-* ☐ Breath waveform visible on the phone  
-* ☐ Metrics streaming into Convex  
-* ☐ Coach view on the laptop updating live  
-* ☐ One Sonic voice cue plays  
-* ☐ Visit the Mana, CREAO and Figma booths; start interviews
+- [ ] Breath waveform visible on the phone
+- [ ] Metrics streaming into Convex
+- [ ] Coach view on the laptop updating live
+- [ ] One Sonic voice cue plays
+- [ ] Visit the Mana, CREAO and Figma booths; start interviews
 
 **M2: full loop works (Sat 6 PM)**
 
-* ☐ Stillness, posture and state model running  
-* ☐ Spoken Feel Checks through Ink, interpreted by Claude  
-* ☐ Calm Map after each session  
-* ☐ Session end starts the CREAO pipeline; plan returns by webhook  
-* ☐ The next session runs from the plan; "Coach off" switch works
+- [ ] Stillness, posture and state model running
+- [ ] Spoken Feel Checks through Ink, interpreted by Claude
+- [ ] Calm Map after each session
+- [ ] Session end starts the CREAO pipeline; plan returns by webhook
+- [ ] The next session runs from the plan; "Coach off" switch works
 
 **Devpost draft in (Sat 10 PM)**
 
-* ☐ \~20 tap-labelled recordings and the average error  
-* ☐ Several sessions per teammate for real history  
-* ☐ Paced-breathing check reads about 6 per minute  
-* ☐ Draft submitted on Devpost
+- [ ] \~20 tap-labelled recordings and the average error
+- [ ] Several sessions per teammate for real history
+- [ ] Paced-breathing check reads about 6 per minute
+- [ ] Draft submitted on Devpost
 
 **Feature freeze (Sun 5 AM)**
 
-* ☐ Replay mode and button fallback for Feel Checks  
-* ☐ README sections for CREAO, Cartesia and Convex done  
-* ☐ Deployed link works on a fresh phone
+- [ ] Replay mode and button fallback for Feel Checks
+- [ ] README sections for CREAO, Cartesia and Convex done
+- [ ] Deployed link works on a fresh phone
 
 **Submitted by 8:30 AM (Sun)**
 
-* ☐ Demo video uploaded  
-* ☐ Pitch rehearsed at least 3 times, under 2 minutes  
-* ☐ Final Devpost edits and every link checked
+- [ ] Demo video uploaded
+- [ ] Pitch rehearsed at least 3 times, under 2 minutes
+- [ ] Final Devpost edits and every link checked
 
-## **Demo script and pitch lines**
+## Demo script and pitch lines
 
 The pitch is 2 minutes and demo-first: the judge meditates before we explain anything. Setup at the table: phone on a stand, laptop showing the live coach view, noise-cancelling headphones with a mic, agent.creao.ai open in a tab.
 
 | Time | What happens | Who talks |
-| :---- | :---- | :---- |
+| --- | --- | --- |
 | 0:00–0:10 | "Meditation has no scoreboard. Want to try it?" Judge sits, puts on headphones | Person 2 |
-| 0:10–0:30 | Paced-breathing circle at 6 per minute; TIDE reads about 6\. "That's the camera, no contact." | Person 1 |
+| 0:10–0:30 | Paced-breathing circle at 6 per minute; TIDE reads about 6. "That's the camera, no contact." | Person 1 |
 | 0:30–1:00 | Judge closes their eyes. The coach view shows their breath wave and stillness live. Voice asks "Focused or drifting?"; the judge answers out loud; the answer appears next to the sensor reading | Person 2 |
 | 1:00–1:15 | Session ends. Calm Map appears. "Your coach is reviewing your session…" starts the CREAO run | Person 3 |
 | 1:15–1:40 | Switch to a teammate's weekend history: patterns found, self-awareness score rising, an agent-designed plan. Flip "Coach off": just a breathing graph. "Remove the agent, and this product dies." | Person 3 |
 | 1:40–2:00 | "Muse tells you when your mind wanders. TIDE teaches you to notice it yourself, then gets out of the way." Judge's own plan arrives, or show a finished run by its share link | Person 1 |
 
-### **One line per sponsor judge**
+### One line per sponsor judge
 
 Add the matching line when a sponsor judge visits.
 
-* **Convex:** "Convex is the nervous system: every breath streams through it, and this coach view is a live query."  
-* **Mana:** "Here's the Mana chat where we designed the state model; it changed how we detect drifting."  
-* **CREAO:** "CREAO is TIDE's coach. Every session after the first was designed by these two agents. Here's the run."  
-* **Anthropic:** "Built for first-year students who quit meditation apps, which is us. Claude reads what you say with your eyes closed, and here's where it could get it wrong."  
-* **Microsoft:** "Here's the number: breath-count error of X, and the self-awareness gap shrinking from Y to Z."  
-* **Cartesia:** "Your eyes are closed, so voice is the only interface. Sonic speaks on your breath; Ink hears your answer in this noisy hall."
+- **Convex:** "Convex is the nervous system: every breath streams through it, and this coach view is a live query."
+- **Mana:** "Here's the Mana chat where we designed the state model; it changed how we detect drifting."
+- **CREAO:** "CREAO is TIDE's coach. Every session after the first was designed by these two agents. Here's the run."
+- **Anthropic:** "Built for first-year students who quit meditation apps, which is us. Claude reads what you say with your eyes closed, and here's where it could get it wrong."
+- **Microsoft:** "Here's the number: breath-count error of X, and the self-awareness gap shrinking from Y to Z."
+- **Cartesia:** "Your eyes are closed, so voice is the only interface. Sonic speaks on your breath; Ink hears your answer in this noisy hall."
+- **Apify:** "Every session the coach designs is grounded in research our Actor collected. Here's the citation behind this one."
 
-### **Questions to be ready for**
+### Questions to be ready for
 
-* **"How accurate is it?"** The paced-breathing check plus our average error from \~20 tap-labelled recordings.  
-* **"Isn't this just Muse?"** Muse tells you when you drift; TIDE trains you to notice it yourself, and needs no \$249 headband.  
-* **"Is it a medical device?"** No. It's a wellness and training tool; no diagnosis, no treatment claims.  
-* **"What about privacy with a camera?"** Video never leaves the phone; only numbers do.  
-* **"How do you know the self-awareness score means anything?"** It builds on a validated breath-counting measure of mindfulness (Levinson et al., 2014).
+- **"How accurate is it?"** The paced-breathing check plus our average error from \~20 tap-labelled recordings.
+- **"Isn't this just Muse?"** Muse tells you when you drift; TIDE trains you to notice it yourself, and needs no $249 headband.
+- **"Is it a medical device?"** No. It's a wellness and training tool; no diagnosis, no treatment claims.
+- **"What about privacy with a camera?"** Video never leaves the phone; only numbers do.
+- **"How do you know the self-awareness score means anything?"** It builds on a validated breath-counting measure of mindfulness (Levinson et al., 2014).
 
-## **Submission checklist and fallbacks**
+## Submission checklist and fallbacks
 
 Submit on Devpost by 8:30 AM Sunday for a 30-minute buffer; the hard deadline is 9:00 AM, and we must be at our table by 10:30 AM with the whole team present.
 
-### **Devpost and README**
+### Devpost and README
 
-* ☐ Check whether Devpost limits the number of sponsor tracks; if so, follow the priority order  
-* ☐ Draft submitted Saturday night, edited until the deadline  
-* ☐ All teammates added on Devpost  
-* ☐ Deployed link judges can open on their phones  
-* ☐ Public GitHub repo with no API keys or secrets (Cartesia and CREAO both require this)  
-* ☐ README: setup steps, architecture, known limitations  
-* ☐ README, CREAO: agent ID(s) and a share link to a run  
-* ☐ README, Cartesia: Sonic and Ink features used  
-* ☐ README, Convex: which Convex features we use and where  
-* ☐ Devpost, Mana: 1–2 public links to Mana chats or pages  
-* ☐ Devpost: accuracy numbers, interview quotes, the Levinson et al. 2014 citation  
-* ☐ Demo video (about 2 minutes, demo-first)  
-* ☐ Rehearsed 2-minute pitch, plus the one-line add-ons per sponsor judge
+- [ ] Check whether Devpost limits the number of sponsor tracks; if so, follow the priority order
+- [ ] Draft submitted Saturday night, edited until the deadline
+- [ ] All teammates added on Devpost
+- [ ] Deployed link judges can open on their phones
+- [ ] Public GitHub repo with no API keys or secrets (Cartesia and CREAO both require this)
+- [ ] README: setup steps, architecture, known limitations
+- [ ] README, CREAO: agent ID(s) and a share link to a run
+- [ ] README, Cartesia: Sonic and Ink features used
+- [ ] README, Convex: which Convex features we use and where
+- [ ] README, Apify: which Actors we use and where, with a link to our Research Actor
+- [ ] Devpost, Mana: 1–2 public links to Mana chats or pages
+- [ ] Devpost: accuracy numbers, interview quotes, the Levinson et al. 2014 citation
+- [ ] Demo video (about 2 minutes, demo-first)
+- [ ] Rehearsed 2-minute pitch, plus the one-line add-ons per sponsor judge
 
-### **Risks and fallbacks**
+### Risks and fallbacks
 
 | Risk | Fallback |
-| :---- | :---- |
+| --- | --- |
 | Venue Wi-Fi drops during judging (personal hotspots are banned) | A replay mode that plays back a recorded session through the same screens |
 | CREAO run is slow during the pitch | Show a finished run by its share link; the judge's plan arrives later |
 | Speech recognition misses an answer in the noisy hall | Headset mic close to the mouth; two big on-screen buttons as backup |
@@ -477,18 +513,14 @@ Submit on Devpost by 8:30 AM Sunday for a 30-minute buffer; the hard deadline is
 | Sponsor API credits run out | Top up at the CREAO booth; one coach run per session; no self-starting agents |
 | Running out of time | Follow the build order; stop wherever time runs out and the demo still works |
 
-### **Build order (stop wherever time runs out and we'll still have a demo)**
+### Build order (stop wherever time runs out and we'll still have a demo)
 
-1. A camera breath waveform that works reliably, checked with the paced-breathing circle and tap labels.  
-2. Stillness and posture tracking, then the live Calm Map.  
-3. Feel Checks with the voice.  
-4. A Convex backend with a live coach view.  
-5. The CREAO coach analyzing patterns across sessions and designing the next one. Record our own sessions on Saturday so we have real history to show.  
-6. The breath-counting focus test.  
+1. A camera breath waveform that works reliably, checked with the paced-breathing circle and tap labels.
+2. Stillness and posture tracking, then the live Calm Map.
+3. Feel Checks with the voice.
+4. A Convex backend with a live coach view.
+5. The CREAO coach analyzing patterns across sessions and designing the next one. Record our own sessions on Saturday so we have real history to show.
+6. The breath-counting focus test.
 7. Depth-camera mode.
 
 Practical tip: build steps 1–3 as a web app using MediaPipe in the phone's browser unless someone is already fast in Swift. It's much quicker than native iOS, and depth can come later.
-
-[image1]: <data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkAAAAFfCAIAAAApkOSyAACAAElEQVR4Xux9Z5gVRRr197990A9djKjIfq4BEdfI7rorxjUiOUmOA5KzKDmIZEEyiJIFBBRJSh5ggCHDMAxpgGEIM1d2wRUT3u9MH+5LUd0z3Dszd5zwnuc8/bz1dlV13a5wqvreW/1/ggqFQqFQFED8H9uhUCgUCkVBgAqYQqFQKAokVMAUCoVCUSChAqZQKBSKAgkVMIVCoVAUSKiAKRQKhaJAQgVMoVAoFAUSKmAKhUKhKJBQAVMoFApFgYQKmEKhUCgKJFTAFAqFQlEgoQKmUCgUigIJFTCFQqFQFEiogCkUCoWiQEIFTKFQKBQFEipgCoVCoSiQyE0B++STTxzHsb1ZItL4RDipHn74YduVA4RzRUWYuPvuu0eNGmV7w8CECRNmzZr1888/2ycixLp1677//nvbGwx+8cUXyN/25jay7iZot82aNbO9uQHHhe3NHIh88eJF26u4HiK9z4qcIJsC9te//pX1JFi2bFnWPdMXkcYnwkkVTpzwkbu5FT58/fXXWdwink1LS2MwGwJmNLQriMj/1FNPSVYLFy6kUzxBT3zrbO4i626CU1WrVrW9uYFIP5dTeAUsovsQKSK9z4qcIJsCJjCrij3zf//7X8uWLQcNGmTECvbu3btGjRqmh2ByRB4yZIjphxw2aNDg4MGDprN69epjx44NhlJt3rx53759chbT6oSEBAmaBUNuuLqV2/Dhw9u2bSvT+Y0bN27atOn06dO1atWyChM0cvvhhx9woR9//BH2Tz/91KZNm+bNm5sxUYb69euvWrWKQQwBiA/jvffea9Gihbl6wD2B5/z58+LBrUPklJQUBn/99VemZWR8BMk2EAjIqXUuaIsn6K5XevbsaTnx0fr160ePt1JOnjyJwh89etR0du3atW/fvhJEPqdOnZoxYwbSHj58GJ7ExERki1uEU9ZNJnh2yZIlPEsB27t3L3Iwb8i5c+ew+Jg+ffrVlC7uu+8+JJ80aRKDly5dQpASCKNbt24SE8HLly/TMG+sCZz66KOPcDxx4gQ9W7ZsQTA2NpZBfBwEZ86ceTWNC9yEatWqrVmzRjwsMFrR1UjB4OjRo/G5fv/9d/HgM7Zr1278+PEMioB5u0nwWgFDA6tSpcrIkSPNCFZLQAPbv39/0G1gn332mRmTgBPFDnoGVmRiVmvQ0yDNRjVmzJiaNWviolLFPIuyyecikMnkyZNNT2pqqpmV2VwRuXv37r6nYKA70MBx8eLFFStWNGOiJyJnNFf0BfFbd8zMEK2aNo6O21blFHHhwoWYmBiMKqbTKmHQr49s27bNum8bNmyg7a1BXhQeZCJORbaR+wImkJZtOs+ePSvxeerGG2/kKRh0/r//9/8kvrRa8ZQuXdpxL7p06VIaQUM7GWR8GlnnBqxevTrojqqlSpUSpwwQEl+Mt99+W2wBPa+//rp4ypYtC8/u3bthcwQnGPPBBx+0PASCt956K+06deqwwGa2lLdvv/1WEvpmcv/990sScaLb4IhsJRXBSnnzzTfFw96VnJxsxHI4KMPo0KGDOOFBt5dg69atoWoYl5E2VJyr18LZoHur77jjDnH+97//hbNPnz7iKVGihKRl8ltuucX0CJwIBQxzAsctM46objpvuukm3GEzGsrJaIK33npLirdjxw46xXPzzTdbHid0u1hTgmCoraKWTafACQnYihUrJILE8bYENDBUljjR2s3cHnroITlFBD3VypjeBikGOvLV2KFKND38+CiP6WRaK6tffvnFcbsDK0LAz2ImhIGZBI0HHnjAPEUnBPtKYsfZuXNn0O+Osd9JEtQFDTMOMXjwYHE+8sgjwVBTEWTWR8z7NnHiRObP5uotD88KpNkoso3cFzDaBw4coI3WL+PR3/72NzN+0E3+22+/wcARNtpHvXr1YKD1wLlr1y7Gv/POOyUhu58kj4uLoyG6IqfEMHPDhNRxwbO1a9emjVFVnCwMbcJxH6fgWLJkSXqwLPjwww/lLOPjiPWBODHQU8AaNWokTqaC8cUXX9BpAktMuTQNDh/0YC5P+7oCxs5Pm/ffcbWfTt9KYT7ml0OOWyNim9HEiV4avPYRIstmTm+9jxA7d+5MG/4XXniBxvr168X59NNP02bQWoUIWBiBr5DIxEj8MAYOHEiDzvj4eIkDQFPlbPDaKsDimx8NnilTptAJ2/rOFZ4XX3yRRoMGDehEQjRXdhPeDekmZkIIGGQYRuPGjcV57Ngx35bABkZnUlKSE2pgkhDNXmzGdK6t1vnz59OwGqRkKwb04Nlnn7WcWG857twRHdCbCQF/5cqVYRQrVkzKIDlwhW05HUPAsKilU+AYLYSpeMfMLon1GQw0Kka45557QqmvFt70AOa6yjEmUlYfkTj03HvvvZYHAuZbgzTMmOacW5ENREvAzpw5Q7tatWqsdYHED3qq84YbbuDM1IpgJRTbcZcaNDj19o1jOuvWrWvmhpUWbVPAGJPKKkEzlekxT1keDGocX6iyQfcpKCf7L730kkSTPAl6ZBHAG2idva6AmTaDOI4YMYJO30rp2rWrBPkAzTh/BXTefvvtkvmyZcuCOfgODP4KFSrQsCDJYVeqVEmCJpzQCsybxLsCs+bUTmhmA2Po0KFmzAULFpi5WVVAOKE1Fm1GwFgmmZcvX56nrEdVvt1E4LgCtm3bNjMh7HHjxvm2BFPA6DRXk9YpBmkI+JsRb4M0DZQZBuod6x7r7Lx58xx3evfDDz9IDlzECCAejI/jtGnTaLzxxhs827dvXzlLg7YIGD0m4JSn30zFO2ZCHqgyeDWxX578FAQ6AuNYCPr1EfO+cSHouALmW4M05KJO4f2WMc8QdQHr3r07VtkSx4JVneXKlfvnP/8pTvOBjxWTBtdPWJPddNNNcpaQOFZuvXv3NnOThwxeARObwbVr1zrGzwEco4cIrFTB0PgyZswYBtGTW7VqJWcXL16Ms9YXIYjDhw/PPPNM0L2B3oKtXr1anBkfxlNakXM564S+NwpmWSk//fQTphGSxPuLOCdqAnbkyBFJYoIfwfxWCcGaNWvSoIDx6ejgwYMlglfAzOc/BBciWB87nhv4/PPPS9CqAsLxPEukwVm8YwiYtXz07SYCxxWw//znPzA+/vhjcX733Xe+LcErYGYDc0IiTZsxHb9qJcwGKdlOnz6daa0L0RABk1N83Gq2aj78uHDhgqSCceedd9KuWLEi/eYlYPAbVvOiAscjYLxj3i557tw5RmB1EL55AmhjHAf4PWtmfQSyJH2E4H2jx3EFzLcGaUgqRwUsx4i6gDEO1lX9+/dn1Up8gF87NW3alNUv37IAfJbITDD2Oe6Cpk6dOuIkrKDpFwPo2LGjxETHoP344487oUdYbLjoVC1btoTx8ssve3PjE3x+B4CB3nE1Bh3VCY0azBYD0G233Qbj4MGDHF8cd5w1Gz2Mdu3aDRgwwAlN3EwwiRm88cYb27dv77iP/sUJIeGC0vvwB8Bqjwbqgk7zt3+Op1IYmR/Hca/O77ruu+++xo0bO6GHNo6fgHGYgLpjWu19hCiDCCfdvgLGO/bKK6+UKVMGhvVzdiYXIAfxy3dgzz33nHNtpZugE7eLEYLuaOUYizALEo2Ap1ixYrw5GKCDoVaET8RWJPk0aNDgySefZCbr16/n0yfE4Spk06ZNmXUTuRC/A8OAC5uiJXEcT0swG5gZU+I7oZYgCzhWa8OGDVmt/EWS42mQkpUT+smDWadyVgSsRYsWzAQdSjIR8OEhW0vQ/ceC434Wrln5WbAOht28eXM0SPPqkonA8QhYMPSgr0uXLui89HAZhMnciRMnnNA3bZJEloAA+ybql+0Qnvnz5ztuH+GqK7M+4rgNg/dNPIycWQ3KRR0VsBwjLwRszpw5rELvDxEhYPwaAA2FX+YHXZ0oUaIEnA899JDEPHbsGDPh1Eb8GFXNoECcvrlt3LiRuaEb00MBYx+Qn1EIJLeEhATYs2fPDoZm7s61z+gfffRRx30WygcgHF+2b9/OmFOnTmW09PR0ep544glJK4C/SpUqlscxlCPo/rqMzkWLFhkRM+CEvrFzQtNYOk0B81YKbhQHWYwpMm3v1asXo3Xq1Ikex0/AACyJGNMrYMCMGTM4VAUzETDg3//+N3NYvny5JBRwjeUY398E3eTWjzgmTJhAwwKd3ufMMorJ06GYmBgzjoBnzR+YsLUAUGh6+KOJO+64g19HLVy4EE55as05eGbdhHCMXyHyAYNz7Vd09EgVsIFxjYsVg7lOJTghWLBgAX9rQ6e3Wr0NUiJbP+JATPOsuQKD9jAOysOzAuupLDBt2jRGRmHEyVYNYZNWbaUSp1fAgp4uaZ5ChxIbSskxgUGCfw26+eab5VFBOH0Ed6N48eLOtfdNpuneGjQv6qiA5Rg5FbA/HGwftjdyWI8QcwsiYPaJLOFc+8QsUkTjg0SEP7wARQfWI8RcR5MmTawxl18RRQo+ZbG9CkXOULAFrGfPnjkc6wX5R8Cef/75li1b2t5IEI0PEj527tzp/f5JESVEW8BkoS+wY4SB77//3vH7a51CkUMUbAGznsvnBBs3bsytrEzwj8wXLlywT2SOnBcj5zkoCgrkn/LRAyaIw4cPH+TCPhceMKeJdiEVRRMFW8AUCoVCUWShAqZQKBSKAgkVMIVCoVAUSKiAKRQKhaJAQgVMoVAoFAUSKmAKhUKhKJBQAVMoFApFgYQKmEKhUCgKJFTAFAqFQlEgoQKmUCgUigIJFTCFQqFQFEiogCkUCoWiQEIFTKFQKBQFEhEL2KVLl/7zn/OBQLpSqVQqlblCyMpPP12y9eZ6iEDAfvvtN+9VlUqlUqnMLUJobO3JHOEK2O+//+69klKpVCqVucvw31EcloCpeimVSqUyz2iLUCYIS8DOn//eewGlUqlUKqPB8+fP2zrkh7AEzJu7UqlUKpXRo61DflABUyqVSmW+o61DflABUyqVSmW+o61DflABUyqVSmW+o61DflABUyqVyuiyd6/3K1d6i/SeNZlFhCxO5Zy1albDcejQj7ZujeMRwdEfj/LGzBVO+3SK12nR1iE/qIAplUpldAkBE3vbtq0hY4sZ5+jRI4EsVco8FR8fL/a5c2f37dtnxkxI2JeenmZ6LJ45c5rG7l07Tb8lYEIrmlXynTu3m8GUlBQzeOTIIbFRqj17dgUMAbNyNmnrkB9UwJRKpTK6FAHD4H78eDKMmBZNP/54ZJXKFWM3rEewYYO6LZo3rVrlbaqUaJUpWrTnzZtbvVrl4cOG9OjRjf6679Tq26cXz365YP6yZd9g5YScly/7RtIKEaFzpw64NOK/U6fmqJHDBg7oB3/zZo0DHgH7/PNPcaxRvcrYT0Yzf0gXDARr18pYsYEozMgRQ82z77Zq0bBh3YBb4GpVK40b+4n5cVA2OClgZs5e2jrkBxUwpVKpjC4hYBs2rAcx1kNgIFqUjYA7pq9ft8YM4jhmzMcrVy6HMX/+PMnE0raWMc1OnEiW4LFjRwOuPiGtGZ/ct28PDUSYPWuGeZZGFgIGWf106hQu2hC5a5dOYL26tTfGxnbp0lEuYeYJXVy5Ypl1iUmTxktMCpiZs5e2DvlBBUypVCqjS/MRIkbz2NgNEAkJrl+/1gzSqFmj6q5dO8xMLAFr1641BAwrLQZPnToZcPVp0sQJVlYmsyFgAXfZhyVXfPxWK89uXTubQTk7duwYHwELFSxgPEKUnM18SFuH/KACplQqldGlKWDt27UOhMb0+Ph4PotjMCFhX53aNRgNnjq1a5qZiIAdPnxYgnPmzDx79gyMVi1bBFx9kpxrVK9iJicjFbC0tHMs0mfTpkJsGjaot2XLZjd+k8TEhJ07th8+nPEV1/jxn+BYv/47mzdvlDytS5w6lQLlhvHttysgYFbOjGnS1iE/qIAplUrlH0DfH3EYZ7dOmTzJm4qMj48X2/wRB/Xpuj/iiJTx8fFm0PqJR9Y/4jApP+IQxsfHe6ORtg75QQVMqVQq8x2rV6vsdV6XssAqBLR1yA8qYEqlUqnMd7R1yA8qYEqlUqnMd7R1yA8qYEqlUqnMd7R1yA8qYEqlUqnMd7R1yA8qYEqlUqnMd7R1yA8qYEqlUqnMd7R1yA8qYEqlUqnMd7R1yA85FbAjRw5ujF25Yf0yZSHmxtgVR48e9NZ+RDxz5pQ3Z2Xh49mz/lvbhc/Dhw+gyXlzVhYmQjiOHU3y1r7Q1iE/5EjAkg7uRTkOJu71nlIWJiYmZlQ06D0VJrfErUHy48kZW+AoCzGPHTuEio7fts57KkyypWFs8Z5SFiYmJu5BRR85kug9Rdo65IfsCxiufejQfq9fWYiZPQ3bkDErz9iuTVlEeOZMarabitepLMRMTNydWaXbOuSHbArY9u2xu3Zu8vqVhZs7dmzauSNjK8/weeLEsVOnTnj9ysLNjHpPOe71Z8FtW9ft2nXNJnvKosDt8Rt2775mW0jS1iE/ZFPAMtNMZaFnpFUfaXxloWGkVR9pfGWhoW/V2zrkh2wK2Pb4WK9TWRQYv239wYNXXo53Xaanp/k2TWVRYERVv3//zkgX98pCw61b1nqdtg75IZsCtn/fDq9TWRS4f9/2PXu2ef2+TE09GdEopixMRNWfOZPq9fty185NBw7s9vqVRYF79uTtCy0TEnZ6ncqiwP37d+ze7dPafHkq5bgKWJGlK2CnvH5f7tixKTFRBayIcu+eeK/T1iE/qIApI6MKmDJMqoApw6QKmDKPqAKmDJMqYMowqQKmzCOqgCnDpAqYMkzmUwHr2fMDctKkSenpafA4jvPee+95Y0abuK7XqcwGoyFgiYkH0EhMD4JpaeesaKjEmJgYb/Iw2bZt20qV3h4y5CPvqRzylltuyUkD8xYsG7lVqlRp2bKlXv8fyOgJ2KlTKbxpX331lfdsmKxVq9aiRYu8fi9z0vCQFqWl4T2bK+zXr1/0Ms8b5lMBc64FPSpgBZrRELCAp4J868vJ7jhy7txZsx3ed9993jgWIQa+ZfBltgUss4JlI7eiI2CZ3bRImQcClpR08IEHHqAdUZ3edtttXmcWROYDBw70+gsK86+AtWvXTmweIWDNmzfr27evRDt8+FCVKlUSEq5sTMXJeJ06tYcNGyZxtmzZUrdu3ZSUk+JJTT314YeDzCQ0GGfMmNFvvfXmunVX/l7Aq7du3bpTp46SAzlx4sSOHTvQlqVAxYpvffPNEjPz+vXrY6ZjpS2CjJ6AoVXQbtq0CevrzJnTDRs2lEpERciIg+5atWpV2aEKTah27VrWMk5YosSfZPhAEtjr12ds1oeqR0WvXLlC8sfxgw/eX7XquyZNMspgZoiYn302TYIzZ87EIuDo0SOwBw0ayJgYW7t16yYfxGS9evUef/xxy5lZwcTJ3ORjmu1cMnn77Yr79+83Baxly5ZIlZ6eJnH+EEZJwHDTOnRoTxtVIDeNbUCGEXDEiBGVK1eWIG5j48aNO3fuxCAFbOzYT1A1Zv64twcOJIjNozS8Pn36mLVw6FDGdrQ93edMMNBWzap5/vnnY2M30JY69W11Xbt2bdGiuXiKFy/eM/QQAkMfqliGPsafNu1Tczh65ZVXJP+CyPwrYBUqVMAdf/nll0TAaNx///00SmTgTzDuvffeG264gXGKFSuGwQtBSfXYY4/BuOmmmx566CEzfxyHDPkIBlqAeJ5++mlWc/Xq1aFk9NerVxdG9+7dS5UqZeZQo0aNnTt3wNi/f9/GjbEwnnnmabR1mVZLmdHsaBRlRknAMC7IvYXxxRdzUYkwTpw4/uyzz0pFdOnShcb06Z/TWLx48Z49u9GGIB4HDybeeOONAbc/Iwfmtnv3LkSLj99mXXHFiuWoehglS5ZE1TO3W2+9NS4u4++05goM8x7agwd/KCUpW/YRjJgw1q5dU7p0afGjLSUnJ0taEq0RjQot3BzdMisY8wm4XcPKzTI2bdoIAz1l69YtMChgMDiIW2XIe0ZDwHjTvH4OI2gD5jDSv39/GgH3P/Uwjh9P3rt3Dz0QMIwzSAINM/PE+MDg6NEf03DchodmBmPGjOloZjB489HSGEFiypRdLm3avq0ObSPgapLElxUYPOXKlaOBMZOG4z6WNIcjTLnMaxU45l8BE2AUoIdjEAYg3nEcFy78EgamKuL58ssFgdDAwZnpSy+9iLZStmxZxpH8A+4DnHfeqcNW+8ILL9D/SgiSp5VKiKk0o02aNIkCxokPRkZJO3ToEN+0RZBRErCAe28HDhyApbncdk5KaGNQdgwBMxOi+p566imzujGIyAyXCTlYWETVv/766xgXUPXMNj09jadMAYOBAcXMH4Ol2SpEwMDevXtJNKFjQJxZFCyz3CxD5oVgmTJlUOavv/7aCTV+DOX4gN7M84zREDDeNK/f8Qwj4Pjx43j39u3bi6mDNCcSAsZxhsnFHxcXxyCGlEqV3uZZNDxmJc2gfPlnuExHhDfeeAPGzJkzHHfKJVmZ2YrtbXXyda/EMQWMGQ4bNoxnnWuHo9mzZ8M4fTrVvFaBY/4VMHM+Qg+/AzMFjKvsxMQD4uGCnQKWnHzMcR/mCM3cOHvirGrOnDmY4NBvxTdr17IxZ0ccxxAwnpJ2jKM8OzLTFk1GT8C4KAf42AfGsGFDeQo2q8NXwP7+97/HxMR4m4fQMZ5PghjlMZueMmUyqh4rcqzwZCiROJaAPf7441b+devWZWlnzZplrsCQG5uTWYBAJo8QfQtGP4633367lZtl/O1vfxMPpm4oM7qAYzT+P/ZbsWgIWMBT+7xpjt8wcscdd/DuQcDat283YsQIM6H5HZiVp+SA1S0NNDw0M/Pe9unT58CBBMd9GIDV2EMPPfToo4/65mPaWbc6sU0Bo4EhSEplDkeTJ08OXCvbBZEFWMAefvhhGOPGjcXx7rvvZhxTwGCgyosXL46WihZp1lOzZk0dF0wlp9A0sWJDfAyFr4TW+BgOMPfBWINub5anTZs2XIxjGkUBA/iw6NZbb5WcZ8yYjjLIJYosoydggWsrsWbNmo47XojTMQSsfPnyEydOdNyV2fHjGQ/ZFi1aKJ38FeMRIshnPuXKlWvVqpXkhhEEVf/VV185btUzW0nCcbBt27abN28aPnw4bDSnTp06SkmeeOIJzN9hfPLJGFPAkpIO8ouZcL5U9y0Y8/HNDcbUqVOg64zAQmLZCnXkCoxxJkyYwOcHhw8f8l40zxglAfO9aRxGeGdkGMHgjtsFg18vwejRowdsJslCwObN+8Jxq1jOouGxmWHVxWbGqYwU4NixozDq1n3HzKdSpUpLlnxtXsK31TlutT7zzNMccOhE/vPnz8PQB/vTT6fi+Pzzz0t8LM3N4ejJJ58UuyCyAAsYWKNGDdhvvfWmxLEEDHzttddgo57M3DgDev/9HrChWGYV/uUvf0Hw5ptvljzZaKxqxrgAT+fOnTH8waCA8Tn7PffcI2lRHqbll/ZFmVEVMCzC0OclyAaAmS+DTkjA4uO38ecPy5dfybxevSvrIQYtAQNRcYwgcZhhsWLF0tPT6DRPBdxfc+Asv2wbOnQI0+7ff+U3ApxL8amUCFj58s84bkt+6qmn7r33XjO3zJhZwXBkm0RuWGEwNz5Ac9wWy5iYkyH49tsVoV6y3mIc8/cLfwijJGAgnzMDzz33nDitYaRx48YI3nXXXfIrc04FaAeyFDB6oJRis+FhZIDGIDhq1CieMlddMDClMDM5fToV7UTOimG1OmQLj1mGSpXedkJfu7z44guwGzVqJMlRbI5vMhw5rgRK8gLHfCpgBY7mI0QhW4w3ctFkVAVMWZgYPQErQHRCv6nJjN4BJ2t6hyM+iPLGLEBUAcsdqoBdlypgyjCpAhYOvQNO1iyUw5EKmDKPqAKmDJMqYMowqQKmzCOqgCnDpAqYMkyqgCnziCpgyjCpAqYMkypgyjyiCpgyTKqAKcOkCpgyj6gCpgyTKmDKMKkCpswjqoApw6QKmDJM5msBq169eo8ePcyN5POA/fv3t3aO8d1kyCT3gfX9VSs3j+nXr9/Jkycyi1NEGCUB279/f/Pmzfr06eM95WWU7n/JkiW9zogiXJfhlDycOF5mL1VUGSUBszpynn3w+Pht1apV8/qVOWc+FTDuX3fgQMLatWvyrJ2RGGvMK3KjF280kxQwX51z3J2E5s+fx43zfeMUEUZJwG666aadO3csXrz444+v7HGQBaN0/6+rT9eNkBml7WXRCOVU9j5dFjn/UYySgFmfNHu3K3y+9dabu3ZlDHcqYNFjPhUw304FDfjXv/5VtmxZRvjzn//ctGmT7t27V6pU6cknnzx9OjXgvgysSZMmTz/9dNu2bQPum1YQc+XKFV26dHnttdcw2FkvoejYscPx48mm5+677968edOjjz7KoOOC9i233NKhQ3sG09LOwcDlqlatSgHDWcbHpe+66y5JToP7YDGI41NPPRUTEyNnHXerNBSbwULJKAmY+ZYccNSoUVWqVPnLX/7CnYEc972FL7/8Ejc5NauSG+JJQlYcqwCNZODAAaigW2+9lbvyPP7443/961/vv//+GTOmMzJaDpoT00Kf+LLEgPvSpmeeebply5bz5n0hmSMCCoDk3N0KMeERGwV23JcnBNw9sdq0acOsuHl5xYpvMVr16tUZU7L1xuERXeOee+5h10CQXcO5to3hQvi8+Ahmhnfcccdjjz326quv9u7dSzIUA60dHUo6l2Pcsdxl3ggYOyw/S8DdbDDgboaLmsUpag/ZrFnTGjVq4I7JK5IxFsXEtGAmMiYkJOxHnDJlyjRu3BhBVEGFChVQNWhO5cqVQ/UVL1580aKFzHPHju3c/My5dqdpswFwYJFTVg0qA/lTwPbs2S27YQqxGuMOY1KX9IsxYcJ4r1+CWAYF3B3JXn/9dcnTMSBOTpbp2bt3DySTtmwid+TI4UDG5nXl+b5EtEhTwFatWsVo6elp5iVE3njkzngY7PhOvH379jJV+/bX7ABZmBglAcNQa9agZfgGpSrNDehYQSRGHDNhcnIyX60kOWzblvFB0Jzo5KqdCoSmy7caymtZJJUYzDPgloSbgqNRcato7mLOEdCbUIxOnTrKG1a9mZvBPn16s2uYbezQoaRSpa7suCjxAxlvtLriZH/JOmfzjuUu81LAxHn06JEFC+bLHv8yOwFlt0BMjMwk1pgQFxcnm9AHrl2BUR0xV8a4wSSMhnkP304QcOcigWsbAN/0tGzZUr6HsyiMEpEyPwoYWKxYMcuTnp7G2aJvXwq4ApaUdJARvNEwTND50ksvmtl6V2AUMO7zi4VUauopZoI1k+SM/i85B0ITJfYHzNMZh8OZGU2CphNTWrPYhXh6FSUBE7LNyL19880rKzAGzTuPqvQm5xb1jIARR7YGxiKM+0cLAu7kWuyAO9itXbtGsvr3v/+NU1u2bBGPvOSiUqW3zV3HzEZFp2kz6GscO3YU9D1lBfv37291DbSxzz6bJu8mlvigOL05ezuXecdyl3kpYGXLPoJ1FV/Rzj2gzc/om4OcssYEvqdU0nofIWJMMNue425Znpx8DAPI6NEfyzu1JQfc4V69enJz8CIySkTKfCpg6HVS05CEgPuuZKxaWIsBTy8NXG8FRuPVV1998cWMF1cKt2+PxyTI9MjXFaVLl65SpYqk3bRpI64OY+vWjIFpwIABHONefvklU8D4/gUsC8y5mFBK1bRpk4D7oebOnRNwxzVGkK2jCx+jJGBQCxp8gQDvsDzQ820PGzas5wqYj26sfOLiNssKLLP2NmVKxrIJzYlOtJmPPx71yCNlvDFJTFMwSfeWiq+DCriNCgZfM++bidcQ+n5GMShgAU8b41m0f75DxMrKfOIqb3Z2Qm9QZNC8Y5JDrjAvBSzgTkB5ChXEaVBKykkzMh/24iwFXk5ZYwL933yzhAaWVnxgmJmALVz4JWPytWQwfBsAX8Qc8NSgMpBvBSwQeiUEgLlJIKMXHcNcuH79+kOHDuHEh9HEYC/lggkrp++++9Y8i6HKcd9ZUKpUxorHezmhCJgTes2uZPLEE084oXeBB9w3caC5Y2AyBeyZZzLeZ79ixXKmkrSSJ4+YmuEojwLee+89FtuMXMgYJQFr0KCB40I8jvs+Ni5QxG9VB+bdsM03sMTEtICHz9A44jgZX3WUQIsKuF9vQCAfeOABPsfmKzTlFYhsM40bNy5XrhwW9JAE59oX7NaqVYtfufEpkFlavtBOGhVaFB9e8bs36KJVcjMtacWxYoqAWW1s9erVjvt2KHNIRbPkaE6h4jvNb7jhBk7ycCtKlSolncu8Y7nL6AmYIGAIWIkSf5JXFbPnli9f3pzXnjx5wnyHlhiBa8cETIxQfcOHD69Tpzarj69QyUzAQCywaMiTIasBIIK8drkojBKRMv8KWCGm2QGKDqMkYNGg/mzsj2WUBExZ+KgC9gdQBey6VAErylQBU4ZJFTBlHrEACZjyj6UKmDJMqoAp84gqYMowqQKmDJMqYMo8ogqYMkyqgCnDZKEVsGzsoBgbuyEp6eDBg4n8qZj8bVCZK8xLAYuL22z9vY9Ob8w84MaNsV5nLnLz5k1ep5B/SQ6TEUWOHvNYwNjx4+O38d/lednxvTfc68kJ9+7d43VmRu5SxLvhPZs/mU8F7OrPXSP8vUPnzp1oWFtGZUH5BXOlSpVmzZo1efLkAQMGBNx/enkj5wGlPIWMURIwc8cEYb169fi3UMvpjZkHzMbvQcJv//v37+M+UqHgfkn4zTdLmJU3VWaMKHL0GCUB4x/MgeXLM5qW1fGbN2/GvwfkZcc3b/jZs2eKFSuWKzs0vvHGGzQGDRroPZsZuQsJ74b3bP5k/hUwGqNHf9y5c+exYz/BNLZUqVJ0Pvzww7feeiv/Z7Nq1Xc33HAD/3fJ/0kwLQRsypSM3TcQ2Zt/yZIlkYr/+ZAkzZo1/fbblZaA4dTjjz+Oo+wVa159yZKvceree6/8Febdd99lttblEGfp0m9wnDhxIj0VKlRw3H+DMehbHvknf0xMDAqG8Tct7RwuHXDb+h133HH//fdbF8rPjKqA4eZUr17dCf21SwTMCW2JQmft2rUkTsDd3A/BhQu/DLh/U+X+GhIZtcmg1I5clHsMVq1alTF5Ie4FFcj4S+IEBFu1asUgBQwTW06uMcfC2SFDPmLaxMQDt9xyi/mPtICxCR5plhN8/vnnEWS2loBVrlxZbIzX1DP+CXLZsqX0owEj2KZNGwbbt2+HIP+QJB+fd5X/5/3Xv/4leeYNoyRg3JmJdEIIhDq+JWA4xfZAtQtk2fFRfSVK/Al1IfljXEKEunXfgY2xaPjw4RhGZCzq06c3zr788ktyw/mXO4CSwxpfvHgxz7700osIrlmzOuAOC3RiWKBRpkyZsmUfoS2RmfOkSZNwZAHgiYlpgWYAA60x4G6lJn/iDoQEjHfD2zLZbvPbmJN/Bayn+yIS3lwImGzGgzvObRR4isczZ07zj6tSu6gzdnjZx0zIjcusHAKZC5gZ2ffqAberI1uMLKZTCM8nn4wJuLtFoFk8+OCD6AASM7PyeAXM3CM4NfUUG711rXzLaAsYt6zlLjsUMNyco0ePSEwrDgaXvn37BtwdbNF+uJFHILSIR2SOF1btkN27dw+ENmhGTP6ZF2PEc889h5kWN9fAGNS/f/+AK2AY9ZgcEzLK3gsvvICYSMv9LFAk80kjZuJfuzh4MNEqJ4jJEILz588LXCtg/HQWcd09ezLGdxYAV2ED5sccNmwouwzGVv61OeD+GZ9pOeIvWrSoR4+MndXyjFESMNxA3Ex5PiYVmpmAmdGy6PizZ89mezBbCO1HHimDcQljEf80jbGoVq1aMB544AEzGokycIsNFJLzCbTJ5OTk0qVLm8OFJWCYNp08eQKEHEpW8h9tETD+1x6dhXNo61NQliwBs1om2y3GnGg/Eo+I+VfA2IExucBEGAImL3xy3P+9A8WLF+d/1N9/vweC6GaBawWMhkzATWI2hK4rGdIIR8Csq6NZN2zYUFbcOCvZmpRMZs6caW5Cj48GTyCT8ngFjJNBrBVwdRbD7AD5nNEWMAYpKvXr15827dMdO7abMa04UpWPPfYYN19H30aQeyJI5MC1tUM67gSLewEj5pw5GfuBSZ7cWIjBgPtaO6kmKBMvimUNBggKbcAt0vTpn0v+UA5O4DZv3mSVE0Mbg8A33ywxBUy01qTVgHFRSc43KliRMYa2bNmSQcy+UbC8/+4wSgIWcPd5KlWqFGcY8tnDETCpBW/HxyQJZ7ndick33njjL3/5C8aleM9OHFYLIUXAxPn555+1bdvWqiNLwLBiw0KQCif0ChgLUL58edlQP5Cxd3MpfigGLQEzWybGHGk2soVYfmD+FTDThoDxkYt1CpRtwsMXMG4lHnDfnBLwtOPrCpiZ1YYN62lgjoxsuQo0N5cz04Jdu3bFZ5EgJuwYgDIrDyZiXOljLh8XFydNyoxTgJjHAoaqkUUVacXBSJSeniZn5ZZaAmbVjklu4IuY3PqZmXTu3Jk7JSYnH4PkBFwBa9y4MTdOrFChguxhz7S+AmY+QrTK+eWXC8QOeB4h/vnPfxYbhTH39KNhbv8YCLVAM4kcA6EfFGC8RhnMVNFmNARs8eLF3No04PmYYQqYmZvZ8eUFFBIHt53jElZFvgLGVxBY2YqAyd1GZWHRZl2ajyUD7rAQMH70YUYLU8D4aiphFgIWMN69kK+YfwWMao+p6Jgxo00BwwCBcaFjxw7SsBYtWnj77bdzXoBmGhPTAkdLwFCRUvGYMbVr127gwAHMAY0M3Ri9NBwB814dc3NMhY4fT0a2JUr8SbI125PjbignkylMrDBCYX7NdpZZeTizk2uZAvbCCy/g5qC544PLVfI581LAeK/QMPiVIWnF2bdvL27siBEjcESvxhH1ghtbokSJkydPSGSrdsgHHnhg7tw5fPCCmBgd+LhbfjfRvXt3x9WPQOg7MLRPNEXu5wuFw1IM0ugdJkhTwFhOlI3lDLhSOnv2bL5yyBKwDz5438n4qiNjld+gQQMWhqfEQAPG0oHf35w5c9pxV5OOu/Mn45w+ncrnRVipzJw58+9///uwYcPkEnnAaAhYwL0D77777tNPP839wa2On7WAZdHxkRbtATVuTpgct+ciAurdK2A4i7msLH1IEbAdO7Y77rvWeBYNgz/uYBAN8s0335SSYJVcq1YtaHPNmjUlK8yoOnXqiHyyFrB77rkHjQRdoHz5ZwLXEzDH7SwooUzp8gPzqYBdl+bjfmv5nBllmhxwW9Lhw4e8ccKkefWDBxPNfT8lW1kaBkLNZdOmjWYmq1Z9J3YW5cnsZ7XoeOnpaV5/vmWUBCyH5Lu7SPRY2TjVpG/tSPWxq/PlcELr6aVFLqwjIr+QE3KozYxYH/h+EOHq1dfklkVprZh5wygJWMDtTfxGMHvMouN7/7eT9YWsBuNlQkLGV25CWecF3KV/ZsNCpExNPWV2gay5deuW/DbmFFQBK1g051lFlvlTwHJOc2WszBVGT8CUhYwqYMo8YmEVMGWuUwVMGSZVwJR5RBUwZZhUAVOGSRUwZR5RBUwZJlXAlGFSBewqt27dwt/BW+QOaTlnbn3vWkCZZwIWH9rULkyG+SOgcCj/78kJV65c4XUWKf5RAiabbuQZsz0mJCTsj96ejdkuVd4znwpYZruWRZUxMTGy3Y7JrH/xFT6L+E85oidgJUr8ia2F/8CV30OHSWvfppxQdvfJCWWbhiLL6AkY24kT+sOD96zX6Y2zfXu8Gcz27oWy8yH/OBgOZZND859Fuc5w7kM+YT4VMHPXMmuXsLJlH5H7Sz9366rj7h5Wvnx5SVivXj3MiJEVprQxMS3MWnHcP2bJVoR33XXXyy+/JAJm7lYX8BOwMmXKOO7fqxl8OPNN0szdEaUAd9xxhxPas6Oeu+eYfAoSawjZ1wfXopN/GsPoxq3wkDODjMlgwLNv3qFDSegn3q3Z855REjBTflAjffv2FQFjU+E2P9a2JgH3zjvuP6uYA5xsFWbmtWrVevPNN3n3zBtrbZwYcCuXTYjBf/zjH2gD5q+uWcvSPjt0aO+4/+5ikEXl34BQp2vWXFOn5A3unp/8Qb8T+oMgZ3i7d++6+eabIeSwS5cuzd/QS/FomDsoxoc2xzPzzz+MkoCZn5cbRQY8d5XH3r174YhaRn1Zd6lcuXLiSU9PQ3vr5W77xAp98skneQotp3jx4vCgA0paM44TwqJFi2jwHwsPGztVcg9YJ3Q5c5NDnProo8Gw0dJ4ljtwyhaXpLlJo7XzobXRJfJBkC1W4lSoUEHGSTgnTZrkGLvC5gfmUwHDEF+q1L3eXcuwFOP/LbwbjHK/ODTKM2dO04MRqlu3bkyemprRH5577jkcH3zwQTNbHFnBjrvhqbVbXcBPwE6ePBFwdyoLZLlJmrU7Io+ofraSxx9/POAW0rsbHsaX+vXr0/YKGIO8OoLcW4FBa9+8gLGv3R/OKAnY4MEfWh4RMDYV6HfAI2AffjgIyhRwuygFTLY/4AYHJIY27heV9caJUuk02rdvt2jRQjNPOYWmcv/996M18qECnRs2rGcL5FYRVp2SnKrj0szTuXaHQynA4sWLJ06ciKFt8+ZNyOezz6bhU3fu3NnaQRENTDYXzYeMhoCh06HuLKf3rvLISpe7umDBfEkCAeNeLQG3vtCdmQkrdNy4sTx13333BdyJjmTijSOnuGdmwLNTpbkHLClbbOAUd+DE1BxzESTkfr5IOHLkSMaxNmmUy/EP+JyrcaNLq8UyprVlqxOavZmf6A9nPhWwgPuHc++uZeC8eV/wAaMZGTf6ykZdr7zCfe0Cxh90JDLFQIKc4UoQIxoEzNqtLuAnYJhc8+/6TM743k3SeNba5FAud/BgYiCTzYRkG5FA5gLGXmQGofdSGNnfL/8wSgIm62ChCBibCjfjsARMagFDDAUMd4y3zmxaokDeGzvR2DjRbEI4YsF90003me+kQPu09p3Dqo5LwIDnCblVp+Lnnp9WK6KBIenVV1+V7fjQPrm161133VW3bl18xl7X7qCIBvb666+bF81XjIaAYTYpM1eT3rtq3dtAxuLm6j6Hjz766NmzZ/ieLcddjlDAWKEvvviClZabXJCZxREBs3aqNPeAJU0B4yMiKFDr1q2REOMVE8ozCWuTRqsFmhtdssX26dObMa37wC1bvbclPzA/ClgWu5Z5DTI5OTk9Pc3K57oCxgWZBO+55x4ImLVbXcAjYBSeQGi+bJUki90RGZMXDYQ2tbuugKFUNEqXLh24noBZ++blK0ZJwMz7X7lyZagLBYwzyoCxNjU3lvzb3/7G78BRX+zwTZo08WbOPbwDng0J5aKWgLGyvNvToX2a+85hXszd8BgBKyQ5FfDUKW0ZlZjE6ghyRX5Hgsk1H2LjyAjWDoqyt1D+ZDQELOB5nQoW6L531bq3AY+A8dSTTz4JGRMBY4XKC1AkrbkKzyyOCJi1U6X3i67MBAwJJ4Ze1SS0Nmm0dj40N7q0Wqx1H7hhpve25AfmRwELuPcIay9r1zI0lBIl/oRqw6QSEfgiWmgSG5DjfqOAeSg3+wpkLmCIhjnFO+/UYWuoV68uJqqYmAwaNBACxlX/iBEjuFtdICRgZrXVqlVrzJjR9GSxSZrv7ohnzpxG08eyncHrChgK2axZU5Bbx2YtYN598/IPoyRgqCPHfTUX+iFfN0MBS0w8wKYC6UJTsTaWTE095bhfv6ONcRRDdeMsJryyF3vAELDrbZxYl1vb8WvawYM/fPbZZ9EGZPUccLWN7RNT8i++mIvmPX78uH/+859UL5yVze58Bewf//gH9/w025IYmD5DuaGL/B4FbQmXgDFnzhx8KMY0d1AsmgIWcG8X6uXhhx/mRpG+d9W6twE/AUMX5lkRMFZo+fLlWaFoOejjaAZ8lkhacSR/tNUaNWrw0aK5U6VXwLBeRKPasWO7JWDMDa0XCadN+5SRrU0arZ0PzY0u2WJnzpxhTvG5ZauMk97bkh+YTwUs4K5qfTcTw/Iosx9JW/vFZcHDhw+Zv2uQr82E3t9DW5uRm79ECmS5SZp3G72zZ89EtCHm0qXf+P48MjOGfx/yklESMBJNhV8emPQ2Fev3web+cgF3//jMmhaZxcaJ3q3tzDZAmvWSnp5m1el1N0jM+uf+J04c927HZ9H7MDx/MnoCFnDX3PwVD5n1XQ2fVoVCwDCzQYvKIk5mzPb+k+aLBYRmq7B2PrQuxCmyxfzw+68smH8FTFnIGFUBUxYmRlXA8oaydldGlSpgyjyiCpgyTBYCAVPmDfNawPbv87mesihw79540Ov3ZWpqigpYkSWq3vse2sy4a1fcAZ0WF1Xu3m1/1xOIqoBtjC3q2+QUWcZuWJ5yMoLn6SpgRZYRVX3yscObNhaM7/aUuU7fpmLrkB+yKWC+11MWBUZa9ZHGVxYaRlr1kcZXFhr6Vr2tQ37IpoBhvb9509U3ESuLCFHpe/b4LPazYErK8aSDGX/VUhYpHkjYFf4XYOSO7bFb4rL5yz1lweXG2JX7/L6TsnXID9kUsEDGX+IP+MqmsrBy+/bYo0eu7igRPrfErdFnzkWKGBm2bs3O660PJe3buTNjUwllESGaSnKy/Q8l0tYhP2RfwMCUk8m4/M4dm1JT89efbZW5S1QxKnrz5mv+bhUR9+7ZhhwS9u/w/q1KWWiYlnZ2377tqOj9+3Z4z4ZJrPIzRhWVsULN1NSTO7ZvREXD8J4lbR3yQ44EjNyzeyvKoSzEhPx46z0bxKzcm7myMHHb1it7sOWE6elpe3Zv8WauLEzcd70fM9s65IdcELCiRt59r1+ptKhNRRke07SpeGnrkB9UwCImm9qO7VfemaJU+vLYsUNsKidOXLMRkVJpcUvcahUwL20d8oMKWGSEbskS2HtWqRRKO9Gmosya0k50WmzS1iE/qIBFQEylzVFJZ9bKzLjt2m/7dGBSZsYjRxJ1VPGlrUN+CEvALlz4rzf3Isu9e+Ov+/WjUhnIeLnBqXPnwt1LSVmUuXv3Ft1g1uTFixdsHfJDWAIW1EWYQRUwZZhUAVOGSRUwi7YCZYJwBSyoGhaiCpgyTKqAKcOkCphJW3syRwQCBnz/fcB7saJGFTBlmFQBU4ZJFTDy/PnvbdXJEpEJGPHzzz//+OP/iiwPHNh5IGGX169UWjx/PnDhwn+8fqXS4r598UlJe73+okPIiq00YSA7AlbEgXZ2KGmf7VUoPLh06cdff/3F9ioUHmBafPRoou1VXA8qYBFDBUwRJlTAFGFCBSx7UAGLGLkuYJUrvWW7chvZuMT33wdslyJC5FDAWGvZqLssMKB/X9ulyAfIWsBytw0UJqiARYwsBCw1NZVG8rFjpv/QoUNm0ERq6ikzePDgQTMYDn799VfbFcL//vcDDekAv/zyi/WsOeXkSTMInD9/HnmaApZF+QX/+9//Ll++bHuLNrIQsCNHDtsuA6iCoGfY+u2331JSUkyPwMrt8OFr6kuaZdBPwKw8fZuT1WZQ12Kj0i9evGic9AGK9/vvv5ue//73v2ZQkbWAZYaDB32SHDqUZLsMXLx4Ac3S9GQdP59DBSxiZCZgHTu2mzRxAgad7t26vP9+96pV3obzmyVfV69WefLkie3atkawx3vdwM+mfQp71qwZdd+p9c03S2ScgjFx4ngGV636tm2bVm1at9q6ZQvPHjiQMHLEsKC7Nurd+4NTp1IWLJjXqFH9mjWqjh8/lnEEHw4aUKtmtUYN67Vv3yZoDIWDBw/q1LF9i+ZN6KxWtVL/fn3MgTI9Pb1lTPNePd+fNm0qPTj7yZiPccRQZRaVxsaNsTj27dt76pRJ9erWmfbpFPoVwUwELBAIoF4mjB83auTwoFut9MuMAfcWFdq8WWPeZB4HfziwXt3aqNa5c2dfySiEGtWr4LajmcEeNmzI2jWr2Q6pTDBYxZxeUMAaNKjLtFK5TIv8x44dY7aHoJu/tJnGjRqAqGuJ07NnjxEjhqGxQSbRDIJunmw8V0o+eNCoUSPQkidOGIcgPgX8BxISvC28KCNrAcMdQ8ds2/ZdBtFt6cRwgbYk0RAnwzlh3OJFC3t+0AOeZk0b8RSbBwSvW9dOgwb2r12rOnOoU7sGGsDKlSs+nZrRczHBbdrkSpICARWwiJGZgEFIcBw/7pO4zZuCod4r/Zx6ZuL9Ht1pMM62bVsZ5BT43VYxHNHQ1en3Cphkbo04pscshjlEeuMQVSpXpPH559NwRLNetOhLGOfOnY1p0XT06FGYTWMoxEh3+vTVeb1vVgpfATtx4gSrmPfKEjBoD2/4Dz/8YFZTFncYSXA8//33QVeEMB7BwIoHMa3qC7oCBsn5Yu4c2J07dUhLS4OBFjt50gSk3bIlDkHo06ZNG5k5SvWf//wnGLou1IvL+o4d2mHhhZUi1oUI7t69S+IMG/oRjffe6ypOMSTobeFFGdcVMDnOnTM7Lm6zuQje7A44Qbfzsmmh8/oKmNx8mddKPjyF6XXBWhyrgEWMzAQMc5mgO5rEx28LerqrF5gl0WAcLMiuOe0Ck/T69erQ9goYlno85b2KeLp07oih7UrTnzt7u1/ZzORiHz1yJOiqbHp6xhgnp7BqbN4sYzIOScbkmqf42SWOgvAVMOjHlMmTMNXlvbIEDHVq3XAeY1o0M50WNm2M5QoJIrRz5w46EdNbfQMH9IPBR4IyWSGQlo8ip0//LHbDejrRZtDYgqHkEDD6u3Xt/F9X2DLizJnNs+3bZTxmAN5/vzt1DnMdKTlhld9s4UUZ4QjY3j17xoy+slzes2e3Henazpu1gBFmcNzYMRC/1q1bGucLAFTAIkakAsZ+LoOFTHksAUPr2bdvLwwzuWkggjwmWrBgHldgGCCQP+MMGtifMZnq4sUL8tCPxzatW+Eo8b2XADhaBUNPmdATZGScPXsmI0tySagC5gtfAbNuO6qV35jiDgddPWverHHQbUhmNeFortswU2YmAJtNQsJ+ZlKrZjUYy5Z+06F9W2/1YQUmrWLp0iV9+/SCsXLlCsyNfAUMbSY9PV3ajCVgXy6YzyAviulRq5bNg+6Cj40t6Pm8VtA0ijLCETAaX321iPaC+fNofPftShrovHNmz4LRoP47FDBJyIqW6uOswrrzSG59PZb/oQIWMSISMKBVyxawV69exSCUjKcsAQu6gwLsbl07wf7xxx/fqVOzXt06ZpNavnxpZXdaDRsChsGob9/eNWtUxXQ+aHyxEXQLM879MoPPiHgJTIphDB82ZPHijD6Q2QiCYO1a1eUXGUuWfAXPJ5+MZvC997pysYgjCkynCpgvfAUMooI2wPUrv7zE6C/VGnSf/yB49OgR3kweL126hEqpHPoqy7zPnTq2R7Brl4xmQxFCUBZDVvXxOzDk1t81oFU428/97spXwNBm0MDYZjA9967AMKlCDt8s+Zp+b6PiWrN2rRqJiQdMv28LL7IIU8CkkQCoFPilRgiOIZhzUMAOHkysbEw0g25W4MyZ02mL3xssEFABixiZCVgegwJme0MQRVH8gfAVsFwBNMZ2uRARUhQsZC1gkeL77wMUsIiQvb0w/liogEUMFTBFmIiegGUGFbACij9cwEaNGmG7CgJUwCJGPhEwRf5H3guYooAidwWs6EAFLGKogCnChAqYIkyogGUPKmARQwVMESZUwBRhQgUse1ABixgqYIowoQKmCBMqYNmDClgE2LB+mUU7hkLhQpuKIiKogGUPKmAR4PfffzeHJGt/UoVCcCrlmNlUzpzx34RXoSBUwLIHFbDIsG3rOp1TK8KBLr8U4UMFLHtQAYsYOqdWhIPLly/rSl0RJlTAsgcVsIihc2pFmIiLW4Ulu+1VKDxQAcsecipgly79uHfvNvNpiVKpVCqVWXP/vviff/7JVpQIkSMBi92wPCkpYydshUKhUCgiQuKBXRtjr2ylnz1kX8Agodvjr2xZrVAoFApFpNi2dS0WQrY3bGRTwPbsjsuhcioUCoVCAQE7kLDT9oaHbArYBv0Vg0KhUChyA9kWlGwK2I7tsbZLoVAoFIrIERe32naFh2wK2JHDCbZLoVAoFIrIkXhgl+0KD9kUMP3LgkKhUChyBUkHs/lrdhUwhUKhUPyRUAFTKBQKRYGECphCoVAoCiTytYB17dq1evXqn3zyiX0iCnAc59VXX7W91wNS2a5IkMPkCoVCUZSRTwXst99+cwz8+c9/tmPkNlTAFAqFomAhnwoYRva//e1vEnzjjTeWLFkC47HHHqOk/fzzzwhOmDDh7Nmz9DCCKQm09+zZwwht2rRB8KabbqL/3XfftSJDwEqWLAmjU6dO4gRKlSrF4L59++i57bbbJAKO69atk6wYwQwOGjTI9Pz+++8MLl26VJwKhUKhiBT5UcCOHz+Okf3w4cOWn0P/Dz/8gFMc+iFgMC5evLh27Vp6SpcuffLkSRhTp04dOXKkJOGSTjL58ccfcfzss88kc4pKQkLC/PnzYWzfvr1SpUo333wzT7Vr147GgAEDLOOXX37hEUGILuQKxjvvvPPpp58ywmuvvQbj9ddfb9SoET2zZs2C8cILL7BICoVCocgG8qOAUWNWrVpl+du2bTtt2jTaiLBt2zYIWL9+/cRjGjwiSYYuhYDVmMTBAoi2eKAoYt9///0QQkn417/+lX4zCT3AvHnzzKCAHp5KS0t76qmnTI9lKxQKhSIi5EcBC7oj+0033WQGV65cCblq1aqVeLCKykzAqD2wJ06c6BWJv//97yIwAgRvuOEGsd966y0nJGlOlgL25JNPmpe+9nxWAnb58mVvfIVCoVCEiXwqYOfOncPg/vjjj3fs2NEUG8f9SqlZs2b0ZCZgwNNPPy3BJUuWrFixghHEcNxlFuMw+NBDDzVq1IjylpKS4rg/HuF3bFBTGkiyaNEi5slUON54441du3aFUb9+/VdffXXdunU1a9Z84403JELQELA777zzmWeeWbBgAcspBVAoFApFRMinAkYEAgGIwalTp0znsWPHLly4YHqui9TUVORjezOBGfPSpUsbN240TmY83tywYYPp8WLTpk3nz5+3vQZwiYsXL9pehUKhUESCfC1gCoVCoVBkBhUwhUKhUBRIqIApFAqFokBCBUyhUCgUBRIqYAqFQqEokFABUygUCkWBRMEQsPB/BJ9t5MElBNG41qZNm2xXvoT3sx8/ftzyCFJSUmxXQUBSUtJ//vMf2+tBbGys7col/Pjjj7YrE3irA/Du4mbi559/lh1tCGRy4sQJ0xMRfMugUISDfCpg1j988+APv3lwCUE0rhWNPKMBbzmHDBlieQS59Sadu+++W+wJEybI9sqCKVOmmMFg6O/wwC233HI1o/DQvn176++Dvrj99tttVzCYkJAwfPhw2xshslYgE/ywFrjtdWY4c+ZMxYoVJdi4ceM+ffqE83ktfPvttzR8y6BQhIOCIWAcRMTJXXG3bNkCT506dcyY9evXd9yNoE6dOgVjwYIF9D/yyCOOu6tvMDQ21ahRI+huMF+6dOkePXpI5q+++irsSpUqMVi2bNly5crR9gIj4w033LB582bYv/7665133vnAAw/wFDcalrTPPfdcqVKluIm+jIk33ngj4qxZswb2Qw89tH37die0Fz4m0cycMb3AJy1evDjip6enB0M3B4MLMke2jAPnU0895bgDdDCUp2z56MXNN99cokQJ/nP87NmzyOfZZ5/lKVyucuXKvHX0oBYSEzNq03F34Tp27BhtfIoKFSowDsFbwa2TJTnuDOwVK1ZQwHD3EJS7R1DAZs6cmZqaCuODDz5AHDrvvfdexvn73/+OO8ANoGvXrm2kvgqvgNEuX768+IPXtjqxpQkFQ03O3HLMvL1AyZIlX3vtNQoYPi9a15NPPikfykrO/cmsendCCF5737zghtRSm927d0fwww8/DLoCNnfuXATR7HnW6iwf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>
-
-[image2]: <data:image/png;base64,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>
