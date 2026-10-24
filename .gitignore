@@ -1,6 +1,10 @@
 .DS_Store
 node_modules/
-.env.local
-.env
 dist/
 .convex/
+.vercel
+.env
+.env.*
+*.local
+graphify-out
+tide-*-raw-*.json
