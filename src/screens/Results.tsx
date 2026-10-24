@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { CalmMap, Counter, Icon, Legend, Screen, Tabs, TopBar, stateColor } from '../components/ui'
 import { avgRate, firstDriftSec, fmt, focusPct, moments, postureLabel, selfAwareness, stillnessLabel } from '../lib/metrics'
 import { useStore } from '../lib/store'
@@ -66,7 +66,7 @@ export function Results() {
   const loc = useLocation() as { state?: { id?: string } }
   const rec = useSession(loc.state?.id)
   useTide(0.24)
-  if (!rec) return null
+  if (!rec) return <Navigate to="/" replace />
   const focus = focusPct(rec.readings)
   const drift = firstDriftSec(rec.readings)
   const answered = rec.feelChecks.filter((f) => f.answer === 'focused' || f.answer === 'drifting')
@@ -136,7 +136,7 @@ export function CalmMapScreen() {
   const rec = useSession(id)
   const [lens, setLens] = useState<Lens>('all')
   useTide(0.2)
-  if (!rec) return null
+  if (!rec) return <Navigate to="/" replace />
   const lanes = lens === 'all' ? undefined : [lens]
   const ms = moments(rec.readings).filter((m) => m.state !== 'focused' || m.to - m.from > 30)
 

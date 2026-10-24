@@ -63,6 +63,12 @@ export function Home() {
 
       {s.coachStatus === 'reviewing' && <CoachReviewing />}
 
+      {s.history.length === 0 ? (
+        <section className="card hero" aria-label="No sessions yet">
+          <p className="eyebrow">self-awareness</p>
+          <p className="lede">Your first session is a baseline. After it, TIDE shows how well what you feel matches what it sees.</p>
+        </section>
+      ) : (
       <Link to="/scores" className="card hero" aria-label={`Self-awareness ${score}. Open scores.`}>
         <div className="readout-big">
           <span className="num-xl"><Counter value={score} /></span>
@@ -79,6 +85,7 @@ export function Home() {
           </div>
         )}
       </Link>
+      )}
 
       <div className="telemetry">
         <div><span>caught</span><strong>{driftsCaught(s.history)}</strong></div>
@@ -87,8 +94,8 @@ export function Home() {
       </div>
 
       <section className="card next-card" aria-label="Next session">
-        <p className="eyebrow">{s.coachOn ? 'next · designed by your coach' : 'free session'}</p>
-        <p className="next-line__title">{s.coachOn ? p.technique : 'Breathe and notice'}</p>
+        <p className="eyebrow">{s.history.length === 0 ? 'first session · your baseline' : s.coachOn ? 'next · designed by your coach' : 'free session'}</p>
+        <p className="next-line__title">{s.history.length === 0 ? 'Breathe and notice' : s.coachOn ? p.technique : 'Breathe and notice'}</p>
         <span className="next-line__meta">{fmt(s.lengthSec)} · {p.feelCheckTimes.length} feel checks{s.coachOn && p.cueTimes.length ? ' · cue before your usual drift' : ''}</span>
         <HoldButton label="hold to begin" onDone={begin} />
       </section>

@@ -9,7 +9,7 @@ import { BreathTest } from './screens/BreathTest'
 import { Intro, Splash } from './screens/Intro'
 import { Scores } from './screens/Scores'
 import { Calibrate } from './screens/Calibrate'
-import { Insights, PlanScreen, Profile, Progress } from './screens/Coach'
+import { Insights, PlanScreen, Profile } from './screens/Coach'
 import { CoachView } from './screens/CoachView'
 import { FeatureTest } from './screens/FeatureTest'
 import { Debug } from './screens/Debug'
@@ -42,7 +42,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path="/calm-map/:id?" element={<CalmMapScreen />} />
           <Route path="/insights" element={<Insights />} />
           <Route path="/plan" element={<PlanScreen />} />
-          <Route path="/progress" element={<Progress />} />
+          <Route path="/progress" element={<Navigate to="/scores" replace />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/coach" element={<CoachView />} />
           <Route path="/scores" element={<Scores />} />

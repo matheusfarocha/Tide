@@ -1,7 +1,7 @@
 import { useQuery } from 'convex/react'
 import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { api } from '../../convex/_generated/api'
-import { backendOn, getOrCreateUser, setCoachEnabled as saveCoachEnabled, toAppPlan, type PacedCheck, type UserId } from './backend'
+import { backendOn, deleteUser, getOrCreateUser, setCoachEnabled as saveCoachEnabled, toAppPlan, type PacedCheck, type UserId } from './backend'
 import { demoBreathTests, demoHistory, demoInsights, demoPlan, firstPlan } from './demo'
 import type { BreathTest, CoachInsights, FeelCheck, Goal, Plan, Reading, SessionRecord } from './types'
 
@@ -30,16 +30,23 @@ interface Store {
   /** The last paced-breathing check, attached to the next session on the server. */
   pacedCheck: PacedCheck | null
   setProfile(p: { name: string; goal: Goal; lengthSec: number }): void
+  /** Update goal and length without touching who you are. */
+  setPreferences(p: { goal: Goal; lengthSec: number }): void
   setLength(sec: number): void
   setCoachOn(v: boolean): void
   setCalibration(rate: number): void
   finishSession(readings: Reading[], feelChecks: FeelCheck[], serverId?: string | null): SessionRecord
   resetDemo(): void
+  /** Start over as someone else (or no one): clears local history, and the server's copy of the old person when asked. */
+  startFresh(opts?: { deleteServer?: boolean; name?: string }): Promise<boolean>
   addBreathTest(t: BreathTest): void
 }
 
 const Ctx = createContext<Store | null>(null)
 const KEY = 'tide.v2'
+
+// With a backend, pages show only real sessions: the seeded demo history is for offline and replay.
+const isDemo = (r: { id: string }) => demoHistory.some((d) => d.id === r.id)
 
 function load() {
   try {
@@ -59,10 +66,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [lengthSec, setLengthSec] = useState<number>(saved?.lengthSec ?? 90)
   const [onboarded, setOnboarded] = useState<boolean>(saved?.onboarded ?? false)
   const [coachOn, setCoachOn] = useState<boolean>(saved?.coachOn ?? true)
-  const [history, setHistory] = useState<SessionRecord[]>(saved?.history ?? demoHistory)
-  const [insights, setInsights] = useState<CoachInsights | null>(saved?.insights ?? demoInsights)
-  const [breathTests, setBreathTests] = useState<BreathTest[]>(saved?.breathTests ?? demoBreathTests)
-  const [plan, setPlan] = useState<Plan>(saved?.plan ?? demoPlan)
+  const [history, setHistory] = useState<SessionRecord[]>(backendOn ? ((saved?.history ?? []) as SessionRecord[]).filter((r) => !isDemo(r)) : saved?.history ?? demoHistory)
+  const [insights, setInsights] = useState<CoachInsights | null>(backendOn ? null : saved?.insights ?? demoInsights)
+  const [breathTests, setBreathTests] = useState<BreathTest[]>(backendOn ? ((saved?.breathTests ?? []) as BreathTest[]).filter((t) => !demoBreathTests.some((d) => d.date === t.date)) : saved?.breathTests ?? demoBreathTests)
+  const [plan, setPlan] = useState<Plan>(backendOn ? firstPlan : saved?.plan ?? demoPlan)
   const [soundOn, setSoundOn] = useState<boolean>(saved?.soundOn ?? true)
   const [coachStatus, setCoachStatus] = useState<CoachStatus>('idle')
   const [calibrationRate, setCalibrationRate] = useState<number | undefined>()
@@ -104,6 +111,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         setLengthSec(p.lengthSec)
         setOnboarded(true)
       },
+      setPreferences(p) {
+        setGoal(p.goal)
+        setLengthSec(p.lengthSec)
+      },
       setLength: setLengthSec,
       setCoachOn(v) {
         setCoachOn(v)
@@ -143,6 +154,26 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         setInsights(demoInsights)
         setPlan(demoPlan)
         setCoachStatus('idle')
+      },
+      async startFresh(opts) {
+        // Server first: if it can't be reached, keep everything so nothing is half deleted.
+        if (opts?.deleteServer && userId && !(await deleteUser(userId))) return false
+        setHistory(backendOn ? [] : demoHistory)
+        setBreathTests(backendOn ? [] : demoBreathTests)
+        setInsights(backendOn ? null : demoInsights)
+        setPlan(backendOn ? firstPlan : demoPlan)
+        setCoachStatus('idle')
+        setCalibrationRate(undefined)
+        setPacedCheck(null)
+        setServer(null)
+        setUserId(null)
+        setUserName('')
+        if (opts?.name !== undefined) {
+          setName(opts.name)
+          // No name left means back to the welcome screen (this also avoids re-finding a user that is being deleted).
+          if (!opts.name) setOnboarded(false)
+        }
+        return true
       },
     }
   }, [name, goal, lengthSec, onboarded, coachOn, soundOn, history, breathTests, insights, plan, coachStatus, calibrationRate, userId, pacedCheck, server])

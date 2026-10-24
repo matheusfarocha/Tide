@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Icon, Screen, Sparkline, TideGauge, Tabs, TopBar, Typewriter, depthOf, type IconName } from '../components/ui'
-import { awarenessTrend, focusPct, fmt } from '../lib/metrics'
+import { Icon, Screen, TideGauge, Tabs, TopBar, Typewriter, depthOf, type IconName } from '../components/ui'
+import { backendOn } from '../lib/backend'
+import { fmt } from '../lib/metrics'
 import { startOcean, stopOcean } from '../lib/ocean'
 import { useStore } from '../lib/store'
 import { useTide } from '../lib/tide'
+import type { Goal } from '../lib/types'
 import { CoachReviewing } from './Home'
 
 function CoachOff() {
@@ -88,46 +90,61 @@ export function PlanScreen() {
   )
 }
 
-export function Progress() {
-  const s = useStore()
-  const nav = useNavigate()
-  const [range, setRange] = useState<'7' | '30' | 'all'>('7')
-  useTide(depthOf('/progress'))
-  const aware = awarenessTrend(s.history)
-  const focus = s.history.map((h) => focusPct(h.readings))
-  const stillness = s.history.map((h) => h.readings.reduce((a, r) => a + r.stillness, 0) / Math.max(1, h.readings.length))
-  const delta = (xs: number[]) => (xs.length > 1 ? Math.round(xs[xs.length - 1] - xs[0]) : 0)
-
-  return (
-    <Screen className="with-tabs">
-      <TopBar title="log" />
-      <Tabs value={range} onChange={setRange} options={[['7', '7 days'], ['30', '30 days'], ['all', 'all']]} />
-      <div className="tiles">
-        <div className="tile"><span className="tile__k">awareness</span><strong className="tile__v up">{delta(aware) >= 0 ? '+' : ''}{delta(aware)}</strong><Sparkline values={aware} h={26} /></div>
-        <div className="tile"><span className="tile__k">focus</span><strong className="tile__v up">{delta(focus) >= 0 ? '+' : ''}{delta(focus)}%</strong><Sparkline values={focus} h={26} /></div>
-        <div className="tile"><span className="tile__k">still</span><strong className="tile__v up">{Math.round((stillness[stillness.length - 1] ?? 0) * 100)}%</strong><Sparkline values={stillness} h={26} /></div>
-      </div>
-      <p className="fine">weekend data from our own sessions</p>
-      <div className="list">
-        {[...s.history].reverse().map((h) => (
-          <button key={h.id} className="list__row list__row--btn" onClick={() => nav(`/calm-map/${h.id}`)}>
-            <div><strong>{new Date(h.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</strong><span className="fine">{fmt(h.lengthSec)}</span></div>
-            <div className="grow"><Sparkline values={h.readings.map((r) => r.stillness)} h={22} /></div>
-            <span className="mono small">{focusPct(h.readings)}%</span>
-          </button>
-        ))}
-      </div>
-      <TideGauge />
-    </Screen>
-  )
-}
+const GOALS: [Goal, string][] = [['stress', 'Stress'], ['focus', 'Focus'], ['habit', 'Habit'], ['sleep', 'Sleep']]
+const LENGTHS: [number, string][] = [[90, '90 s'], [300, '5 min'], [480, '8 min'], [600, '10 min']]
 
 export function Profile() {
   const s = useStore()
+  const nav = useNavigate()
+  const [name, setName] = useState(s.name)
+  const [confirm, setConfirm] = useState<'rename' | 'delete' | null>(null)
+  const [busy, setBusy] = useState(false)
+  const [failed, setFailed] = useState(false)
   useTide(depthOf('/profile'))
+
+  const renamed = name.trim() !== s.name && name.trim() !== ''
+  const run = async (opts: Parameters<typeof s.startFresh>[0]) => {
+    setBusy(true)
+    setFailed(false)
+    const ok = await s.startFresh(opts)
+    setBusy(false)
+    setConfirm(null)
+    if (!ok) setFailed(true)
+    else if (opts?.name === '') nav('/')
+  }
+
   return (
     <Screen className="with-tabs">
       <TopBar title="you" />
+
+      <label className="field">
+        <span className="eyebrow">name</span>
+        <input value={name} onChange={(e) => { setName(e.target.value); setConfirm(null) }} placeholder="Your name" autoComplete="given-name" />
+      </label>
+      {renamed && (confirm === 'rename' ? (
+        <div className="card">
+          <p className="muted small">A new name starts a new profile on this phone: this history is cleared here. {s.userId ? 'The old profile stays in the cloud.' : ''}</p>
+          <button className="btn btn--primary" disabled={busy} onClick={() => run({ name: name.trim() })}>start as {name.trim()}</button>
+        </div>
+      ) : <button className="btn btn--ghost" onClick={() => setConfirm('rename')}>use this name</button>)}
+
+      <div>
+        <p className="eyebrow">what brings you here</p>
+        <div className="chips">
+          {GOALS.map(([g, l]) => (
+            <button key={g} className={`chip${s.goal === g ? ' is-on' : ''}`} aria-pressed={s.goal === g} onClick={() => s.setPreferences({ goal: g, lengthSec: s.lengthSec })}>{l}</button>
+          ))}
+        </div>
+      </div>
+      <div>
+        <p className="eyebrow">session length</p>
+        <div className="chips">
+          {LENGTHS.map(([v, l]) => (
+            <button key={v} className={`chip${s.lengthSec === v ? ' is-on' : ''}`} aria-pressed={s.lengthSec === v} onClick={() => s.setPreferences({ goal: s.goal, lengthSec: v })}>{l}</button>
+          ))}
+        </div>
+      </div>
+
       <div className="list">
         <div className="list__row toggle-row">
           <div><strong>AI coach</strong><p className="muted">Designs every session after your first.</p></div>
@@ -138,6 +155,13 @@ export function Profile() {
           <button role="switch" aria-checked={s.soundOn} aria-label="Sound of the sea" className={`switch${s.soundOn ? ' is-on' : ''}`} onClick={() => { if (s.soundOn) stopOcean(); s.setSoundOn(!s.soundOn) }}><i /></button>
         </div>
       </div>
+
+      <div className="card">
+        <p className="eyebrow">saved</p>
+        <p className="muted small">
+          {s.history.length} session{s.history.length === 1 ? '' : 's'} on this phone · {backendOn ? (s.userId ? 'synced to the cloud' : 'connecting to the cloud…') : 'cloud off, everything stays here'}
+        </p>
+      </div>
       <div className="card">
         <p className="eyebrow"><Icon name="lock" size={12} /> privacy</p>
         <p className="muted small">Video is processed on your phone and never stored or uploaded. Only the numbers leave it. Spoken answers are not saved.</p>
@@ -147,7 +171,17 @@ export function Profile() {
         <p className="muted small">TIDE is a wellness and training tool. It doesn’t diagnose or treat anything.</p>
       </div>
       <div className="spacer" />
-      <button className="btn btn--ghost" onClick={s.resetDemo}>reset demo data</button>
+      {failed && <p className="fine" role="alert">Couldn’t reach the cloud, so nothing was deleted. Try again.</p>}
+      {confirm === 'delete' ? (
+        <div className="card">
+          <p className="muted small">This deletes your sessions, readings and plans{backendOn ? ' here and in the cloud' : ''}. It can’t be undone.</p>
+          <button className="btn btn--primary" disabled={busy} onClick={() => run({ deleteServer: true, name: '' })}>{busy ? 'deleting…' : 'yes, delete everything'}</button>
+          <button className="btn btn--ghost" disabled={busy} onClick={() => setConfirm(null)}>cancel</button>
+        </div>
+      ) : (
+        <button className="btn btn--ghost" onClick={() => setConfirm('delete')}>delete my data</button>
+      )}
+      {!backendOn && <button className="btn btn--ghost" onClick={s.resetDemo}>reset demo data</button>}
       <TideGauge />
     </Screen>
   )

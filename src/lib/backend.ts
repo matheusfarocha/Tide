@@ -52,6 +52,11 @@ export async function setCoachEnabled(userId: UserId, enabled: boolean) {
   try { await convex?.mutation(api.users.setCoachEnabled, { userId, enabled }) } catch (e) { console.warn('Convex: coach switch failed', e) }
 }
 
+/** Delete a person and their recorded data on the server. Returns false if it could not be reached. */
+export async function deleteUser(userId: UserId): Promise<boolean> {
+  try { await convex?.mutation(api.users.remove, { userId }); return true } catch (e) { console.warn('Convex: delete failed', e); return false }
+}
+
 /** A paced-breathing check done on the Calibrate screen, before the session existed. */
 export interface PacedCheck { measuredRate: number; doneAt: number }
 

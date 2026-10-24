@@ -5,4 +5,6 @@ import basicSsl from '@vitejs/plugin-basic-ssl'
 // `npm run phone` serves over HTTPS on your Wi-Fi so a phone can use the camera.
 export default defineConfig(({ mode }) => ({
   plugins: [react(), ...(mode === 'phone' ? [basicSsl()] : [])],
+  // Separate dependency cache per mode, so `npm run dev` and `npm run phone` can run side by side.
+  cacheDir: mode === 'phone' ? 'node_modules/.vite-phone' : 'node_modules/.vite',
 }))

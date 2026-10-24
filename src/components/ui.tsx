@@ -100,7 +100,6 @@ export const DEPTHS: [string, string, number][] = [
   ['/', 'today', 0.42],
   ['/scores', 'scores', 0.6],
   ['/insights', 'coach', 0.66],
-  ['/progress', 'log', 0.72],
   ['/profile', 'you', 0.52],
 ]
 export const depthOf = (path: string) => DEPTHS.find((d) => d[0] === path)?.[2] ?? 0.45

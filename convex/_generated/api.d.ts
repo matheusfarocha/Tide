@@ -18,6 +18,7 @@ import type * as devCoach from "../devCoach.js";
 import type * as feel from "../feel.js";
 import type * as history from "../history.js";
 import type * as http from "../http.js";
+import type * as leaderboard from "../leaderboard.js";
 import type * as live from "../live.js";
 import type * as plans from "../plans.js";
 import type * as research from "../research.js";
@@ -44,6 +45,7 @@ declare const fullApi: ApiFromModules<{
   feel: typeof feel;
   history: typeof history;
   http: typeof http;
+  leaderboard: typeof leaderboard;
   live: typeof live;
   plans: typeof plans;
   research: typeof research;
