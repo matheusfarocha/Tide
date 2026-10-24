@@ -60,8 +60,12 @@ in chat only last for that chat). Instructions to paste:
 >    self-awareness score is trending, which times of day go better. **Every claim must list the
 >    sessionIds it is based on.** Don't claim a pattern from fewer than 2 sessions; with only one
 >    session, say what you saw in that one.
-> 3. Optionally GET `researchUrl` + a search term (e.g. `mind wandering`) to pick a technique
->    (breathFocus, bodyScan, breathCounting, openAwareness) you can cite.
+> 3. **Pick the technique from research, never from memory.** GET `researchUrl` + a search term
+>    for the user's weak point (e.g. `mind%20wandering`, `posture`, `sleep`), optionally with
+>    `&technique=breathFocus|bodyScan|breathCounting|openAwareness`. Choose a technique that the
+>    results support and cite 1–3 findings by their `externalId`, each with one plain sentence
+>    saying why it fits this person. Prefer non-clinical studies of healthy adults or students.
+>    Only cite `externalId`s that the search actually returned; Convex drops any it can't find.
 > 4. Design the next session. Session clock in seconds, 0 = eyes closed; the first 60 s are a
 >    baseline with no cues except `settle` at 0. Place one `anchor` cue ~20–30 s before their usual
 >    first drift, and Feel Checks around and after it. Cue text is short, calm, non-clinical.
@@ -75,7 +79,8 @@ in chat only last for that chat). Instructions to paste:
 >   "cues":[{"atSec":0,"kind":"settle","text":"Eyes closed. Three slow breaths to arrive.","onBreath":"exhale"}],
 >   "feelChecks":[{"atSec":150}],"fadingLevel":1,
 >   "intro":"You usually drift around minute four, so I'll check in just before then.",
->   "reasons":[{"claim":"First drift landed between 3:40 and 4:20 in your last three sessions.","sessionIds":["..."]}]}}
+>   "reasons":[{"claim":"First drift landed between 3:40 and 4:20 in your last three sessions.","sessionIds":["..."]}],
+>   "citations":[{"externalId":"MED:25386148","why":"Practising breath counting reduced mind wandering in 4 weeks."}]}}
 > ```
 > `kind` ∈ settle | anchor | posture | wake | close. `onBreath` ∈ inhale | exhale | any.
 

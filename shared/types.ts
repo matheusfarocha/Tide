@@ -119,6 +119,21 @@ export interface PlanReason {
   sessionIds: string[];
 }
 
+/**
+ * A paper from the research library (`techniques`) that this plan is based on.
+ * The coach sends externalId + why; Convex fills citation + url from the library and drops
+ * anything not in it, so a plan can never cite a paper the Actor didn't collect.
+ */
+export interface PlanCitation {
+  /** ResearchFinding.externalId, e.g. "MED:25386148". */
+  externalId: string;
+  /** One plain sentence: why this paper supports this session. */
+  why: string;
+  /** ResearchFinding.citation, e.g. "Levinson et al. (2014). Title. Journal." */
+  citation: string;
+  url: string;
+}
+
 export interface SessionPlan {
   version: 1;
   technique: Technique;
@@ -131,6 +146,8 @@ export interface SessionPlan {
   /** One line spoken at the start, e.g. "Last time you drifted around minute 4." */
   intro: string;
   reasons: PlanReason[];
+  /** Research behind the technique, shown as "Why this session". [] for fixed plans. */
+  citations: PlanCitation[];
 }
 
 // ---------- Session Analyst output ----------

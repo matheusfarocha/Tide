@@ -103,6 +103,13 @@ export function asPlan(x: unknown): SessionPlan | null {
     }))
     .filter((r) => r.claim)
     .slice(0, 10);
+  // Only the ID and the reason are trusted from the agent; applyCoach fills citation + url
+  // from the research library and drops IDs that aren't in it.
+  const citations = (Array.isArray(x.citations) ? x.citations : [])
+    .filter(isObj)
+    .map((c) => ({ externalId: str(c.externalId) ?? "", why: (str(c.why) ?? "").slice(0, 300), citation: "", url: "" }))
+    .filter((c) => c.externalId)
+    .slice(0, 5);
   return {
     version: 1,
     technique: oneOf(TECHNIQUES, x.technique, "breathFocus"),
@@ -112,5 +119,6 @@ export function asPlan(x: unknown): SessionPlan | null {
     fadingLevel: Math.round(clamp(num(x.fadingLevel) ?? 0, 0, 3)),
     intro: (str(x.intro) ?? "").slice(0, 300),
     reasons,
+    citations,
   };
 }

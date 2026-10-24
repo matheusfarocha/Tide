@@ -35,6 +35,7 @@ export function toAppPlan(p: SessionPlan): Plan {
     focusArea: p.intro,
     intro: p.intro,
     reasons: p.reasons.map((r) => r.claim),
+    citations: p.citations.map(({ citation, url, why }) => ({ citation, url, why })),
   }
 }
 

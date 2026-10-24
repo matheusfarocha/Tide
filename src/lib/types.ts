@@ -38,6 +38,8 @@ export interface Plan {
   technique: string
   focusArea: string
   reasons: string[]
+  /** "Why this session": papers from the research library behind the technique. */
+  citations?: { citation: string; url: string; why: string }[]
 }
 
 export interface SessionRecord {

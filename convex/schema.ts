@@ -6,6 +6,7 @@ import {
   calibrationFields,
   feelCheckFields,
   planFields,
+  vPlanCitation,
   readingFields,
   researchFindingFields,
   vCoachRunStatus,
@@ -66,6 +67,8 @@ export default defineSchema({
     coachRunId: v.optional(v.id("coachRuns")),
     createdAt: v.number(),
     ...planFields,
+    /** Optional only because plans saved before citations existed lack it; read via planFromDoc. */
+    citations: v.optional(v.array(vPlanCitation)),
   }).index("by_userId_and_createdAt", ["userId", "createdAt"]),
 
   coachRuns: defineTable({
