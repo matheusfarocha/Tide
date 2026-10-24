@@ -2,6 +2,7 @@ import { httpRouter } from "convex/server";
 import { api, internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 import { env, httpAction } from "./_generated/server";
+import { resultText } from "./coach";
 import type { Technique } from "../shared/types";
 
 const http = httpRouter();
@@ -110,7 +111,6 @@ http.route({
       return Response.json({ error: "invalid JSON" }, { status: 400 });
     }
     const b = (typeof body === "object" && body !== null ? body : {}) as Record<string, unknown>;
-    const result = (typeof b.result === "object" && b.result !== null ? b.result : {}) as Record<string, unknown>;
     if (typeof b.runId !== "string" || typeof b.status !== "string") {
       return Response.json({ error: "runId and status required" }, { status: 400 });
     }
@@ -118,7 +118,7 @@ http.route({
     await ctx.scheduler.runAfter(0, internal.coach.onWebhook, {
       creaoRunId: b.runId,
       status: b.status,
-      text: typeof result.text === "string" ? result.text : null,
+      text: resultText(b.result),
       threadId: typeof b.threadId === "string" ? b.threadId : null,
     });
     return Response.json({ ok: true });

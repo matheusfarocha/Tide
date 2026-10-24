@@ -42,7 +42,7 @@ function agent(stage: Stage) {
 }
 
 /** URLs the agents call as tools. ?key= is checked by convex/http.ts. */
-function agentUrls(sessionId: Id<"sessions">, userId: Id<"users">) {
+export function agentUrls(sessionId: Id<"sessions">, userId: Id<"users">) {
   const site = env.CONVEX_SITE_URL;
   const key = env.TIDE_AGENT_KEY ? `&key=${encodeURIComponent(env.TIDE_AGENT_KEY)}` : "";
   return {
@@ -272,16 +272,22 @@ export const start = internalAction({
 
 type RunResult = { status: string; text: string | null; threadId: string | null };
 
+/**
+ * The agent's reply from a run's `result`. CREAO adds `chatText` when the conversational reply
+ * differs from `text`, so read both; `text` goes last because the last JSON object wins.
+ */
+export function resultText(result: unknown): string | null {
+  if (typeof result === "string") return result;
+  if (typeof result !== "object" || result === null) return null;
+  const r = result as { text?: unknown; chatText?: unknown };
+  const parts = [r.chatText, r.text].filter((s): s is string => typeof s === "string" && s.length > 0);
+  return parts.length ? parts.join("\n\n") : null;
+}
+
 function readRun(body: unknown): RunResult {
   const b = (typeof body === "object" && body !== null ? body : {}) as Record<string, unknown>;
   const data = (typeof b.data === "object" && b.data !== null ? b.data : b) as Record<string, unknown>;
-  const result = data.result ?? data.output;
-  const text =
-    typeof result === "string" ? result
-    : typeof result === "object" && result !== null && typeof (result as { text?: unknown }).text === "string"
-      ? (result as { text: string }).text
-    : typeof data.text === "string" ? data.text
-    : null;
+  const text = resultText(data.result ?? data.output) ?? (typeof data.text === "string" ? data.text : null);
   return {
     status: typeof data.status === "string" ? data.status : "unknown",
     text,
