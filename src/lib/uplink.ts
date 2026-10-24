@@ -85,7 +85,7 @@ export class ReadingQueue {
     const send = this.send
     this.inFlight = send(batch)
       .then(() => { this.queue.splice(0, batch.length); this.failures = 0 })
-      .catch(() => { this.failures++ })
+      .catch((e) => { this.failures++; console.warn(`Convex: ${batch.length} readings not sent (try ${this.failures})`, e) })
       .finally(() => { this.inFlight = null })
     return this.inFlight
   }

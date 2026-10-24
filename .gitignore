@@ -8,3 +8,4 @@ dist/
 *.local
 graphify-out
 tide-*-raw-*.json
+scripts/.tmp/
