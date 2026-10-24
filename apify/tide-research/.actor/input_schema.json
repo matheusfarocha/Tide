@@ -1,0 +1,48 @@
+{
+  "title": "TIDE Research Library input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "queries": {
+      "title": "Search queries",
+      "type": "array",
+      "description": "Europe PMC query syntax. Leave empty to use the built-in TIDE set (breath counting, mind wandering, breath focus, body scan, open monitoring, students and exam stress). Each query also runs on PubMed.",
+      "editor": "stringList"
+    },
+    "maxPerQuery": {
+      "title": "Max papers per query and source",
+      "type": "integer",
+      "description": "How many results to take from each source for each query.",
+      "default": 25,
+      "minimum": 1,
+      "maximum": 100
+    },
+    "openAccessOnly": {
+      "title": "Open access only",
+      "type": "boolean",
+      "description": "Only keep papers anyone can read for free.",
+      "default": true
+    },
+    "includePubMed": {
+      "title": "Also search PubMed",
+      "type": "boolean",
+      "description": "Run each query on PubMed (NCBI E-utilities) too and merge the results.",
+      "default": true
+    },
+    "fromYear": {
+      "title": "Published from year",
+      "type": "integer",
+      "description": "Ignore papers published before this year.",
+      "default": 2005
+    },
+    "seedPmids": {
+      "title": "Always include these PubMed IDs",
+      "type": "array",
+      "description": "Key papers to include no matter what the searches return.",
+      "editor": "stringList",
+      "prefill": [
+        "25386148"
+      ]
+    }
+  }
+}

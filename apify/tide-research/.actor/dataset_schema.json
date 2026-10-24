@@ -1,0 +1,25 @@
+{
+  "actorSpecification": 1,
+  "fields": {},
+  "views": {
+    "overview": {
+      "title": "Findings",
+      "transformation": {
+        "fields": ["technique", "title", "population", "sampleSize", "studyType", "outcome", "citation", "url"]
+      },
+      "display": {
+        "component": "table",
+        "properties": {
+          "technique": { "label": "Technique", "format": "text" },
+          "title": { "label": "Title", "format": "text" },
+          "population": { "label": "Who was studied", "format": "text" },
+          "sampleSize": { "label": "N", "format": "number" },
+          "studyType": { "label": "Study type", "format": "text" },
+          "outcome": { "label": "Key finding", "format": "text" },
+          "citation": { "label": "Citation", "format": "text" },
+          "url": { "label": "Link", "format": "link" }
+        }
+      }
+    }
+  }
+}
