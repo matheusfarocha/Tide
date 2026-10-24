@@ -12,7 +12,7 @@ function useSession(id?: string) {
   return history.find((h) => h.id === id) ?? history[history.length - 1]
 }
 
-const QUALITY: Record<MindState, number> = { focused: 1, settling: 0.7, drowsy: 0.38, drifting: 0.26, restless: 0.15 }
+const QUALITY: Record<MindState, number> = { focused: 1, settling: 0.7, drifting: 0.26, restless: 0.15 }
 
 /** The session drawn as a tide line: high water when focused, low when you drifted. */
 function TideChart({ readings, feelChecks }: { readings: Reading[]; feelChecks: FeelCheck[] }) {
@@ -127,8 +127,7 @@ type Lens = 'all' | 'rate' | 'stillness' | 'posture'
 const MOMENT: Record<MindState, [string, string]> = {
   settling: ['Settling in', 'Learning your baseline.'],
   focused: ['Steady focus', 'Even breathing, body still.'],
-  drifting: ['Mind wandered', 'More movement, uneven breathing.'],
-  drowsy: ['Got sleepy', 'Head dropped, breathing slowed.'],
+  drifting: ['Mind wandered', 'More movement, uneven breathing, or your head dropped.'],
   restless: ['Restless', 'Lots of movement.'],
 }
 

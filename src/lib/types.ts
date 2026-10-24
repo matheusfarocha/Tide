@@ -1,6 +1,6 @@
 // Shared contract between the three lanes. Mirrors the Convex tables in the build plan.
 
-export type MindState = 'settling' | 'focused' | 'drifting' | 'drowsy' | 'restless'
+export type MindState = 'settling' | 'focused' | 'drifting' | 'restless'
 
 /** One reading per second from Person 1's signal module. */
 export interface Reading {
@@ -29,6 +29,10 @@ export interface FeelCheck {
 export interface Plan {
   lengthSec: number
   cueTimes: number[]
+  /** What each cue says, when the coach wrote it. Without it the session uses a default line. */
+  cues?: { atSec: number; text: string }[]
+  /** Spoken at the start, e.g. "Last time you drifted around minute 4." */
+  intro?: string
   feelCheckTimes: number[]
   fadingLevel: number  // 0 = full support, 1 = no cues
   technique: string
@@ -43,6 +47,8 @@ export interface SessionRecord {
   readings: Reading[]
   feelChecks: FeelCheck[]
   calibrationRate?: number
+  /** The Convex session this was recorded as, when the backend is on. */
+  serverId?: string
 }
 
 export interface CoachInsights {

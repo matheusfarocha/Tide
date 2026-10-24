@@ -31,7 +31,6 @@ const MOODS: Record<Mood, { line: RGB; top: RGB; deep: RGB }> = {
   focused:   { line: [127, 231, 255], top: [14, 62, 84],  deep: [3, 10, 20] },
   settling:  { line: [176, 196, 232], top: [24, 42, 76],  deep: [4, 8, 22] },
   drifting:  { line: [255, 181, 112], top: [66, 46, 46],  deep: [12, 8, 12] },
-  drowsy:    { line: [190, 168, 255], top: [42, 34, 88],  deep: [7, 6, 20] },
   restless:  { line: [255, 126, 140], top: [70, 30, 44],  deep: [12, 6, 10] },
 }
 

@@ -6,3 +6,5 @@ dist/
 .env
 .env.*
 *.local
+graphify-out
+tide-*-raw-*.json

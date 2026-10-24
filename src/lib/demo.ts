@@ -88,7 +88,7 @@ export const demoHistory: SessionRecord[] = [
   { id: 's2', date: daysAgo(2, 21, 30), lengthSec: 480, readings: synth(480, 200), feelChecks: [
     { t: 150, answer: 'focused', sensorState: 'focused', match: true },
     { t: 270, answer: 'drifting', sensorState: 'drifting', match: true },
-    { t: 400, answer: 'focused', sensorState: 'drowsy', match: false },
+    { t: 400, answer: 'focused', sensorState: 'drifting', match: false },
   ] },
   { id: 's3', date: daysAgo(1, 8, 5), lengthSec: 600, readings: synth(600, 240), feelChecks: [
     { t: 150, answer: 'focused', sensorState: 'focused', match: true },

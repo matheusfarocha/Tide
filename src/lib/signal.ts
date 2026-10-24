@@ -1,4 +1,14 @@
+import type { Frame, SignalReading } from '../signal/types'
 import type { MindState, Reading } from './types'
+
+export interface ChestInfo {
+  /** Crop window in fractions of the video frame, or null if there is none. */
+  roi: { x: number; y: number; w: number; h: number } | null
+  /** Usable texture in the crop (higher is better); null if no step was measured. */
+  texture: number | null
+  /** Accumulated chest displacement, in image heights (positive = down). */
+  cum: number
+}
 
 /**
  * The interface Person 1's MediaPipe module implements.
@@ -11,6 +21,18 @@ export interface SignalSource {
   onBreath(cb: (value: number) => void): () => void
   /** 1 Hz reading with every score and the state. */
   onReading(cb: (r: Reading) => void): () => void
+  /** Optional: a detected inhale, with its time in seconds. Real source only; the fake has none. */
+  onInhale?(cb: (t: number) => void): () => void
+  /** Optional, real source only: the engine's full per-second reading (confidence, head drop, flutter...). */
+  onRaw?(cb: (r: SignalReading) => void): () => void
+  /** Optional, real source only: every tracked frame, raw from the model and as fed to the engine (smoothed). */
+  onFrame?(cb: (raw: Frame, used: Frame) => void): () => void
+  /** Optional, real source only: chest pixel-motion tracking state (crop window, texture quality, displacement). */
+  onChest?(cb: (c: ChestInfo) => void): () => void
+  /** Optional, real source only: the live camera stream (for a diagnostic preview). */
+  stream?(): MediaStream | null
+  /** Optional: 'real' once camera and models run, 'demo' if it fell back to the fake signal. */
+  mode?(): 'pending' | 'real' | 'demo'
 }
 
 /** Fake breathing person: ~6.5 breaths/min, drifts around minute 4 (scaled for short sessions). */
@@ -26,10 +48,9 @@ export function createFakeSignal(opts: { lengthSec: number; targetRate?: number 
     const m = t / scale
     if (t < Math.min(60, opts.lengthSec * 0.15)) return 'settling'
     if (m > 225 && m < 320) return 'drifting'
-    if (m > 400 && m < 430) return 'drowsy'
     return 'focused'
   }
-  const rateFor = (s: MindState) => opts.targetRate ?? (s === 'drifting' ? 8.8 : s === 'drowsy' ? 5.2 : 6.6)
+  const rateFor = (s: MindState) => opts.targetRate ?? (s === 'drifting' ? 8.8 : 6.6)
 
   return {
     async start() {
@@ -54,7 +75,7 @@ export function createFakeSignal(opts: { lengthSec: number; targetRate?: number 
           rate: +(rateFor(s) + n() * 4).toFixed(1),
           regularity: (s === 'drifting' ? 0.55 : 0.88) + n(),
           stillness: (s === 'drifting' ? 0.6 : s === 'settling' ? 0.75 : 0.92) + n(),
-          posture: (s === 'drowsy' ? 0.55 : 0.9) + n(),
+          posture: (s === 'drifting' ? 0.8 : 0.9) + n(),
           tension: (s === 'drifting' ? 0.45 : 0.2) + n(),
           state: s,
           signalOk: true,

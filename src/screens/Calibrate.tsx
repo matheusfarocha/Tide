@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Icon, Screen, TopBar } from '../components/ui'
-import { createFakeSignal } from '../lib/signal'
+import { createSignal } from '../lib/realSignal'
 import { useStore } from '../lib/store'
 import { useTide, useTideCtl } from '../lib/tide'
 
@@ -16,7 +16,7 @@ export function Calibrate() {
   const { setCalibration } = useStore()
   const tide = useTideCtl()
   useTide(0.42)
-  const signal = useMemo(() => createFakeSignal({ lengthSec: DURATION, targetRate: PACE + (Math.random() - 0.5) * 0.6 }), [])
+  const signal = useMemo(() => createSignal({ lengthSec: DURATION, targetRate: PACE + (Math.random() - 0.5) * 0.6 }), [])
   const [left, setLeft] = useState(DURATION)
   const [rate, setRate] = useState<number | null>(null)
   const [inhale, setInhale] = useState(true)

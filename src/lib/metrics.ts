@@ -3,16 +3,19 @@ import type { BreathTest, FeelCheck, Reading, SessionRecord } from './types'
 const avg = (xs: number[]) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0)
 
 export function focusPct(readings: Reading[]) {
-  const live = readings.filter((r) => r.state !== 'settling')
+  const live = withSignal(readings).filter((r) => r.state !== 'settling')
   if (!live.length) return 0
   return Math.round((live.filter((r) => r.state === 'focused').length / live.length) * 100)
 }
 
-export const avgRate = (rs: Reading[]) => +avg(rs.map((r) => r.rate)).toFixed(1)
+// Readings without a signal (shoulders not found) or still warming up (rate 0) must not count as data.
+const withSignal = (rs: Reading[]) => rs.filter((r) => r.signalOk)
+
+export const avgRate = (rs: Reading[]) => +avg(withSignal(rs).filter((r) => r.rate > 0).map((r) => r.rate)).toFixed(1)
 
 const band = (v: number) => (v > 0.8 ? 'High' : v > 0.6 ? 'Medium' : 'Low')
-export const stillnessLabel = (rs: Reading[]) => band(avg(rs.map((r) => r.stillness)))
-export const postureLabel = (rs: Reading[]) => (avg(rs.map((r) => r.posture)) > 0.75 ? 'Good' : 'Slumping')
+export const stillnessLabel = (rs: Reading[]) => band(avg(withSignal(rs).map((r) => r.stillness)))
+export const postureLabel = (rs: Reading[]) => (avg(withSignal(rs).map((r) => r.posture)) > 0.75 ? 'Good' : 'Slumping')
 
 /** Self-awareness = share of Feel Checks where what you felt matched what the sensors saw. */
 export function selfAwareness(fcs: FeelCheck[]) {

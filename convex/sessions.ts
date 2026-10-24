@@ -159,7 +159,8 @@ export const end = mutation({
   handler: async (ctx, { sessionId }) => {
     const session = await liveSession(ctx, sessionId);
     const user = await ctx.db.get("users", session.userId);
-    const coachOn = user?.coachEnabled ?? false;
+    // The breath-counting test is scored here, not by the coach: don't spend a CREAO run on it.
+    const coachOn = (user?.coachEnabled ?? false) && session.kind !== "breathCount";
     await ctx.db.patch("sessions", sessionId, {
       status: coachOn ? "analyzing" : "ended",
       endedAt: Date.now(),

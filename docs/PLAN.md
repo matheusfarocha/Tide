@@ -27,7 +27,7 @@ You prop your phone on a stand about an arm's length away, close your eyes and m
 - **Posture:** a slumping spine or dropping head signals drowsiness.
 - **Face:** tension in the jaw and brow, and eyelid flutter.
 
-From these signals, TIDE builds a **Calm Map**: a timeline of your session showing when you settled in, when you drifted, when you got sleepy, and when you came back.
+From these signals, TIDE builds a **Calm Map**: a timeline of your session showing when you settled in, when you drifted, and when you came back.
 
 ### How it trains you (the core innovation)
 
@@ -128,7 +128,7 @@ Starting values below are guesses to tune on our own recordings.
 3. Band-pass filter to the breathing range (start around 6–40 breaths per minute).
 4. Each inhale = a peak; breathing rate from the last \~30 seconds; regularity = how much breath-to-breath intervals vary.
 5. Stillness = body motion outside the breathing range; drowsiness = head drop and shoulders slumping; tension = brow and jaw blendshapes.
-6. States (settling, focused, drifting, drowsy, restless) = simple rules against the session baseline, refined by each Feel Check label.
+6. States (settling, focused, drifting, restless) = simple rules against the session baseline, refined by each Feel Check label.
 
 ### Data model (Convex tables)
 
@@ -267,7 +267,7 @@ The Apify team confirmed that using Apify to gather our data counts. They judge 
 | A named community | First-year college students with exam stress who quit meditation apps |
 | A real problem | We live it. Interview about 10 hackers this weekend and quote 2–3 on Devpost |
 | It works: one thing done well, usable on Monday | A deployed link judges can open on their own phone |
-| Thoughtful use of Claude | Claude interprets spoken Feel Check answers ("uh… kind of floaty?" → drifting) and phrases cues in real time. Failure modes we name: misreading calm as drowsy, over-reading noisy data. Every claim cites its sessions, and Claude never gives medical or mental-health advice |
+| Thoughtful use of Claude | Claude interprets spoken Feel Check answers ("uh… kind of floaty?" → drifting) and phrases cues in real time. Failure modes we name: misreading calm as drifting, over-reading noisy data. Every claim cites its sessions, and Claude never gives medical or mental-health advice |
 
 ### Microsoft Grand Prize + Customer Impact Award
 
@@ -339,7 +339,7 @@ Each person also owns the evidence and sponsor items closest to their own code, 
 - [ ] Breath waveform from shoulder and upper-chest motion, filtered to the breathing range
 - [ ] Inhale detection, breathing rate and regularity score
 - [ ] Stillness, posture and head-drop, and face tension (brow, jaw, eyelid) scores
-- [ ] Session baseline from the first 60 seconds; state rules (settling, focused, drifting, drowsy, restless)
+- [ ] Session baseline from the first 60 seconds; state rules (settling, focused, drifting, restless)
 - [ ] A simple signal module Person 2 can call: one reading per second with every score and the state
 - [ ] Paced-breathing check reads about 6 per minute
 - [ ] Breath-counting focus test logic: compare the user's taps with detected breaths

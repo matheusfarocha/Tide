@@ -1,14 +1,103 @@
+import { useMutation, useQuery } from 'convex/react'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { api } from '../../convex/_generated/api'
+import type { FeelCheck as SharedFeelCheck, SignalReading as SharedReading } from '../../shared/types'
 import { CalmMap, Legend, LiveWave, Mark, stateColor } from '../components/ui'
+import { backendOn } from '../lib/backend'
 import { subscribe } from '../lib/live'
 import { fmt } from '../lib/metrics'
 import { useStore } from '../lib/store'
 import { useTide, useTideCtl } from '../lib/tide'
 import type { FeelCheck, Reading } from '../lib/types'
 
-// Laptop screen at the judging table. Live from the phone.
+// Laptop screen at the judging table. With Convex on it's a live query on the phone's session
+// (any device, any network); without it, a BroadcastChannel between tabs of one browser.
+
+interface Board {
+  readings: Reading[]
+  checks: FeelCheck[]
+  asking: boolean
+  status: 'waiting' | 'live' | 'ended'
+  coachOn: boolean
+  setCoachOn(v: boolean): void
+  who?: string
+}
 
 export function CoachView() {
+  return backendOn ? <ServerCoachView /> : <LocalCoachView />
+}
+
+/** A stored reading in the shape the app's charts use. */
+function toAppReading(r: SharedReading): Reading {
+  return {
+    t: Math.round(r.t / 1000),
+    breathPhase: r.wave[r.wave.length - 1] ?? 0,
+    rate: r.breathRate ?? 0,
+    regularity: r.regularity ?? 0,
+    stillness: r.stillness,
+    posture: r.posture,
+    tension: r.tension,
+    state: r.state === null || r.state === 'drowsy' ? (r.state === 'drowsy' ? 'drifting' : 'settling') : r.state,
+    signalOk: r.state !== null,
+  }
+}
+
+function toAppCheck(c: SharedFeelCheck): FeelCheck {
+  const answer = c.answer === 'focused' ? 'focused' : c.answer === null ? (c.source === 'timeout' ? 'none' : 'unsure') : 'drifting'
+  return {
+    t: Math.round(c.t / 1000),
+    spoken: c.transcript ?? undefined,
+    answer,
+    sensorState: c.sensorState === null ? 'settling' : c.sensorState === 'drowsy' ? 'drifting' : c.sensorState,
+    match: c.match === true,
+  }
+}
+
+function ServerCoachView() {
+  const current = useQuery(api.live.current)
+  const sessionId = current?.session._id
+  const shared = useQuery(api.live.recentReadings, sessionId ? { sessionId, n: 600 } : 'skip')
+  const fcs = useQuery(api.live.feelChecks, sessionId ? { sessionId } : 'skip')
+  const setEnabled = useMutation(api.users.setCoachEnabled)
+  // After a session ends live.current returns null; keep showing the last one.
+  const seenSession = useRef(false)
+  if (sessionId) seenSession.current = true
+  const [kept, setKept] = useState<{ readings: Reading[]; checks: FeelCheck[] }>({ readings: [], checks: [] })
+  const readings = shared ? shared.map(toAppReading) : kept.readings
+  const checks = fcs ? fcs.map(toAppCheck) : kept.checks
+  useEffect(() => { if (shared && fcs) setKept({ readings: shared.map(toAppReading), checks: fcs.map(toAppCheck) }) }, [shared, fcs])
+
+  // Each stored reading carries its second of breath wave at 10 Hz: replay it so the wave flows.
+  const breathSubs = useRef(new Set<(v: number) => void>())
+  const tide = useTideCtl()
+  const lastT = useRef(-1)
+  useEffect(() => {
+    const r = shared?.[shared.length - 1]
+    if (!r || r.t === lastT.current) return
+    lastT.current = r.t
+    const timers = r.wave.map((v, i) => window.setTimeout(() => {
+      breathSubs.current.forEach((cb) => cb(v))
+      tide.pushBreath(Math.max(-1, Math.min(1, v)))
+    }, (i * 1000) / Math.max(1, r.wave.length)))
+    return () => timers.forEach(clearTimeout)
+  }, [shared, tide])
+
+  const coachOn = current?.coachEnabled ?? true
+  return (
+    <CoachBoard
+      board={{
+        readings, checks, asking: false,
+        status: current ? 'live' : seenSession.current ? 'ended' : 'waiting',
+        coachOn,
+        setCoachOn: (v) => { if (current) void setEnabled({ userId: current.session.userId, enabled: v }) },
+        who: current?.userName,
+      }}
+      breathSubs={breathSubs.current}
+    />
+  )
+}
+
+function LocalCoachView() {
   const s = useStore()
   const [readings, setReadings] = useState<Reading[]>([])
   const [checks, setChecks] = useState<FeelCheck[]>([])
@@ -16,9 +105,6 @@ export function CoachView() {
   const [status, setStatus] = useState<'waiting' | 'live' | 'ended'>('waiting')
   const breathSubs = useRef(new Set<(v: number) => void>())
   const tide = useTideCtl()
-  const latest = readings[readings.length - 1]
-  // The judge's own breath becomes the tide on the big screen.
-  useTide(0.34, latest?.state ?? 'idle')
 
   useEffect(() => subscribe((m) => {
     if (m.kind === 'start') { setReadings([]); setChecks([]); setStatus('live') }
@@ -29,22 +115,30 @@ export function CoachView() {
     if (m.kind === 'end') setStatus('ended')
   }), [tide])
 
-  const onBreath = useCallback((cb: (v: number) => void) => {
-    breathSubs.current.add(cb)
-    return () => { breathSubs.current.delete(cb) }
-  }, [])
+  return <CoachBoard board={{ readings, checks, asking, status, coachOn: s.coachOn, setCoachOn: s.setCoachOn }} breathSubs={breathSubs.current} />
+}
 
+function CoachBoard({ board, breathSubs }: { board: Board; breathSubs: Set<(v: number) => void> }) {
+  const { readings, checks, asking, status } = board
   const r = readings[readings.length - 1]
+  const lost = r !== undefined && !r.signalOk
+  // The judge's own breath becomes the tide on the big screen.
+  useTide(0.34, r && !lost ? r.state : 'idle')
+
+  const onBreath = useCallback((cb: (v: number) => void) => {
+    breathSubs.add(cb)
+    return () => { breathSubs.delete(cb) }
+  }, [breathSubs])
 
   return (
     <div className="shell shell--wide">
       <main className="coachview">
         <header className="coachview__head">
-          <span className="lockup"><Mark size={30} /><span className="lockup__word" style={{ fontSize: 24 }}>tide</span><span className="fine">· coach view</span></span>
+          <span className="lockup"><Mark size={30} /><span className="lockup__word" style={{ fontSize: 24 }}>tide</span><span className="fine">· coach view{board.who ? ` · ${board.who}` : ''}</span></span>
           <span className={`live-dot ${status}`}>{status === 'live' ? `live · ${fmt(r?.t ?? 0)}` : status === 'ended' ? 'session ended' : 'waiting for phone…'}</span>
           <label className="toggle-inline">
             coach
-            <button role="switch" aria-checked={s.coachOn} className={`switch${s.coachOn ? ' is-on' : ''}`} onClick={() => s.setCoachOn(!s.coachOn)}><i /></button>
+            <button role="switch" aria-checked={board.coachOn} className={`switch${board.coachOn ? ' is-on' : ''}`} onClick={() => board.setCoachOn(!board.coachOn)}><i /></button>
           </label>
         </header>
 
@@ -54,10 +148,10 @@ export function CoachView() {
         </section>
 
         <section className="coachview__stats">
-          <div className="card stat"><span className="muted">Rate</span><strong>{r?.rate.toFixed(1) ?? '–'}<small>/min</small></strong></div>
+          <div className="card stat"><span className="muted">Rate</span><strong>{r && !lost && r.rate > 0 ? r.rate.toFixed(1) : '–'}<small>/min</small></strong></div>
           <div className="card stat"><span className="muted">Stillness</span><strong>{r ? Math.round(r.stillness * 100) : '–'}<small>%</small></strong></div>
           <div className="card stat"><span className="muted">Posture</span><strong>{r ? Math.round(r.posture * 100) : '–'}<small>%</small></strong></div>
-          <div className="card stat"><span className="muted">State</span><strong style={{ color: r ? stateColor[r.state] : undefined }}>{r?.state ?? '–'}</strong></div>
+          <div className="card stat"><span className="muted">State</span><strong style={{ color: r && !lost ? stateColor[r.state] : undefined }}>{!r ? '–' : lost ? 'no signal' : r.state}</strong></div>
         </section>
 
         <section className="card">
@@ -80,7 +174,7 @@ export function CoachView() {
           {!asking && !checks.length && <p className="muted">None yet.</p>}
         </section>
 
-        {!s.coachOn && <div className="card coach-off-banner">Coach off: no next session, no insights, no fading plan. Just a breathing graph.</div>}
+        {!board.coachOn && <div className="card coach-off-banner">Coach off: no next session, no insights, no fading plan. Just a breathing graph.</div>}
       </main>
     </div>
   )

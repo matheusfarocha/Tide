@@ -292,7 +292,7 @@ export function LiveWave({ subscribe, height = 90, seconds = 12, color = '#7fe0f
 
 /* ---------- Calm Map ---------- */
 export const stateColor: Record<MindState, string> = {
-  settling: '#b0c4e8', focused: '#7fe7ff', drifting: '#ffb570', drowsy: '#bea8ff', restless: '#ff7e8c',
+  settling: '#b0c4e8', focused: '#7fe7ff', drifting: '#ffb570', restless: '#ff7e8c',
 }
 
 type Lane = { key: 'rate' | 'stillness' | 'posture' | 'tension'; label: string; color: string; invert?: boolean }
@@ -349,7 +349,7 @@ export function CalmMap({ readings, feelChecks = [], lanes = ['rate', 'stillness
 export function Legend() {
   return (
     <div className="legend">
-      {(['focused', 'drifting', 'drowsy', 'settling'] as MindState[]).map((s) => (
+      {(['focused', 'drifting', 'settling'] as MindState[]).map((s) => (
         <span key={s}><i style={{ background: stateColor[s] }} />{s[0].toUpperCase() + s.slice(1)}</span>
       ))}
       <span><i className="dot dot--ok" />Felt it right</span>

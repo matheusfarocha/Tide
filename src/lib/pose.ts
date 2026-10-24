@@ -7,7 +7,7 @@ export interface Landmark { x: number; y: number; z: number; visibility?: number
 
 export const LM = { nose: 0, lEar: 7, rEar: 8, lShoulder: 11, rShoulder: 12, lElbow: 13, rElbow: 14, lHip: 23, rHip: 24 } as const
 
-const VERSION = '0.10.14' // keep in sync with package.json
+export const VERSION = '0.10.14' // keep in sync with package.json
 let loading: Promise<PoseLandmarker> | null = null
 
 export function loadPose(): Promise<PoseLandmarker> {
@@ -16,7 +16,7 @@ export function loadPose(): Promise<PoseLandmarker> {
       const fileset = await FilesetResolver.forVisionTasks(`https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${VERSION}/wasm`)
       const make = (delegate: 'GPU' | 'CPU') => PoseLandmarker.createFromOptions(fileset, {
         baseOptions: {
-          modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task',
+          modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_full/float16/1/pose_landmarker_full.task',
           delegate,
         },
         runningMode: 'VIDEO',
@@ -40,6 +40,9 @@ export class BreathTracker {
   private armed = true
   private peaks: number[] = []
 
+  /** minDev: the smallest movement (in the units pushed) that still fills the -1..1 range; smaller signals need a smaller value. */
+  constructor(private minDev = 0.0025) {}
+
   push(t: number, y: number) {
     this.s.push({ t, y })
     while (this.s.length && t - this.s[0].t > 30000) this.s.shift()
@@ -58,7 +61,7 @@ export class BreathTracker {
     const mean = recent.reduce((a, p) => a + p.y, 0) / recent.length
     const last = this.s.slice(-4).reduce((a, p) => a + p.y, 0) / Math.min(4, n)
     const window = this.s.filter((p) => now - p.t < 15000)
-    const dev = Math.max(0.0025, ...window.map((p) => Math.abs(p.y - mean)))
+    const dev = Math.max(this.minDev, ...window.map((p) => Math.abs(p.y - mean)))
     return Math.max(-1, Math.min(1, -(last - mean) / dev)) // y grows downward, so invert
   }
 

@@ -16,7 +16,6 @@ A crescent moon over a single wave line (`public/icon.svg`, `<Mark />` in `src/c
 | Shore | `#eaf3f7` | Text, the moon |
 | Tide | `#7fe7ff` | Focus, primary accent, the waterline |
 | Ember | `#ffb570` | Drifting. Only used to mean drift |
-| Dusk | `#bea8ff` | Drowsy |
 | Settle | `#b0c4e8` | Settling in |
 
 State colors always mean a state. The water itself changes to the current one.
