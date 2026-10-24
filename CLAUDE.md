@@ -24,10 +24,35 @@ owns what. Read the relevant section before building any feature.
 - `docs/PLAN.md`: the plan
 
 ## Commands
-(fill in once the scaffold exists, e.g. `npm run dev`, `npx convex dev`)
+- `npm run typecheck`: typechecks `shared/` and `convex/`; fails if
+  `convex/validators.ts` drifts from `shared/types.ts`
+- `npx tsx scripts/fake-session.ts`: sanity-check the fake session data
+- `npx tsx scripts/smoke-convex.ts`: end-to-end test of the Convex backend (dev deployment)
+- `npx convex dev`: keep running in its own terminal; pushes `convex/` on save
+  to the cloud dev deployment `tacit-moose-727` (team `param-mans`, project `tide`)
+- `cd apify/tide-research && npm install && node src/main.js`: run the
+  Research Actor locally (results in its `storage/datasets/default/`)
+- `npx convex run research:refresh`: start the Actor on Apify and import its
+  results into `techniques` (needs `APIFY_TOKEN`, `APIFY_RESEARCH_ACTOR`)
+- Data sources, flow and the clock convention: `docs/DATA.md`
+- App-facing Convex functions: `docs/BACKEND.md`; CREAO agent setup: `docs/CREAO.md`
 
 ## Working style
 - Prefer the simplest thing that works for a live demo by Sunday 8:30 AM.
 - Before a larger feature, propose a short plan and wait for approval.
 - Keep the README sections required by sponsors up to date (CREAO agent IDs
   and run link, Cartesia features used, Convex features used).
+
+<!-- convex-ai-start -->
+
+This project uses [Convex](https://convex.dev) as its backend.
+
+When working on Convex code, **always read
+`convex/_generated/ai/guidelines.md` first** for important guidelines on
+how to correctly use Convex APIs and patterns. The file contains rules that
+override what you may have learned about Convex from training data.
+
+Convex agent skills for common tasks can be installed by running
+`npx convex ai-files install`.
+
+<!-- convex-ai-end -->
