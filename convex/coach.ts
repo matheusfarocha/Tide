@@ -25,7 +25,7 @@ import {
 import { asPlan, asSummary, extractJson } from "./coachParse";
 import { vSessionPlan, vSessionSummary } from "./validators";
 import { sessionFeatureVector } from "../shared/scoring";
-import type { SessionSummary } from "../shared/types";
+import type { PlanCitation, SessionSummary } from "../shared/types";
 
 const CREAO = "https://agent.creao.ai/api/v1";
 const FIRST_POLL_MS = 60_000;
@@ -172,6 +172,23 @@ export const applyAnalyst = internalMutation({
   },
 });
 
+/**
+ * Keep only citations of papers in the research library, with citation text and link taken
+ * from the library, not from the agent. So a plan can't cite a paper the Actor never collected.
+ */
+async function resolveCitations(ctx: MutationCtx, cited: PlanCitation[]): Promise<PlanCitation[]> {
+  const out: PlanCitation[] = [];
+  for (const c of cited) {
+    if (out.some((o) => o.externalId === c.externalId)) continue;
+    const found = await ctx.db
+      .query("techniques")
+      .withIndex("by_externalId", (q) => q.eq("externalId", c.externalId))
+      .unique();
+    if (found) out.push({ externalId: c.externalId, why: c.why, citation: found.citation, url: found.url });
+  }
+  return out;
+}
+
 /** Coach finished: the next session exists. */
 export const applyCoach = internalMutation({
   args: {
@@ -198,6 +215,7 @@ export const applyCoach = internalMutation({
       coachRunId,
       createdAt: Date.now(),
       ...plan,
+      citations: await resolveCitations(ctx, plan.citations),
     });
     await ctx.db.patch("sessions", run.sessionId, { status: "coached" });
     return true;

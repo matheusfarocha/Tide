@@ -3,9 +3,18 @@
  * module and coach exist. fakeReadings() is also the replay-mode fallback.
  */
 
-import type { AttentionState, SessionMs, SessionPlan, SignalReading } from "./types";
+import type { AttentionState, PlanCitation, SessionMs, SessionPlan, SignalReading } from "./types";
 import { BASELINE_SEC, PACED_CHECK_SEC, PACED_RATE_BPM, WAVE_HZ } from "./types";
 import { rateFromBreaths } from "./scoring";
+
+/** The breath-counting validation study. Also in the research library (seed PMID). */
+export const LEVINSON_2014: PlanCitation = {
+  externalId: "MED:25386148",
+  why: "Breath-counting skill goes with less mind wandering, and 4 weeks of practice improved it.",
+  citation:
+    "Levinson et al. (2014). A mind you can count on: validating breath counting as a behavioral measure of mindfulness. Front Psychol.",
+  url: "https://doi.org/10.3389/fpsyg.2014.01202",
+};
 
 /** The only session not designed by the coach: a 5-minute assessment. */
 export const BASELINE_PLAN: SessionPlan = {
@@ -21,6 +30,7 @@ export const BASELINE_PLAN: SessionPlan = {
   fadingLevel: 0,
   intro: "This first session is a baseline. Just breathe and answer when I ask.",
   reasons: [],
+  citations: [],
 };
 
 /** What a coach-designed plan looks like. Use it to build the runner and to prompt the agent. */
@@ -41,6 +51,7 @@ export const EXAMPLE_COACH_PLAN: SessionPlan = {
     { claim: "First drift landed between 3:40 and 4:20 in your last three sessions.", sessionIds: ["s1", "s2", "s3"] },
     { claim: "Posture dropped after minute 5 in two of three sessions.", sessionIds: ["s2", "s3"] },
   ],
+  citations: [LEVINSON_2014],
 };
 
 function mulberry32(seed: number) {

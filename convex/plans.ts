@@ -5,7 +5,7 @@
 
 import type { Doc, Id } from "./_generated/dataModel";
 import type { QueryCtx } from "./_generated/server";
-import { BASELINE_PLAN } from "../shared/fixtures";
+import { BASELINE_PLAN, LEVINSON_2014 } from "../shared/fixtures";
 import type { SessionPlan } from "../shared/types";
 import { BASELINE_SEC } from "../shared/types";
 
@@ -19,6 +19,7 @@ export const COACH_OFF_PLAN: SessionPlan = {
   fadingLevel: 3,
   intro: "",
   reasons: [],
+  citations: [],
 };
 
 /** Breath-counting focus test (Levinson et al., 2014): count breaths, tap on every Nth. */
@@ -40,6 +41,7 @@ export const BREATH_COUNT_PLAN: SessionPlan = {
   fadingLevel: 0,
   intro: "This is the breath-counting test.",
   reasons: [],
+  citations: [LEVINSON_2014],
 };
 
 export function planFromDoc(p: Doc<"plans">): SessionPlan {
@@ -52,6 +54,7 @@ export function planFromDoc(p: Doc<"plans">): SessionPlan {
     fadingLevel: p.fadingLevel,
     intro: p.intro,
     reasons: p.reasons,
+    citations: p.citations ?? [],
   };
 }
 

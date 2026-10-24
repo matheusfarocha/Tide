@@ -82,6 +82,17 @@ export function PlanScreen() {
         <p className="fine">support fades as you improve, until you notice on your own.</p>
       </div>
       {p.reasons.length > 0 && <ul className="reasons">{p.reasons.map((r) => <li key={r}>{r}</li>)}</ul>}
+      {p.citations && p.citations.length > 0 && (
+        <div className="card">
+          <p className="eyebrow">why this session</p>
+          {p.citations.map((c) => (
+            <p key={c.url} className="fine">
+              {c.why}{' '}
+              <a href={c.url} target="_blank" rel="noreferrer">{c.citation}</a>
+            </p>
+          ))}
+        </div>
+      )}
       <div className="spacer" />
       <button className="btn btn--primary" onClick={() => { if (s.soundOn) startOcean(); nav('/setup') }}>begin <Icon name="arrow" size={16} /></button>
     </Screen>

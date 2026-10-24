@@ -87,6 +87,13 @@ export const vTechnique = v.union(
   v.literal("openAwareness"),
 );
 
+export const vPlanCitation = v.object({
+  externalId: v.string(),
+  why: v.string(),
+  citation: v.string(),
+  url: v.string(),
+});
+
 export const planFields = {
   version: v.literal(1),
   technique: vTechnique,
@@ -96,6 +103,7 @@ export const planFields = {
   fadingLevel: v.number(),
   intro: v.string(),
   reasons: v.array(v.object({ claim: v.string(), sessionIds: v.array(v.string()) })),
+  citations: v.array(vPlanCitation),
 };
 export const vSessionPlan = v.object(planFields);
 

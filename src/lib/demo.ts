@@ -42,6 +42,11 @@ export const demoPlan: Plan = {
   technique: 'Breath counting with longer intervals',
   focusArea: 'Posture and breathing consistency',
   reasons: ['You usually drift around minute 4.', 'Your posture slips after minute 6.'],
+  citations: [{
+    citation: 'Levinson et al. (2014). A mind you can count on: validating breath counting as a behavioral measure of mindfulness. Front Psychol.',
+    url: 'https://doi.org/10.3389/fpsyg.2014.01202',
+    why: 'Breath-counting skill goes with less mind wandering, and 4 weeks of practice improved it.',
+  }],
 }
 
 export const demoInsights: CoachInsights = {
