@@ -1,7 +1,7 @@
 import { useQuery } from 'convex/react'
 import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { api } from '../../convex/_generated/api'
-import { backendOn, deleteUser, getOrCreateUser, setCoachEnabled as saveCoachEnabled, toAppPlan, type PacedCheck, type UserId } from './backend'
+import { backendOn, deleteUser, getOrCreateUser, setCoachEnabled as saveCoachEnabled, toAppPlan, type PacedCheck, type SessionId, type UserId } from './backend'
 import { demoBreathTests, demoHistory, demoInsights, demoPlan, firstPlan } from './demo'
 import type { BreathTest, CoachInsights, FeelCheck, Goal, Plan, Reading, SessionRecord } from './types'
 
@@ -9,7 +9,7 @@ import type { BreathTest, CoachInsights, FeelCheck, Goal, Plan, Reading, Session
 // from Convex (ServerSync below); finished sessions are also kept locally so the Calm Map is instant.
 // Without it, everything is local and a fake coach run stands in for CREAO.
 
-type CoachStatus = 'idle' | 'reviewing' | 'ready'
+type CoachStatus = 'idle' | 'reviewing' | 'ready' | 'failed'
 
 interface Store {
   name: string
@@ -20,10 +20,14 @@ interface Store {
   soundOn: boolean
   setSoundOn(v: boolean): void
   plan: Plan
+  /** How long the next session runs: the coach's planned length, or the chosen length for the baseline. */
+  sessionLengthSec: number
   history: SessionRecord[]
   breathTests: BreathTest[]
   insights: CoachInsights | null
   coachStatus: CoachStatus
+  /** The server session whose coach run failed, so it can be retried. */
+  failedSessionId: SessionId | null
   calibrationRate?: number
   /** Convex user, once created. null when the backend is off or unreachable. */
   userId: UserId | null
@@ -57,7 +61,14 @@ function load() {
   }
 }
 
-interface ServerState { plan: Plan | null; status: CoachStatus; insights: CoachInsights | null }
+interface ServerState {
+  plan: Plan | null
+  status: CoachStatus
+  insights: CoachInsights | null
+  failedSessionId: SessionId | null
+  /** The user's coach switch as the server has it: the laptop's coach view can flip it mid-demo. */
+  coachOn: boolean | null
+}
 
 export function StoreProvider({ children }: { children: ReactNode }) {
   const saved = useRef(load()).current
@@ -100,11 +111,15 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const store = useMemo<Store>(() => {
     const fromServer = backendOn && userId !== null && server !== null
+    const coachOnNow = fromServer && server.coachOn !== null ? server.coachOn : coachOn
+    const nextPlan = !coachOnNow ? firstPlan : fromServer && server.plan ? server.plan : plan
     return {
-      name, goal, lengthSec, onboarded, coachOn, soundOn, setSoundOn, history, breathTests, calibrationRate, userId, pacedCheck,
+      name, goal, lengthSec, onboarded, coachOn: coachOnNow, soundOn, setSoundOn, history, breathTests, calibrationRate, userId, pacedCheck,
       insights: fromServer && server.insights ? server.insights : insights,
       coachStatus: fromServer ? server.status : coachStatus,
-      plan: !coachOn ? firstPlan : fromServer && server.plan ? server.plan : plan,
+      failedSessionId: fromServer ? server.failedSessionId : null,
+      plan: nextPlan,
+      sessionLengthSec: coachOnNow && nextPlan.fromCoach ? nextPlan.lengthSec : lengthSec,
       setProfile(p) {
         setName(p.name)
         setGoal(p.goal)
@@ -190,13 +205,18 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 function ServerSync({ userId, onChange }: { userId: UserId; onChange(s: ServerState): void }) {
   const next = useQuery(api.sessions.nextPlan, { userId })
   const hist = useQuery(api.history.forUser, { userId })
+  const user = useQuery(api.users.get, { userId })
 
   useEffect(() => {
-    if (next === undefined || hist === undefined) return
+    if (next === undefined || hist === undefined || user === undefined) return
     const sessions = hist.sessions.filter((s) => s.kind !== 'breathCount')
     const last = sessions[sessions.length - 1]
-    const status: CoachStatus = !last ? 'idle' : last.status === 'analyzing' ? 'reviewing' : last.status === 'coached' ? 'ready' : 'idle'
-    const plan = next.plan && next.source !== 'coachOff' ? toAppPlan(next.plan) : null
+    const status: CoachStatus = !last ? 'idle'
+      : last.status === 'analyzing' ? 'reviewing'
+      : last.status === 'coached' ? 'ready'
+      : last.status === 'coachFailed' ? 'failed'
+      : 'idle'
+    const plan = next.plan && next.source !== 'coachOff' ? { ...toAppPlan(next.plan), fromCoach: next.source === 'coach' } : null
 
     // Insights: the latest coached session's highlights, and the patterns behind the latest plan.
     const coached = [...sessions].reverse().find((s) => s.summary)
@@ -211,8 +231,12 @@ function ServerSync({ userId, onChange }: { userId: UserId; onChange(s: ServerSt
       })),
     } : null
 
-    onChange({ plan, status, insights })
-  }, [next, hist, onChange])
+    onChange({
+      plan, status, insights,
+      failedSessionId: status === 'failed' && last ? last.sessionId : null,
+      coachOn: user ? user.coachEnabled : null,
+    })
+  }, [next, hist, user, onChange])
 
   return null
 }

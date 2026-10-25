@@ -40,6 +40,8 @@ export interface Plan {
   reasons: string[]
   /** "Why this session": papers from the research library behind the technique. */
   citations?: { citation: string; url: string; why: string }[]
+  /** Designed by the CREAO coach, so its length is part of the plan. The baseline uses the chosen length. */
+  fromCoach?: boolean
 }
 
 export interface SessionRecord {

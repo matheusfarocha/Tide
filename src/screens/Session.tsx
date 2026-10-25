@@ -28,7 +28,8 @@ export function Session() {
   const store = useStore()
   const nav = useNavigate()
   const tide = useTideCtl()
-  const length = store.lengthSec
+  // The coach's plan sets its own length; the first (baseline) session uses the length chosen at onboarding.
+  const length = store.sessionLengthSec
   const plan = store.plan
   const scale = length / plan.lengthSec
   const feelTimes = useMemo(() => plan.feelCheckTimes.map((t) => Math.round(t * scale)).filter((t) => t > 10 && t < length - 5), [plan, scale, length])
@@ -64,6 +65,8 @@ export function Session() {
   const [result, setResult] = useState<FeelCheck | null>(null)
   const [cue, setCue] = useState<string | null>(null)
   const [hud, setHud] = useState(true)
+  /** Set when the server refused this session, so it is only kept on this phone. */
+  const [refused, setRefused] = useState<string | null>(null)
   const hudTimer = useRef(0)
   pausedRef.current = paused
 
@@ -152,6 +155,7 @@ export function Session() {
     earlyReadings.current.forEach((r) => link.addReading(r))
     earlyReadings.current = []
     linkRef.current = link
+    void link.ready().then((id) => { if (!id) setRefused(link.error ?? "TIDE's server didn't accept this session.") })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [store.userId])
 
@@ -219,6 +223,11 @@ export function Session() {
     store.setSoundOn(!seaOn)
   }
 
+  // Say so when nothing reaches the server, instead of quietly running on the phone only.
+  const notSaved = !backendOn ? null : refused ?? (!store.userId && elapsed >= 6 ? "Can't reach TIDE's server." : null)
+  // The camera couldn't start, so the app is running a simulated breath: never pass that off as real.
+  const simulated = signal.mode?.() === 'demo'
+
   const cueLine = cue ?? (paused ? 'Paused.' : lost ? 'Finding you… sit back in view of the camera.' : elapsed < 8 ? 'Close your eyes.' : phase === 'in' ? 'in…' : 'out…')
 
   return (
@@ -230,6 +239,8 @@ export function Session() {
           : <span className="session__state" style={{ color: `var(--st-${reading.state})` }}><i style={{ background: 'currentColor' }} />{STATE_TEXT[reading.state]}</span>)}
       </div>
 
+      {simulated && <p className="session__unsaved" role="status">Camera not available · this is a simulated breath, not yours.</p>}
+      {notSaved && <p className="session__unsaved" role="status">Not saved · {notSaved} This session stays on this phone only.</p>}
       <p className="session__cue" onClick={showHud} aria-live="polite">{cueLine}</p>
       <p className="fine">{store.coachOn ? plan.technique.toLowerCase() : 'free session'}</p>
 
