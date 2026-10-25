@@ -180,7 +180,7 @@ signal) is never saved.
 | Check | Result so far |
 | --- | --- |
 | Paced-breathing check (true rate 6 breaths/min) | Mean reading **5.29** breaths/min over **2** real runs (SD 0.07); mean absolute error **0.71**; 2/2 within 1 breath/min |
-| Breath detection vs. a teammate tapping every inhale | Not yet recorded. Tool: `/debug`, "tap-label recorder" (precision, recall and timing offset via `matchBreaths` in `shared/scoring.ts`) |
+| Breath detection vs. a teammate tapping every inhale | Not recorded this weekend; `matchBreaths` in `shared/scoring.ts` and `accuracy:summary` are ready to score such recordings |
 | Self-awareness across weekend sessions | Too few sessions to show a trend yet; weekend data only, labelled as such |
 
 These are small samples from one weekend, not a validation study.

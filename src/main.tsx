@@ -11,8 +11,6 @@ import { Scores } from './screens/Scores'
 import { Calibrate } from './screens/Calibrate'
 import { Insights, PlanScreen, Profile } from './screens/Coach'
 import { CoachView } from './screens/CoachView'
-import { FeatureTest } from './screens/FeatureTest'
-import { Debug } from './screens/Debug'
 import { Replay } from './screens/Replay'
 import { Home } from './screens/Home'
 import { Onboarding } from './screens/Onboarding'
@@ -48,9 +46,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path="/coach" element={<CoachView />} />
           <Route path="/replay" element={<Replay />} />
           <Route path="/scores" element={<Scores />} />
-          <Route path="/debug" element={<Debug />} />
-          <Route path="/debug/features" element={<FeatureTest />} />
-          <Route path="/debug/camera" element={<Navigate to="/debug/features" replace />} />
           <Route path="/breath-test" element={<BreathTest />} />
         </Routes>
       </BrowserRouter>
