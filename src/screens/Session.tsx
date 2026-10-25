@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { ChestPanel, LiveBody } from '../components/LiveBody'
 import { Screen } from '../components/ui'
 import { backendOn, SessionLink } from '../lib/backend'
 import { publish } from '../lib/live'
@@ -7,7 +8,7 @@ import { fmt } from '../lib/metrics'
 import { startOcean, stopOcean } from '../lib/ocean'
 import { createSignal } from '../lib/realSignal'
 import { useStore } from '../lib/store'
-import { useTide, useTideCtl } from '../lib/tide'
+import { useSheerTide, useTide, useTideCtl } from '../lib/tide'
 import type { FeelAnswer, FeelCheck, MindState, Reading } from '../lib/types'
 import { toSharedReading } from '../lib/uplink'
 import { interpret, listen, speak } from '../lib/voice'
@@ -69,6 +70,7 @@ export function Session() {
 
   const lost = reading !== null && !reading.signalOk
   useTide(0.5, reading && !lost ? reading.state : 'settling')
+  useSheerTide()
 
   const showHud = useCallback(() => {
     setHud(true)
@@ -223,6 +225,7 @@ export function Session() {
 
   return (
     <Screen className="session">
+      <LiveBody signal={signal} />
       <div className="session__hud" onClick={showHud}>
         <span>{fmt(elapsed)} / {fmt(length)}</span>
         {reading && (lost
@@ -234,6 +237,8 @@ export function Session() {
       <p className="fine">{store.coachOn ? plan.technique.toLowerCase() : 'free session'}</p>
 
       <div className="spacer" onClick={showHud} />
+
+      <ChestPanel signal={signal} rate={reading && !lost && reading.rate > 0 ? reading.rate : null} />
 
       <div className="metrics" onClick={showHud}>
         <div><span>breath</span><strong>{reading && !lost && reading.rate > 0 ? reading.rate.toFixed(1) : '—'}<small>/m</small></strong></div>

@@ -36,6 +36,21 @@ small { font-size: .8em; }
 
 .tide-canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; z-index: 0; }
 
+/* Live camera behind a breathing screen: video, chest overlay, then the sheer tide (z 0) on top. */
+.livebody { position: fixed; inset: 0; z-index: -1; background: #03050c; overflow: hidden; }
+.livebody__video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); opacity: 0; transition: opacity 1.2s ease; filter: saturate(.8) contrast(1.05); }
+.livebody.has-video .livebody__video { opacity: 1; }
+.livebody__overlay { position: absolute; inset: 0; width: 100%; height: 100%; }
+.livebody__shade { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(rgba(3, 5, 12, .62), rgba(3, 5, 12, .12) 26%, rgba(3, 5, 12, 0) 50%, rgba(3, 5, 12, .5) 100%); }
+.chest-panel { padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; border-radius: 22px; border: 1px solid transparent;
+  background: linear-gradient(160deg, rgba(10, 18, 32, .55), rgba(10, 18, 32, .3)) padding-box, var(--glass-rim) border-box;
+  backdrop-filter: blur(22px) saturate(170%); -webkit-backdrop-filter: blur(22px) saturate(170%); box-shadow: var(--glass-shadow); }
+.chest-panel__head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.chest-panel__head .eyebrow { margin: 0; }
+.chest-panel__phase { font-family: var(--serif); font-style: italic; font-size: 20px; color: var(--ink-2); transition: color .3s; }
+.chest-panel__phase.is-in { color: var(--glow); }
+.chest-panel__wave { width: 100%; height: 40px; display: block; }
+
 /* ---------- Layout ---------- */
 .shell { position: relative; z-index: 1; min-height: 100%; display: flex; justify-content: center; }
 .screen { position: relative; width: 100%; max-width: 460px; min-height: 100dvh; padding: max(18px, env(safe-area-inset-top)) 20px calc(26px + env(safe-area-inset-bottom));

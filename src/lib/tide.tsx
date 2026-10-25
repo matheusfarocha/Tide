@@ -16,11 +16,12 @@ interface TideCtl {
   setCalm(on: boolean): void      // flatten the sea (Feel Check)
   pulse(): void                   // a tide sweep, used on page changes
   ripple(x?: number, strength?: number): void
+  setSheer(on: boolean): void     // see-through sky and water, for screens with live video behind
 }
 
 interface TideState {
   level: number; mood: Mood; breath: number; lastPush: number; surge: number; calm: boolean
-  pulseAt: number; ripples: { x: number; t0: number; s: number }[]; tilt: number
+  pulseAt: number; ripples: { x: number; t0: number; s: number }[]; tilt: number; sheer: boolean
 }
 
 const Ctx = createContext<TideCtl | null>(null)
@@ -45,7 +46,7 @@ export function requestTilt() {
 }
 
 export function TideProvider({ children }: { children: ReactNode }) {
-  const state = useRef<TideState>({ level: 0.4, mood: 'idle', breath: 0, lastPush: -1e9, surge: 0, calm: false, pulseAt: -1e9, ripples: [], tilt: 0 })
+  const state = useRef<TideState>({ level: 0.4, mood: 'idle', breath: 0, lastPush: -1e9, surge: 0, calm: false, pulseAt: -1e9, ripples: [], tilt: 0, sheer: false })
   const ctl = useMemo<TideCtl>(() => ({
     setLevel: (l) => { state.current.level = l },
     setMood: (m) => { state.current.mood = m },
@@ -53,6 +54,7 @@ export function TideProvider({ children }: { children: ReactNode }) {
     surge: (v) => { state.current.surge = v },
     setCalm: (on) => { state.current.calm = on },
     pulse: () => { state.current.pulseAt = performance.now() },
+    setSheer: (on) => { state.current.sheer = on },
     ripple: (x = window.innerWidth / 2, s = 1) => {
       const r = state.current.ripples
       r.push({ x, t0: performance.now(), s })
@@ -82,6 +84,12 @@ export function useTideCtl() {
   return c
 }
 
+/** Make the tide see-through while this screen is mounted (live camera behind it). */
+export function useSheerTide() {
+  const t = useTideCtl()
+  useEffect(() => { t.setSheer(true); return () => t.setSheer(false) }, [t])
+}
+
 /** Declare this screen's water level and mood. */
 export function useTide(level: number, mood: Mood = 'idle') {
   const t = useTideCtl()
@@ -102,7 +110,7 @@ function TideCanvas({ state }: { state: React.MutableRefObject<TideState> }) {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     let raf = 0
     let level = state.current.level
-    let breath = 0, surge = 0, calm = 0, tilt = 0
+    let breath = 0, surge = 0, calm = 0, tilt = 0, sheer = 0
     let col = MOODS.idle
     let lastSound = 0
 
@@ -122,6 +130,8 @@ function TideCanvas({ state }: { state: React.MutableRefObject<TideState> }) {
       surge += (s.surge - surge) * 0.12
       calm += ((s.calm ? 1 : 0) - calm) * 0.05
       tilt += (s.tilt - tilt) * 0.06
+      sheer += ((s.sheer ? 1 : 0) - sheer) * 0.06
+      const clear = 1 - sheer * 0.72 // how much of the water's fill remains in sheer mode
       const pAge = (ms - s.pulseAt) / 1100
       const pulse = pAge >= 0 && pAge < 1 ? Math.sin(Math.PI * pAge) * 0.16 : 0
       const m = MOODS[s.mood]
@@ -131,12 +141,15 @@ function TideCanvas({ state }: { state: React.MutableRefObject<TideState> }) {
       if (ms - lastSound > 120) { setOceanBreath(breath); lastSound = ms }
       s.ripples = s.ripples.filter((r) => ms - r.t0 < 4500)
 
-      // Sky, stars, moon
+      // Sky, stars, moon. In sheer mode the sky thins to a faint tint so live video shows through.
+      g.clearRect(0, 0, W, H)
+      g.globalAlpha = 1 - sheer * 0.9
       const sky = g.createLinearGradient(0, 0, 0, H)
       sky.addColorStop(0, '#02040a')
       sky.addColorStop(1, rgb(mix([10, 16, 32], col.top, 0.3)))
       g.fillStyle = sky
       g.fillRect(0, 0, W, H)
+      g.globalAlpha = 1 - sheer * 0.7
       for (const st of STARS) {
         g.fillStyle = `rgba(220,235,255,${0.1 + 0.2 * (0.5 + 0.5 * Math.sin(t * 0.7 + st.p))})`
         g.beginPath(); g.arc(st.x * W, st.y * H, st.r, 0, 7); g.fill()
@@ -151,6 +164,7 @@ function TideCanvas({ state }: { state: React.MutableRefObject<TideState> }) {
       g.beginPath(); g.arc(mx, my, 13, 0, 7); g.fill()
       g.fillStyle = 'rgba(2,4,10,.55)'
       g.beginPath(); g.arc(mx + 5, my - 3, 12, 0, 7); g.fill()
+      g.globalAlpha = 1
 
       const base = H * (1 - Math.min(1.05, level + surge * 0.55 + pulse)) - breath * H * 0.04
       const wild = (1 - calm * 0.85) * (1 + Math.abs(breath) * 0.25) * (s.mood === 'drifting' || s.mood === 'restless' ? 1.5 : 1)
@@ -185,8 +199,8 @@ function TideCanvas({ state }: { state: React.MutableRefObject<TideState> }) {
         g.closePath()
         const top = base + L.off - 20
         const fill = g.createLinearGradient(0, top, 0, H)
-        fill.addColorStop(0, rgb(col.top, L.a))
-        fill.addColorStop(1, rgb(col.deep, Math.min(1, L.a + 0.2)))
+        fill.addColorStop(0, rgb(col.top, L.a * clear))
+        fill.addColorStop(1, rgb(col.deep, Math.min(1, L.a + 0.2) * clear))
         g.fillStyle = fill
         g.fill()
         if (L !== front) {
