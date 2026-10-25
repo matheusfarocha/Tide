@@ -16,7 +16,7 @@ Meditation is a skill with no scoreboard. TIDE gives it one, and then teaches yo
 
 The hardest part of meditation is invisible. Your mind drifts off, and you don't notice for minutes. Beginners can't tell whether they're focused, distracted or half-asleep. No one gives them feedback, so they never improve and they quit. Meditation apps make it worse because they play the same script to everyone, without knowing anything about the person listening.
 
-**Named community:** first-year college students dealing with exam stress who tried a meditation app and gave up. That's us, so we test it on each other all weekend.
+**Named community:** first-year college students dealing with exam stress who tried a meditation app and gave up. We test it on ourselves all weekend.
 
 ### Proposed Solution
 
@@ -265,7 +265,7 @@ The Apify team confirmed that using Apify to gather our data counts. They judge 
 | Their criterion | How TIDE shows it |
 | --- | --- |
 | A named community | First-year college students with exam stress who quit meditation apps |
-| A real problem | We live it. Interview about 10 hackers this weekend and quote 2–3 on Devpost |
+| A real problem | Interview about 10 hackers this weekend and quote 2–3 on Devpost |
 | It works: one thing done well, usable on Monday | A deployed link judges can open on their own phone |
 | Thoughtful use of Claude | Claude interprets spoken Feel Check answers ("uh… kind of floaty?" → drifting) and phrases cues in real time. Failure modes we name: misreading calm as drifting, over-reading noisy data. Every claim cites its sessions, and Claude never gives medical or mental-health advice |
 
@@ -467,7 +467,7 @@ Add the matching line when a sponsor judge visits.
 - **Convex:** "Convex is the nervous system: every breath streams through it, and this coach view is a live query."
 - **Mana:** "Here's the Mana chat where we designed the state model; it changed how we detect drifting."
 - **CREAO:** "CREAO is TIDE's coach. Every session after the first was designed by these two agents. Here's the run."
-- **Anthropic:** "Built for first-year students who quit meditation apps, which is us. Claude reads what you say with your eyes closed, and here's where it could get it wrong."
+- **Anthropic:** "Built for first-year students who quit meditation apps. Claude reads what you say with your eyes closed, and here's where it could get it wrong."
 - **Microsoft:** "Here's the number: breath-count error of X, and the self-awareness gap shrinking from Y to Z."
 - **Cartesia:** "Your eyes are closed, so voice is the only interface. Sonic speaks on your breath; Ink hears your answer in this noisy hall."
 - **Apify:** "Every session the coach designs is grounded in research our Actor collected. Here's the citation behind this one."
