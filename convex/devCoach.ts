@@ -244,3 +244,51 @@ export const checkReply = internalQuery({
     };
   },
 });
+
+/**
+ * What CREAO reports for our recent real runs (credits used, timing), for the README's cost
+ * estimate. Reads run status with the app keys; prints no keys.  npx convex run devCoach:runUsage
+ */
+export const runUsage = internalAction({
+  args: { limit: v.optional(v.number()) },
+  returns: v.any(),
+  handler: async (ctx, { limit }) => {
+    const runs: { stage: string | null; creaoRunId: string }[] = await ctx.runQuery(internal.devCoach.recentRuns, { limit: limit ?? 8 });
+    const out = [];
+    for (const r of runs) {
+      const appId = r.stage === "analyst" ? env.CREAO_ANALYST_APP_ID : env.CREAO_COACH_APP_ID;
+      const key = r.stage === "analyst" ? env.CREAO_ANALYST_API_KEY : env.CREAO_COACH_API_KEY;
+      if (!appId || !key) continue;
+      const res = await fetch(`https://agent.creao.ai/api/v1/apps/${appId}/runs/${r.creaoRunId}`, { headers: { authorization: `Bearer ${key}` } });
+      const body = (await res.json()) as Record<string, unknown>;
+      const { result: _r, ...meta } = body; // drop the reply text
+      out.push({ stage: r.stage, status: res.status, meta });
+    }
+    return out;
+  },
+});
+
+export const recentRuns = internalQuery({
+  args: { limit: v.number() },
+  returns: v.array(v.object({ stage: v.union(v.string(), v.null()), creaoRunId: v.string() })),
+  handler: async (ctx, { limit }) => {
+    const rows = await ctx.db.query("coachRuns").order("desc").take(100);
+    return rows
+      .filter((r) => r.creaoRunId && !r.creaoRunId.startsWith("phase1-") && r.status === "succeeded")
+      .slice(0, limit)
+      .map((r) => ({ stage: r.stage ?? null, creaoRunId: r.creaoRunId! }));
+  },
+});
+
+/** Cost of the latest Research Actor runs on Apify (for the README's cost estimate). */
+export const researchRunCost = internalAction({
+  args: {},
+  returns: v.any(),
+  handler: async () => {
+    const res = await fetch(`https://api.apify.com/v2/acts/${encodeURIComponent(env.APIFY_RESEARCH_ACTOR ?? "")}/runs?desc=true&limit=3`, {
+      headers: { authorization: `Bearer ${env.APIFY_TOKEN}` },
+    });
+    const body = (await res.json()) as { data?: { items?: { id: string; status: string; usageTotalUsd?: number; stats?: { runTimeSecs?: number } }[] } };
+    return (body.data?.items ?? []).map((r) => ({ id: r.id, status: r.status, usd: r.usageTotalUsd, secs: r.stats?.runTimeSecs }));
+  },
+});
