@@ -2,7 +2,7 @@ import { useAction, useQuery } from 'convex/react'
 import { useEffect, useState } from 'react'
 import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { CalmMap, Counter, Icon, Legend, Screen, Tabs, TopBar, stateColor } from '../components/ui'
-import { avgRate, firstDriftSec, fmt, focusPct, moments, postureLabel, selfAwareness, stillnessLabel } from '../lib/metrics'
+import { avgRate, firstDriftSec, fmt, focusPct, moments, postureLabel, scorable, selfAwareness, stillnessLabel } from '../lib/metrics'
 import { api } from '../../convex/_generated/api'
 import { backendOn, type SessionId } from '../lib/backend'
 import { useStore } from '../lib/store'
@@ -54,7 +54,7 @@ function TideChart({ readings, feelChecks }: { readings: Reading[]; feelChecks: 
       {feelChecks.map((f, i) => (
         <g key={i}>
           <line x1={x(f.t)} x2={x(f.t)} y1={10} y2={bottom} stroke="rgba(234,243,247,.25)" strokeDasharray="2 3" vectorEffect="non-scaling-stroke" />
-          <circle cx={x(f.t)} cy={10} r={3} fill={f.answer === 'none' ? 'rgba(234,243,247,.4)' : f.match ? 'var(--ok)' : 'var(--miss)'} />
+          <circle cx={x(f.t)} cy={10} r={3} fill={f.answer === 'none' || f.unscored ? 'rgba(234,243,247,.4)' : f.match ? 'var(--ok)' : 'var(--miss)'} />
         </g>
       ))}
       <text x={2} y={H - 4} className="tidechart__lbl">0:00</text>
@@ -72,7 +72,7 @@ export function Results() {
   if (!rec) return <Navigate to="/" replace />
   const focus = focusPct(rec.readings)
   const drift = firstDriftSec(rec.readings)
-  const answered = rec.feelChecks.filter((f) => f.answer === 'focused' || f.answer === 'drifting')
+  const answered = rec.feelChecks.filter(scorable)
 
   return (
     <Screen>
@@ -102,7 +102,7 @@ export function Results() {
               <span>{fmt(f.t)}</span>
               <span>felt <b>{f.answer === 'none' ? 'quiet' : f.answer}</b></span>
               <span>saw <b>{f.sensorState}</b></span>
-              {f.answer === 'none' ? <span>–</span> : <span className={f.match ? 'ok' : 'miss'}>{f.match ? '✓' : '✕'}</span>}
+              {f.answer === 'none' || f.unscored ? <span className="muted">–</span> : <span className={f.match ? 'ok' : 'miss'}>{f.match ? '✓' : '✕'}</span>}
             </div>
           ))}
         </div>

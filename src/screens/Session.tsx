@@ -211,6 +211,7 @@ export function Session() {
       fc.answer = fromServerAnswer(res.answer) ?? (spoken ? 'unsure' : fc.answer)
       fc.sensorState = fromServerState(res.sensorState) ?? fc.sensorState
       fc.match = res.match === true
+      fc.unscored = fc.answer !== 'none' && fc.answer !== 'unsure' && res.match === null
     }
     feelChecks.current.push(fc)
     publish({ kind: 'feel', f: fc })
@@ -338,7 +339,7 @@ export function Session() {
                 <div className="verdict__line verdict__line--saw" style={{ color: `var(--st-${result.sensorState})` }}>
                   <i /><span>tide saw · <b>{result.sensorState}</b></span>
                 </div>
-                <p className={`verdict__tag ${result.answer === 'none' ? 'muted' : result.match ? 'ok' : 'miss'}`}>{result.match ? 'You caught it.' : result.answer === 'none' ? 'Logged as quiet.' : 'Not quite. Keep noticing.'}</p>
+                <p className={`verdict__tag ${result.answer === 'none' ? 'muted' : result.match ? 'ok' : 'miss'}`}>{result.match ? 'You caught it.' : result.answer === 'none' ? 'Logged as quiet.' : result.unscored ? 'Noted. Too early to score.' : 'Not quite. Keep noticing.'}</p>
               </div>
               <span />
             </>

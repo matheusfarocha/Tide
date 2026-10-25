@@ -12,13 +12,16 @@ export const LINES = {
   miss: 'Thanks. Keep noticing.',
   quiet: "That's okay. Back to the breath.",
   unclear: 'No problem. Back to the breath.',
+  noted: 'Noted. Back to the breath.',
   closing: "That's the end of your session. When you're ready, gently open your eyes.",
 }
 
 /** What TIDE says after a Feel Check, so the user hears the result with their eyes still closed. */
-export function feedbackLine(fc: Pick<FeelCheck, 'answer' | 'match'>): string {
+export function feedbackLine(fc: Pick<FeelCheck, 'answer' | 'match' | 'unscored'>): string {
   if (fc.answer === 'none') return LINES.quiet
   if (fc.answer === 'unsure') return LINES.unclear
+  // Too early to compare (the sensors were still settling): neither praise nor correction.
+  if (fc.unscored) return LINES.noted
   return fc.match ? LINES.caught : LINES.miss
 }
 

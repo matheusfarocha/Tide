@@ -180,6 +180,10 @@ small { font-size: .8em; }
 .coach-card--ready { color: var(--glow); }
 .coach-card--ready strong { color: var(--ink); }
 .coach-card--failed { color: var(--miss); align-items: flex-start; }
+.replay-banner { border-color: var(--glow); line-height: 1.5; }
+.replay-banner .link { margin-left: 6px; }
+.replay-notes { margin: 8px 0 10px; padding-left: 18px; line-height: 1.5; }
+.replay-notes li { margin: 6px 0; }
 .coach-card--failed strong { color: var(--ink); }
 .coach-card--failed .btn { margin-top: 10px; width: auto; }
 .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--glow); flex: none; animation: pulse 1.6s ease-in-out infinite; }

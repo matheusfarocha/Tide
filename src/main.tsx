@@ -13,6 +13,7 @@ import { Insights, PlanScreen, Profile } from './screens/Coach'
 import { CoachView } from './screens/CoachView'
 import { FeatureTest } from './screens/FeatureTest'
 import { Debug } from './screens/Debug'
+import { Replay } from './screens/Replay'
 import { Home } from './screens/Home'
 import { Onboarding } from './screens/Onboarding'
 import { CalmMapScreen, Results } from './screens/Results'
@@ -45,6 +46,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path="/progress" element={<Navigate to="/scores" replace />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/coach" element={<CoachView />} />
+          <Route path="/replay" element={<Replay />} />
           <Route path="/scores" element={<Scores />} />
           <Route path="/debug" element={<Debug />} />
           <Route path="/debug/features" element={<FeatureTest />} />

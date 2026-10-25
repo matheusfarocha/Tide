@@ -23,6 +23,8 @@ export interface FeelCheck {
   answer: FeelAnswer
   sensorState: MindState
   match: boolean
+  /** The server couldn't score it (e.g. the sensors still read "settling"): neither right nor wrong. */
+  unscored?: boolean
 }
 
 /** Next-session plan designed by the CREAO coach (Person 3). Times are in seconds. */
