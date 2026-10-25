@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from 'convex/react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
+import { Link } from 'react-router-dom'
 import { api } from '../../convex/_generated/api'
 import type { FeelCheck as SharedFeelCheck, SignalReading as SharedReading } from '../../shared/types'
 import { CalmMap, Legend, LiveWave, Mark, stateColor } from '../components/ui'
@@ -13,7 +14,7 @@ import type { FeelCheck, Reading } from '../lib/types'
 // Laptop screen at the judging table. With Convex on it's a live query on the phone's session
 // (any device, any network); without it, a BroadcastChannel between tabs of one browser.
 
-interface Board {
+export interface Board {
   readings: Reading[]
   checks: FeelCheck[]
   asking: boolean
@@ -21,6 +22,8 @@ interface Board {
   coachOn: boolean
   setCoachOn(v: boolean): void
   who?: string
+  /** Replay mode: replaces the live status and adds a banner and an end section. */
+  replay?: { status: string; banner: ReactNode; after?: ReactNode }
 }
 
 export function CoachView() {
@@ -28,7 +31,7 @@ export function CoachView() {
 }
 
 /** A stored reading in the shape the app's charts use. */
-function toAppReading(r: SharedReading): Reading {
+export function toAppReading(r: SharedReading): Reading {
   return {
     t: Math.round(r.t / 1000),
     breathPhase: r.wave[r.wave.length - 1] ?? 0,
@@ -42,7 +45,7 @@ function toAppReading(r: SharedReading): Reading {
   }
 }
 
-function toAppCheck(c: SharedFeelCheck): FeelCheck {
+export function toAppCheck(c: SharedFeelCheck): FeelCheck {
   const answer = c.answer === 'focused' ? 'focused' : c.answer === null ? (c.source === 'timeout' ? 'none' : 'unsure') : 'drifting'
   return {
     t: Math.round(c.t / 1000),
@@ -50,6 +53,7 @@ function toAppCheck(c: SharedFeelCheck): FeelCheck {
     answer,
     sensorState: c.sensorState === null ? 'settling' : c.sensorState === 'drowsy' ? 'drifting' : c.sensorState,
     match: c.match === true,
+    unscored: c.answer !== null && c.match === null,
   }
 }
 
@@ -118,7 +122,7 @@ function LocalCoachView() {
   return <CoachBoard board={{ readings, checks, asking, status, coachOn: s.coachOn, setCoachOn: s.setCoachOn }} breathSubs={breathSubs.current} />
 }
 
-function CoachBoard({ board, breathSubs }: { board: Board; breathSubs: Set<(v: number) => void> }) {
+export function CoachBoard({ board, breathSubs }: { board: Board; breathSubs: Set<(v: number) => void> }) {
   const { readings, checks, asking, status } = board
   const r = readings[readings.length - 1]
   const lost = r !== undefined && !r.signalOk
@@ -135,12 +139,15 @@ function CoachBoard({ board, breathSubs }: { board: Board; breathSubs: Set<(v: n
       <main className="coachview">
         <header className="coachview__head">
           <span className="lockup"><Mark size={30} /><span className="lockup__word" style={{ fontSize: 24 }}>tide</span><span className="fine">· coach view{board.who ? ` · ${board.who}` : ''}</span></span>
-          <span className={`live-dot ${status}`}>{status === 'live' ? `live · ${fmt(r?.t ?? 0)}` : status === 'ended' ? 'session ended' : 'waiting for phone…'}</span>
+          <span className={`live-dot ${status}`}>{board.replay ? board.replay.status : status === 'live' ? `live · ${fmt(r?.t ?? 0)}` : status === 'ended' ? 'session ended' : 'waiting for phone…'}</span>
           <label className="toggle-inline">
             coach
             <button role="switch" aria-checked={board.coachOn} className={`switch${board.coachOn ? ' is-on' : ''}`} onClick={() => board.setCoachOn(!board.coachOn)}><i /></button>
           </label>
         </header>
+
+        {board.replay?.banner}
+        {!board.replay && status === 'waiting' && <p className="fine">No connection at the table? <Link to="/replay">Play a recorded session →</Link></p>}
 
         <section className="card coachview__wave">
           <p className="eyebrow">Breathing</p>
@@ -168,13 +175,14 @@ function CoachBoard({ board, breathSubs }: { board: Board; breathSubs: Set<(v: n
               <span className="muted">{fmt(c.t)}</span>
               <span>Felt <b>{c.answer}</b>{c.spoken && <small> “{c.spoken}”</small>}</span>
               <span>Saw <b>{c.sensorState}</b></span>
-              {c.answer === 'none' ? <span className="muted">Quiet</span> : <span className={c.match ? 'ok' : 'miss'}>{c.match ? 'Match ✓' : 'Miss ✕'}</span>}
+              {c.answer === 'none' ? <span className="muted">Quiet</span> : c.unscored ? <span className="muted">Not scored</span> : <span className={c.match ? 'ok' : 'miss'}>{c.match ? 'Match ✓' : 'Miss ✕'}</span>}
             </div>
           ))}
           {!asking && !checks.length && <p className="muted">None yet.</p>}
         </section>
 
         {!board.coachOn && <div className="card coach-off-banner">Coach off: no next session, no insights, no fading plan. Just a breathing graph.</div>}
+        {board.replay?.after}
       </main>
     </div>
   )

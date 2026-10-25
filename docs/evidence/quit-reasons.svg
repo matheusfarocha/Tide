@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 422" width="760" height="422" role="img" aria-labelledby="t d" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
+<title id="t">What 484 one-star reviews of meditation apps complain about</title>
+<desc id="d">Crashes, login or playback bugs: 156; Too expensive or paywalled: 102; Charged unexpectedly, can't cancel: 87; An update made it worse: 67; Other, or no reason given: 41; Repetitive or generic content: 30; Couldn't tell if it was working: 1; Hard to keep the habit: 0. Newest one-star Google Play reviews of Balance, Calm, Headspace, Insight Timer, Medito, 100 per app, collected 2026-10-25 with an Apify Store actor and sorted into one reason each by Claude.</desc>
+<style>
+  svg { --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --ink-3: #6f6e69; --rule: #d9d8d3; --series-1: #2a78d6; }
+  @media (prefers-color-scheme: dark) { svg { --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --ink-3: #9c9b92; --rule: #3a3a37; --series-1: #3987e5; } }
+  .bg { fill: var(--surface); }
+  .h1 { fill: var(--ink); font-size: 19px; font-weight: 650; }
+  .sub { fill: var(--ink-2); font-size: 13px; }
+  .lbl { fill: var(--ink); font-size: 13.5px; }
+  .val { fill: var(--ink); font-size: 13.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .muted { fill: var(--ink-3); font-weight: 400; }
+  .note { fill: var(--ink-3); font-size: 11.5px; }
+  .axis { stroke: var(--rule); stroke-width: 1; }
+  .bar { fill: var(--series-1); }
+</style>
+<rect class="bg" width="760" height="422" rx="10"/>
+<text class="h1" x="24" y="38">What 484 one-star reviews of meditation apps complain about</text>
+<text class="sub" x="24" y="62">Newest one-star Google Play reviews, 100 per app: Balance, Calm, Headspace, Insight Timer, Medito. One main reason per review.</text>
+<line class="axis" x1="262" x2="262" y1="84" y2="350"/>
+<text class="lbl" x="250" y="106.0" text-anchor="end">Crashes, login or playback bugs</text><g><title>Crashes, login or playback bugs: 156 of 484 reviews (32%)</title><path class="bar" d="M262 92H660.0Q664.0 92 664.0 96V106Q664.0 110 660.0 110H262Z"/></g><text class="val" x="672.0" y="106.0">156 <tspan class="muted">· 32%</tspan></text><text class="lbl" x="250" y="140.0" text-anchor="end">Too expensive or paywalled</text><g><title>Too expensive or paywalled: 102 of 484 reviews (21%)</title><path class="bar" d="M262 126H520.8Q524.8 126 524.8 130V140Q524.8 144 520.8 144H262Z"/></g><text class="val" x="532.8" y="140.0">102 <tspan class="muted">· 21%</tspan></text><text class="lbl" x="250" y="174.0" text-anchor="end">Charged unexpectedly, can&#x27;t cancel</text><g><title>Charged unexpectedly, can&#x27;t cancel: 87 of 484 reviews (18%)</title><path class="bar" d="M262 160H482.2Q486.2 160 486.2 164V174Q486.2 178 482.2 178H262Z"/></g><text class="val" x="494.2" y="174.0">87 <tspan class="muted">· 18%</tspan></text><text class="lbl" x="250" y="208.0" text-anchor="end">An update made it worse</text><g><title>An update made it worse: 67 of 484 reviews (14%)</title><path class="bar" d="M262 194H430.7Q434.7 194 434.7 198V208Q434.7 212 430.7 212H262Z"/></g><text class="val" x="442.7" y="208.0">67 <tspan class="muted">· 14%</tspan></text><text class="lbl" x="250" y="242.0" text-anchor="end">Other, or no reason given</text><g><title>Other, or no reason given: 41 of 484 reviews (8%)</title><path class="bar" d="M262 228H363.7Q367.7 228 367.7 232V242Q367.7 246 363.7 246H262Z"/></g><text class="val" x="375.7" y="242.0">41 <tspan class="muted">· 8%</tspan></text><text class="lbl" x="250" y="276.0" text-anchor="end">Repetitive or generic content</text><g><title>Repetitive or generic content: 30 of 484 reviews (6%)</title><path class="bar" d="M262 262H335.3Q339.3 262 339.3 266V276Q339.3 280 335.3 280H262Z"/></g><text class="val" x="347.3" y="276.0">30 <tspan class="muted">· 6%</tspan></text><text class="lbl" x="250" y="310.0" text-anchor="end">Couldn&#x27;t tell if it was working</text><g><title>Couldn&#x27;t tell if it was working: 1 of 484 reviews (under 1%)</title><path class="bar" d="M262 296H262.0Q264.6 296 264.6 298.6V311.4Q264.6 314 262.0 314H262Z"/></g><text class="val" x="272.6" y="310.0">1 <tspan class="muted">· &lt;1%</tspan></text><text class="lbl" x="250" y="344.0" text-anchor="end">Hard to keep the habit</text><g><title>Hard to keep the habit: 0 of 484 reviews (0%)</title></g><text class="val" x="270.0" y="344.0">0 <tspan class="muted">· 0%</tspan></text>
+<text class="note" x="24" y="400">Collected 2026-10-25 with the Apify Store actor neatrat/google-play-store-reviews-scraper; each review sorted into a fixed category by Claude.</text>
+<text class="note" x="24" y="414">Counts only: no review text or reviewer names were kept. Reviews span 2023-11 to 2026-10.</text>
+</svg>

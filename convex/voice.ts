@@ -1,15 +1,15 @@
 /**
  * Cartesia voice, server-side only. CARTESIA_API_KEY never reaches the browser.
  *
- * Speaking: `speak` turns cue text into Sonic 3.5 audio, caches it in Convex file
- * storage, and returns a URL. The app can call `prefetch` with every cue in a plan
- * at session start, so cues play the instant they're due.
+ * Speaking: `speak` turns a line into Sonic 3.6 audio, caches it in Convex file storage,
+ * and returns a URL. The app calls `prefetch` with every line of a session (cues, the Feel
+ * Check question, the spoken feedback) before the user closes their eyes, so each one plays
+ * the instant it's due, on the user's breath.
  *
- * Listening: Ink 2 is streaming-only (WebSocket). `sttToken` mints a short-lived
- * Cartesia access token; the app opens
- *   wss://api.cartesia.ai/stt/websocket?model=ink-2&encoding=pcm_s16le&sample_rate=16000
- *     &cartesia_version=2026-08-14&access_token=<token>
- * sends ~100 ms PCM chunks, then "finalize", and passes the final transcript to feel.answer.
+ * Listening: Ink 2 is streaming-only (WebSocket). `sttToken` mints a short-lived, STT-only
+ * Cartesia access token; the app streams 16 kHz PCM to /stt/turns/websocket (semantic turn
+ * detection, with /stt/websocket + "finalize" as the fallback) only while a Feel Check is
+ * waiting for an answer, and passes the transcript to feel.answer. Audio is never stored.
  */
 
 import { v } from "convex/values";
@@ -17,8 +17,8 @@ import { internal } from "./_generated/api";
 import { action, env, internalMutation, internalQuery, type ActionCtx } from "./_generated/server";
 
 const CARTESIA = "https://api.cartesia.ai";
-const TTS_VERSION = "2026-03-01";
-const AUTH_VERSION = "2026-08-14";
+const API_VERSION = "2026-08-14";
+const TTS_MODEL = "sonic-3.6";
 const TOKEN_TTL_SEC = 600;
 
 function cartesiaKey() {
@@ -68,36 +68,56 @@ export const saveCached = internalMutation({
   },
 });
 
+/** A slow, calm guide voice. Part of the cache key, so changing it regenerates every line. */
+const GENERATION = { speed: 0.8, emotion: "calm" } as const;
+/** Cartesia's concurrency limit on our plan; more parallel requests get HTTP 429. */
+const MAX_PARALLEL = 2;
+const RETRIES = 4;
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
 async function speakOne(ctx: ActionCtx, text: string): Promise<string> {
   const voice = voiceId();
-  const key = await sha256(`sonic-3.5|${voice}|${text}`);
+  const key = await sha256(`${TTS_MODEL}|${voice}|${JSON.stringify(GENERATION)}|${text}`);
   const hit: string | null = await ctx.runQuery(internal.voice.cached, { key });
   if (hit) return hit;
 
-  const res = await fetch(`${CARTESIA}/tts/bytes`, {
-    method: "POST",
-    headers: {
-      authorization: `Bearer ${cartesiaKey()}`,
-      "cartesia-version": TTS_VERSION,
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      model_id: "sonic-3.5",
-      transcript: text,
-      voice: { mode: "id", id: voice },
-      output_format: { container: "mp3", sample_rate: 44100, bit_rate: 128000 },
-      // A slow, calm guide voice.
-      generation_config: { speed: 0.9, emotion: "calm" },
-    }),
-  });
-  if (!res.ok) throw new Error(`Cartesia TTS: HTTP ${res.status} ${await res.text()}`);
+  const res = await tts(text, voice);
   const storageId = await ctx.storage.store(new Blob([await res.arrayBuffer()], { type: "audio/mpeg" }));
   const url: string | null = await ctx.runMutation(internal.voice.saveCached, { key, text, storageId });
   if (!url) throw new Error("Stored speech has no URL");
   return url;
 }
 
-/** Sonic 3.5 audio for one cue. Returns a playable mp3 URL. */
+/** One Sonic request, retried with back-off when Cartesia is busy (429) or briefly failing (5xx). */
+async function tts(text: string, voice: string): Promise<Response> {
+  for (let attempt = 0; ; attempt++) {
+    const res = await fetch(`${CARTESIA}/tts/bytes`, {
+      method: "POST",
+    headers: {
+      authorization: `Bearer ${cartesiaKey()}`,
+      "cartesia-version": API_VERSION,
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      model_id: TTS_MODEL,
+      transcript: text,
+      voice: { id: voice },
+      language: "en",
+      output_format: { container: "mp3", sample_rate: 44100, bit_rate: 128000 },
+      generation_config: GENERATION,
+    }),
+    });
+    if (res.ok) return res;
+    const body = await res.text();
+    if ((res.status === 429 || res.status >= 500) && attempt < RETRIES) {
+      await sleep(400 * 2 ** attempt + Math.random() * 200);
+      continue;
+    }
+    throw new Error(`Cartesia TTS: HTTP ${res.status} ${body}`);
+  }
+}
+
+/** Sonic 3.6 audio for one line. Returns a playable mp3 URL. */
 export const speak = action({
   args: { text: v.string() },
   returns: v.string(),
@@ -114,9 +134,18 @@ export const prefetch = action({
   returns: v.record(v.string(), v.string()),
   handler: async (ctx, { texts }) => {
     const unique = [...new Set(texts.map((t) => t.trim()).filter((t) => t && t.length <= 500))].slice(0, 30);
-    const urls = await Promise.all(unique.map((t) => speakOne(ctx, t)));
+    // At most MAX_PARALLEL generations at once (cached lines return straight away). A line that
+    // still fails is left out, and the app generates it on demand, instead of losing every line.
     const out: Record<string, string> = {};
-    unique.forEach((t, i) => (out[t] = urls[i]));
+    const queue = [...unique];
+    const failures: string[] = [];
+    await Promise.all(Array.from({ length: MAX_PARALLEL }, async () => {
+      for (let t = queue.shift(); t !== undefined; t = queue.shift()) {
+        try { out[t] = await speakOne(ctx, t); } catch (e) { failures.push(`${t}: ${String(e)}`); }
+      }
+    }));
+    if (failures.length) console.warn(`Sonic prefetch: ${failures.length} line(s) failed`, failures);
+    if (unique.length && !Object.keys(out).length) throw new Error(failures[0] ?? "Sonic prefetch failed");
     return out;
   },
 });
@@ -130,7 +159,7 @@ export const sttToken = action({
       method: "POST",
       headers: {
         authorization: `Bearer ${cartesiaKey()}`,
-        "cartesia-version": AUTH_VERSION,
+        "cartesia-version": API_VERSION,
         "content-type": "application/json",
       },
       body: JSON.stringify({ grants: { stt: true }, expires_in: TOKEN_TTL_SEC }),

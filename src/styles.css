@@ -194,6 +194,13 @@ small { font-size: .8em; }
 .coach-card strong { font-weight: 400; }
 .coach-card--ready { color: var(--glow); }
 .coach-card--ready strong { color: var(--ink); }
+.coach-card--failed { color: var(--miss); align-items: flex-start; }
+.replay-banner { border-color: var(--glow); line-height: 1.5; }
+.replay-banner .link { margin-left: 6px; }
+.replay-notes { margin: 8px 0 10px; padding-left: 18px; line-height: 1.5; }
+.replay-notes li { margin: 6px 0; }
+.coach-card--failed strong { color: var(--ink); }
+.coach-card--failed .btn { margin-top: 10px; width: auto; }
 .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--glow); flex: none; animation: pulse 1.6s ease-in-out infinite; }
 @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(127, 231, 255, .7); } 50% { box-shadow: 0 0 0 10px rgba(127, 231, 255, 0); } }
 
@@ -268,6 +275,7 @@ small { font-size: .8em; }
 
 .session { cursor: default; }
 .session__hud { display: flex; justify-content: space-between; align-items: center; font-family: var(--mono); font-size: 12px; letter-spacing: .12em; color: var(--ink-2); }
+.session__unsaved { margin: 12px 0 0; padding: 8px 12px; border: 1px solid var(--miss); border-radius: 10px; color: var(--miss); font-size: 13px; line-height: 1.4; }
 .session__cue { font-family: var(--serif); font-style: italic; font-size: clamp(44px, 13vw, 64px); line-height: 1; margin: 10vh 0 0; min-height: 2.1em; }
 .session__state { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-2); }
 .session__state i, .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; flex: none; box-shadow: 0 0 10px currentColor; }

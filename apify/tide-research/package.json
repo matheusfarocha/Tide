@@ -1,11 +1,12 @@
 {
   "name": "tide-research",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "description": "Apify Actor: open-access meditation research library for the TIDE coach",
   "scripts": {
-    "start": "node src/main.js"
+    "start": "node src/main.js",
+    "test": "node --test"
   },
   "dependencies": {
     "apify": "^3.2.6"

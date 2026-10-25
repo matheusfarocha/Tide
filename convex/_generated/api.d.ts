@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as accuracy from "../accuracy.js";
 import type * as agentApi from "../agentApi.js";
 import type * as claude from "../claude.js";
 import type * as coach from "../coach.js";
@@ -22,6 +23,7 @@ import type * as leaderboard from "../leaderboard.js";
 import type * as live from "../live.js";
 import type * as plans from "../plans.js";
 import type * as research from "../research.js";
+import type * as reviews from "../reviews.js";
 import type * as sessions from "../sessions.js";
 import type * as similar from "../similar.js";
 import type * as users from "../users.js";
@@ -35,6 +37,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  accuracy: typeof accuracy;
   agentApi: typeof agentApi;
   claude: typeof claude;
   coach: typeof coach;
@@ -49,6 +52,7 @@ declare const fullApi: ApiFromModules<{
   live: typeof live;
   plans: typeof plans;
   research: typeof research;
+  reviews: typeof reviews;
   sessions: typeof sessions;
   similar: typeof similar;
   users: typeof users;

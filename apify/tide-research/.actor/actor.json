@@ -3,7 +3,7 @@
   "name": "tide-research",
   "title": "TIDE Meditation Research Library",
   "description": "Collects open-access research on breath-focused meditation, mind wandering and breath counting from Europe PMC and PubMed, and extracts technique, population, outcome and a citation for each paper. Stores short summaries and links, never full text.",
-  "version": "0.1",
+  "version": "0.2",
   "buildTag": "latest",
   "input": "./input_schema.json",
   "storages": {

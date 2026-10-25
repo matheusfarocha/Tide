@@ -7,7 +7,7 @@ import { startOcean, stopOcean } from '../lib/ocean'
 import { useStore } from '../lib/store'
 import { useTide } from '../lib/tide'
 import type { Goal } from '../lib/types'
-import { CoachReviewing } from './Home'
+import { CoachFailed, CoachReviewing } from './Home'
 
 function CoachOff() {
   const nav = useNavigate()
@@ -29,7 +29,7 @@ export function Insights() {
   return (
     <Screen className="with-tabs">
       <TopBar title="coach" />
-      {!s.coachOn ? <CoachOff /> : s.coachStatus === 'reviewing' ? <CoachReviewing /> : s.insights && (
+      {!s.coachOn ? <CoachOff /> : s.coachStatus === 'reviewing' ? <CoachReviewing /> : s.coachStatus === 'failed' ? <CoachFailed /> : s.insights && (
         <>
           <div className="card"><p className="eyebrow"><Icon name="spark" size={12} /> coach summary</p><p className="summary"><Typewriter text={s.insights.summary} /></p></div>
           <Tabs value={tab} onChange={setTab} options={[['insights', 'takeaways'], ['patterns', 'patterns']]} />

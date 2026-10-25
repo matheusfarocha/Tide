@@ -31,6 +31,8 @@ const CREAO = "https://agent.creao.ai/api/v1";
 const FIRST_POLL_MS = 60_000;
 const POLL_MS = 30_000;
 const MAX_POLLS = 40; // ~20 minutes
+/** Coach runs per session before giving up on a plan that cites no paper from the library. */
+const MAX_COACH_ATTEMPTS = 2;
 
 type Stage = "analyst" | "coach";
 const vStage = v.union(v.literal("analyst"), v.literal("coach"));
@@ -189,7 +191,11 @@ async function resolveCitations(ctx: MutationCtx, cited: PlanCitation[]): Promis
   return out;
 }
 
-/** Coach finished: the next session exists. */
+/**
+ * Coach finished: the next session exists, as long as it is grounded in the research library.
+ * A plan citing no paper the Apify Actor collected is rejected: "retry" asks the coach again,
+ * "failed" means it already had MAX_COACH_ATTEMPTS tries.
+ */
 export const applyCoach = internalMutation({
   args: {
     coachRunId: v.id("coachRuns"),
@@ -198,27 +204,39 @@ export const applyCoach = internalMutation({
     creaoThreadId: v.union(v.string(), v.null()),
     shareUrl: v.union(v.string(), v.null()),
   },
-  returns: v.boolean(),
+  returns: v.union(v.literal("applied"), v.literal("duplicate"), v.literal("retry"), v.literal("failed")),
   handler: async (ctx, { coachRunId, plan, summary, creaoThreadId, shareUrl }) => {
     const run = await ctx.db.get("coachRuns", coachRunId);
-    if (!run || run.status === "succeeded" || run.status === "failed") return false;
+    if (!run || run.status === "succeeded" || run.status === "failed") return "duplicate";
+    const session = await ctx.db.get("sessions", run.sessionId);
+    if (summary && !session?.summary) await saveSummary(ctx, run.sessionId, summary);
+    const citations = await resolveCitations(ctx, plan.citations);
+    if (citations.length === 0) {
+      const error = "Plan cited no paper from the research library";
+      await finishRun(ctx, run, { status: "failed", error, creaoThreadId: creaoThreadId ?? undefined });
+      const attempts = (await ctx.db
+        .query("coachRuns")
+        .withIndex("by_sessionId", (q) => q.eq("sessionId", run.sessionId))
+        .take(20)).filter((r) => r.stage === "coach").length;
+      if (attempts < MAX_COACH_ATTEMPTS) return "retry";
+      await ctx.db.patch("sessions", run.sessionId, { status: "coachFailed" });
+      return "failed";
+    }
     await finishRun(ctx, run, {
       status: "succeeded",
       creaoThreadId: creaoThreadId ?? undefined,
       shareUrl: shareUrl ?? undefined,
     });
-    const session = await ctx.db.get("sessions", run.sessionId);
-    if (summary && !session?.summary) await saveSummary(ctx, run.sessionId, summary);
     await ctx.db.insert("plans", {
       userId: run.userId,
       basedOnSessionId: run.sessionId,
       coachRunId,
       createdAt: Date.now(),
       ...plan,
-      citations: await resolveCitations(ctx, plan.citations),
+      citations,
     });
     await ctx.db.patch("sessions", run.sessionId, { status: "coached" });
-    return true;
+    return "applied";
   },
 });
 
@@ -323,13 +341,17 @@ async function complete(ctx: ActionCtx, coachRunId: Id<"coachRuns">, result: Run
     await ctx.runMutation(internal.coach.fail, { coachRunId, error: "Coach JSON is not a SessionPlan" });
     return;
   }
-  await ctx.runMutation(internal.coach.applyCoach, {
+  const outcome = await ctx.runMutation(internal.coach.applyCoach, {
     coachRunId,
     plan,
     summary: json.summary ? summary : null,
     creaoThreadId: result.threadId,
     shareUrl: typeof json.shareUrl === "string" ? json.shareUrl : null,
   });
+  if (outcome === "retry") {
+    console.warn(`Coach plan for ${run.sessionId} cited no library paper; asking the coach again`);
+    await launch(ctx, run.sessionId, "coach");
+  }
 }
 
 /** Fallback path: ask CREAO for the run's status until it finishes. */

@@ -65,7 +65,8 @@ in chat only last for that chat). Instructions to paste:
 >    `&technique=breathFocus|bodyScan|breathCounting|openAwareness`. Choose a technique that the
 >    results support and cite 1–3 findings by their `externalId`, each with one plain sentence
 >    saying why it fits this person. Prefer non-clinical studies of healthy adults or students.
->    Only cite `externalId`s that the search actually returned; Convex drops any it can't find.
+>    Only cite `externalId`s that the search actually returned; Convex drops any it can't find,
+>    and rejects a plan with no valid citation (the coach is asked once more, then the run fails).
 > 4. Design the next session. Session clock in seconds, 0 = eyes closed; the first 60 s are a
 >    baseline with no cues except `settle` at 0. Place one `anchor` cue ~20–30 s before their usual
 >    first drift, and Feel Checks around and after it. Cue text is short, calm, non-clinical.

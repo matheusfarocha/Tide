@@ -17,9 +17,12 @@ const band = (v: number) => (v > 0.8 ? 'High' : v > 0.6 ? 'Medium' : 'Low')
 export const stillnessLabel = (rs: Reading[]) => band(avg(withSignal(rs).map((r) => r.stillness)))
 export const postureLabel = (rs: Reading[]) => (avg(withSignal(rs).map((r) => r.posture)) > 0.75 ? 'Good' : 'Slumping')
 
-/** Self-awareness = share of Feel Checks where what you felt matched what the sensors saw. */
+/** A Feel Check that counts: a clear answer, and a sensor state it can be compared with. */
+export const scorable = (f: FeelCheck) => (f.answer === 'focused' || f.answer === 'drifting') && !f.unscored
+
+/** Self-awareness = share of scorable Feel Checks where what you felt matched what the sensors saw. */
 export function selfAwareness(fcs: FeelCheck[]) {
-  const answered = fcs.filter((f) => f.answer === 'focused' || f.answer === 'drifting')
+  const answered = fcs.filter(scorable)
   if (!answered.length) return 0
   return Math.round((answered.filter((f) => f.match).length / answered.length) * 100)
 }

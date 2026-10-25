@@ -1,7 +1,7 @@
 import { THRESHOLDS as S } from './state'
 
 // Pass/fail checks for each feature, judged against the same thresholds the state model uses,
-// so a PASS means the feature would really trigger. Used by the guided /debug/features page.
+// so a PASS means the feature would really trigger. Covered by featureCheck.test.ts.
 
 export type Verdict = 'pass' | 'warn' | 'fail'
 

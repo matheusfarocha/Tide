@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Counter, HoldButton, Icon, Lockup, Screen, Sparkline, TideGauge, depthOf, stateColor } from '../components/ui'
+import { retryCoach } from '../lib/backend'
 import { awarenessTrend, driftsCaught, fmt, level, streak, totalMinutes } from '../lib/metrics'
 import { startOcean } from '../lib/ocean'
 import { useStore } from '../lib/store'
@@ -62,6 +64,7 @@ export function Home() {
       </div>
 
       {s.coachStatus === 'reviewing' && <CoachReviewing />}
+      {s.coachStatus === 'failed' && <CoachFailed />}
 
       {s.history.length === 0 ? (
         <section className="card hero" aria-label="No sessions yet">
@@ -96,13 +99,35 @@ export function Home() {
       <section className="card next-card" aria-label="Next session">
         <p className="eyebrow">{s.history.length === 0 ? 'first session · your baseline' : s.coachOn ? 'next · designed by your coach' : 'free session'}</p>
         <p className="next-line__title">{s.history.length === 0 ? 'Breathe and notice' : s.coachOn ? p.technique : 'Breathe and notice'}</p>
-        <span className="next-line__meta">{fmt(s.lengthSec)} · {p.feelCheckTimes.length} feel checks{s.coachOn && p.cueTimes.length ? ' · cue before your usual drift' : ''}</span>
+        <span className="next-line__meta">{fmt(s.sessionLengthSec)} · {p.feelCheckTimes.length} feel checks{s.coachOn && p.cueTimes.length ? ' · cue before your usual drift' : ''}</span>
         <HoldButton label="hold to begin" onDone={begin} />
       </section>
 
       <Link to="/breath-test" className="link center">breath-count test →</Link>
       <TideGauge />
     </Screen>
+  )
+}
+
+/** The coach run for the last session failed: say so and offer to run it again. */
+export function CoachFailed() {
+  const s = useStore()
+  const [state, setState] = useState<'idle' | 'starting' | 'error'>('idle')
+  const id = s.failedSessionId
+  const retry = async () => {
+    if (!id) return
+    setState('starting')
+    setState((await retryCoach(id)) ? 'idle' : 'error')
+  }
+  return (
+    <div className="card coach-card coach-card--failed" role="alert">
+      <Icon name="spark" />
+      <div>
+        <strong>Your coach couldn't finish reviewing that session.</strong>
+        <p className="muted">{state === 'error' ? "Couldn't reach TIDE's server. Try again in a moment." : 'Your history is saved. Run the review again to get your next session.'}</p>
+        <button className="btn btn--ghost" disabled={!id || state === 'starting'} onClick={retry}>{state === 'starting' ? 'starting…' : 'try again'}</button>
+      </div>
+    </div>
   )
 }
 

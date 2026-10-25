@@ -23,6 +23,8 @@ export interface FeelCheck {
   answer: FeelAnswer
   sensorState: MindState
   match: boolean
+  /** The server couldn't score it (e.g. the sensors still read "settling"): neither right nor wrong. */
+  unscored?: boolean
 }
 
 /** Next-session plan designed by the CREAO coach (Person 3). Times are in seconds. */
@@ -30,7 +32,7 @@ export interface Plan {
   lengthSec: number
   cueTimes: number[]
   /** What each cue says, when the coach wrote it. Without it the session uses a default line. */
-  cues?: { atSec: number; text: string }[]
+  cues?: { atSec: number; text: string; onBreath?: 'inhale' | 'exhale' | 'any' }[]
   /** Spoken at the start, e.g. "Last time you drifted around minute 4." */
   intro?: string
   feelCheckTimes: number[]
@@ -40,6 +42,8 @@ export interface Plan {
   reasons: string[]
   /** "Why this session": papers from the research library behind the technique. */
   citations?: { citation: string; url: string; why: string }[]
+  /** Designed by the CREAO coach, so its length is part of the plan. The baseline uses the chosen length. */
+  fromCoach?: boolean
 }
 
 export interface SessionRecord {

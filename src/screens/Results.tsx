@@ -1,11 +1,14 @@
-import { useState } from 'react'
+import { useAction, useQuery } from 'convex/react'
+import { useEffect, useState } from 'react'
 import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { CalmMap, Counter, Icon, Legend, Screen, Tabs, TopBar, stateColor } from '../components/ui'
-import { avgRate, firstDriftSec, fmt, focusPct, moments, postureLabel, selfAwareness, stillnessLabel } from '../lib/metrics'
+import { avgRate, firstDriftSec, fmt, focusPct, moments, postureLabel, scorable, selfAwareness, stillnessLabel } from '../lib/metrics'
+import { api } from '../../convex/_generated/api'
+import { backendOn, type SessionId } from '../lib/backend'
 import { useStore } from '../lib/store'
 import { useTide } from '../lib/tide'
 import type { FeelCheck, MindState, Reading } from '../lib/types'
-import { CoachReviewing } from './Home'
+import { CoachFailed, CoachReviewing } from './Home'
 
 function useSession(id?: string) {
   const { history } = useStore()
@@ -51,7 +54,7 @@ function TideChart({ readings, feelChecks }: { readings: Reading[]; feelChecks: 
       {feelChecks.map((f, i) => (
         <g key={i}>
           <line x1={x(f.t)} x2={x(f.t)} y1={10} y2={bottom} stroke="rgba(234,243,247,.25)" strokeDasharray="2 3" vectorEffect="non-scaling-stroke" />
-          <circle cx={x(f.t)} cy={10} r={3} fill={f.answer === 'none' ? 'rgba(234,243,247,.4)' : f.match ? 'var(--ok)' : 'var(--miss)'} />
+          <circle cx={x(f.t)} cy={10} r={3} fill={f.answer === 'none' || f.unscored ? 'rgba(234,243,247,.4)' : f.match ? 'var(--ok)' : 'var(--miss)'} />
         </g>
       ))}
       <text x={2} y={H - 4} className="tidechart__lbl">0:00</text>
@@ -69,7 +72,7 @@ export function Results() {
   if (!rec) return <Navigate to="/" replace />
   const focus = focusPct(rec.readings)
   const drift = firstDriftSec(rec.readings)
-  const answered = rec.feelChecks.filter((f) => f.answer === 'focused' || f.answer === 'drifting')
+  const answered = rec.feelChecks.filter(scorable)
 
   return (
     <Screen>
@@ -99,14 +102,14 @@ export function Results() {
               <span>{fmt(f.t)}</span>
               <span>felt <b>{f.answer === 'none' ? 'quiet' : f.answer}</b></span>
               <span>saw <b>{f.sensorState}</b></span>
-              {f.answer === 'none' ? <span>–</span> : <span className={f.match ? 'ok' : 'miss'}>{f.match ? '✓' : '✕'}</span>}
+              {f.answer === 'none' || f.unscored ? <span className="muted">–</span> : <span className={f.match ? 'ok' : 'miss'}>{f.match ? '✓' : '✕'}</span>}
             </div>
           ))}
         </div>
       )}
 
       {s.coachOn ? (
-        s.coachStatus === 'reviewing' ? <CoachReviewing /> : (
+        s.coachStatus === 'reviewing' ? <CoachReviewing /> : s.coachStatus === 'failed' ? <CoachFailed /> : (
           <Link to="/insights" className="card coach-card coach-card--ready">
             <Icon name="spark" />
             <div><strong>Your coach left you a plan</strong><p className="muted">See what it found →</p></div>
@@ -148,6 +151,7 @@ export function CalmMapScreen() {
         <CalmMap readings={rec.readings} feelChecks={rec.feelChecks} lanes={lanes as any} />
         <Legend />
       </div>
+      {backendOn && rec.serverId && <ServerNotes sessionId={rec.serverId as SessionId} />}
       <p className="eyebrow">key moments</p>
       <div className="list">
         {ms.map((m, i) => (
@@ -162,5 +166,60 @@ export function CalmMapScreen() {
         ))}
       </div>
     </Screen>
+  )
+}
+
+type Similar = { sessionId: string; score: number; startedAt: number; summary: { firstDriftSec: number | null; selfAwareness: number | null; highlights: string[] } }
+
+/**
+ * What the server knows about this session: the CREAO Session Analyst's notes, and the person's
+ * past sessions that looked most like it (vector search over each session's features).
+ */
+function ServerNotes({ sessionId }: { sessionId: SessionId }) {
+  const map = useQuery(api.sessions.calmMap, { sessionId })
+  const findSimilar = useAction(api.similar.sessions)
+  const [similar, setSimilar] = useState<Similar[] | null>(null)
+  const summary = map?.session.summary
+  const analyzed = !!summary
+  useEffect(() => {
+    if (!analyzed) return
+    let live = true
+    findSimilar({ sessionId, limit: 3 }).then((r) => { if (live) setSimilar(r) }).catch(() => { if (live) setSimilar([]) })
+    return () => { live = false }
+  }, [analyzed, sessionId, findSimilar])
+  if (!map) return null
+
+  return (
+    <>
+      <p className="eyebrow"><Icon name="spark" size={12} /> your coach's notes</p>
+      {summary ? (
+        <ol className="takeaways">{summary.highlights.map((h) => <li key={h}>{h}</li>)}</ol>
+      ) : map.session.status === 'analyzing' ? (
+        <p className="muted small">Your coach is still reviewing this session…</p>
+      ) : (
+        <p className="muted small">No coach review for this session.</p>
+      )}
+      {similar && similar.length > 0 && (
+        <>
+          <p className="eyebrow">sessions like this one</p>
+          <div className="list">
+            {similar.map((m) => (
+              <div key={m.sessionId} className="list__row">
+                <Icon name="wave" />
+                <div>
+                  <span className="fine">
+                    {new Date(m.startedAt).toLocaleString(undefined, { weekday: 'short', hour: 'numeric', minute: '2-digit' })}
+                    {' · '}{m.summary.firstDriftSec !== null ? `first drift ${fmt(m.summary.firstDriftSec)}` : 'no drift'}
+                    {m.summary.selfAwareness !== null ? ` · self-awareness ${Math.round(m.summary.selfAwareness * 100)}` : ''}
+                  </span>
+                  {m.summary.highlights[0] && <small className="muted">{m.summary.highlights[0]}</small>}
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="fine">Matched on breathing, stillness, posture, drift timing and self-awareness.</p>
+        </>
+      )}
+    </>
   )
 }

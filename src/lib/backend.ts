@@ -28,7 +28,7 @@ export function toAppPlan(p: SessionPlan): Plan {
   return {
     lengthSec: p.lengthSec,
     cueTimes: p.cues.map((c) => c.atSec),
-    cues: p.cues.map((c) => ({ atSec: c.atSec, text: c.text })),
+    cues: p.cues.map((c) => ({ atSec: c.atSec, text: c.text, onBreath: c.onBreath })),
     feelCheckTimes: p.feelChecks.map((f) => f.atSec),
     fadingLevel: Math.max(0, Math.min(1, p.fadingLevel / 3)),
     technique: TECHNIQUE[p.technique] ?? p.technique,
@@ -37,6 +37,14 @@ export function toAppPlan(p: SessionPlan): Plan {
     reasons: p.reasons.map((r) => r.claim),
     citations: p.citations.map(({ citation, url, why }) => ({ citation, url, why })),
   }
+}
+
+/** The readable part of a Convex error ("Uncaught Error: X at handler…" → "X"). */
+function serverMessage(e: unknown): string {
+  const m = String((e as { message?: unknown })?.message ?? e)
+  const inner = m.match(/Uncaught Error: ([^\n]+?)(?:\s+at |\n|$)/)
+  if (inner) return inner[1]
+  return /fetch|network|connect|websocket/i.test(m) ? "Can't reach TIDE's server." : m.split('\n')[0]
 }
 
 export async function getOrCreateUser(name: string): Promise<UserId | null> {
@@ -51,6 +59,11 @@ export async function getOrCreateUser(name: string): Promise<UserId | null> {
 
 export async function setCoachEnabled(userId: UserId, enabled: boolean) {
   try { await convex?.mutation(api.users.setCoachEnabled, { userId, enabled }) } catch (e) { console.warn('Convex: coach switch failed', e) }
+}
+
+/** Run the CREAO coach again for a session whose run failed. Returns false if it could not be started. */
+export async function retryCoach(sessionId: SessionId): Promise<boolean> {
+  try { await convex?.mutation(api.coach.retry, { sessionId }); return true } catch (e) { console.warn('Convex: coach retry failed', e); return false }
 }
 
 /** Delete a person and their recorded data on the server. Returns false if it could not be reached. */
@@ -70,6 +83,8 @@ export class SessionLink {
   private sessionId: SessionId | null = null
   private started: Promise<SessionId | null>
   private ended = false
+  /** Why the server refused or couldn't be reached, when it did. The session then runs only on this phone. */
+  error: string | null = null
 
   constructor(userId: UserId, kind: 'training' | 'breathCount', onPlan?: (p: SessionPlan) => void, paced?: PacedCheck) {
     this.started = (async () => {
@@ -92,6 +107,7 @@ export class SessionLink {
       } catch (e) {
         // e.g. "Your coach is still designing your next session": run locally instead of blocking.
         console.warn('Convex: session not started, running locally', e)
+        this.error = serverMessage(e)
         return null
       }
     })()

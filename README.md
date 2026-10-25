@@ -10,14 +10,59 @@ attention. An AI coach (CREAO agents) designs every session after the first, and
 support as you improve.
 
 Built at Cal Hacks 13.0 for first-year college students with exam stress who tried a meditation
-app and gave up. That's us.
+app and gave up.
 
 - **Try it:** https://tide-eosin.vercel.app (laptop coach view: https://tide-eosin.vercel.app/coach)
 - **Demo video:** _TODO_
 - **Devpost:** _TODO_
 
-> **Status (TODO: delete once wired):** the app and the backend are both built but not yet
-> connected. The app currently runs on fake data. See [For the team](#for-the-team).
+## How we use Convex
+
+- **Live coach view:** the phone streams breath readings through mutations; the laptop updates via realtime `useQuery`.
+- **AI coach loop:** scheduled actions start the CREAO agents; HTTP actions give them data and receive their plan by webhook.
+- **Cited research and memory:** a daily cron, full text search over the research library, and vector search for similar sessions.
+- Details and the files behind each feature: [hackathon.md](hackathon.md).
+
+## Who it's for, and the problem
+
+**Community:** first-year college students under exam stress who tried a meditation app and
+gave up. We tested TIDE on ourselves throughout the weekend.
+
+**The problem, with data:**
+
+- **Students prefer to cope alone.** In a WHO survey of 13,984 first-year college students in
+  eight countries, only 24.6% said they would definitely seek treatment for a future emotional
+  problem; the most common reason not to was preferring to handle it alone (56.4%)
+  ([Ebert et al., 2019](https://doi.org/10.1002/mpr.1782)). A self-guided practice meets them
+  where they are. TIDE is a wellness and training tool, not a substitute for care.
+- **People quit these apps.** Across 93 popular mental-health apps, median 30-day retention was
+  3.3%, and 4.7% for mindfulness and meditation apps
+  ([Baumel et al., 2019](https://doi.org/10.2196/14567)).
+- **You don't notice your own drifting.** When people count breaths, only 29% of their counting
+  errors are self-caught; most lapses go unnoticed. Breath-counting skill goes with more
+  meta-awareness and less mind wandering, and 4 weeks of breath-counting training improved
+  mindfulness and reduced mind wandering
+  ([Levinson et al., 2014](https://doi.org/10.3389/fpsyg.2014.01202)). That blind spot is what
+  TIDE trains, with the camera checking what you report.
+- **What app users complain about:** our own scrape of 484 one-star reviews (see
+  [Apify](#apify)): bugs, paywalls and billing. TIDE has no paywall, no subscription and nothing
+  to cancel.
+
+## How we measure impact
+
+TIDE already records, per user and per session, what we would measure in a study:
+
+| Outcome | Measure in TIDE | Where |
+| --- | --- | --- |
+| Noticing your own drift (the core skill) | Self-awareness: share of Feel Checks where your answer matched the sensors | `shared/scoring.ts`, scores screen |
+| Attention | Breath-counting accuracy against camera-detected breaths (the Levinson et al. task) | `/breath-test`, `scoreBreathCount` |
+| Needing the app less | Fading level the coach reaches (0 to 3, fewer cues) | each coach plan |
+| Sticking with it | Sessions per week, and 30-day retention against the 4.7% baseline | `sessions` table |
+| Measurement quality | Breath-rate error on the paced check (true rate 6/min) | `accuracy:summary` |
+
+**Next step:** a 4-week pilot with first-year students at our university, mirroring the 4-week
+training in Levinson et al.: breath-counting accuracy and self-awareness at week 0 and week 4,
+plus retention. This weekend's numbers are from our own team and are labelled as weekend data.
 
 ## What it does
 
@@ -119,22 +164,83 @@ npx tsx scripts/smoke-convex.ts                  # end-to-end test of the backen
 | `/calm-map/:id` | Calm Map timeline + key moments |
 | `/insights` | AI coach summary, takeaways, patterns |
 | `/plan` | Next session designed by the coach, with the fading support meter |
-| `/progress` | Self-awareness, focus, stillness trends + session history |
 | `/scores` | Scoreboard: level, records, milestones, today's table leaderboard |
 | `/breath-test` | 60 s breath-counting focus test (Levinson et al., 2014) |
 | `/profile` | Coach on/off switch, privacy, reset demo data |
 | `/coach` | **Laptop coach view** for the judging table (live wave, stats, Feel Checks) |
+| `/replay` | **Replay mode**: a real recorded session played back on the coach view, then the coach's notes and plan. Bundled into the app, so it works with no connection (our Wi-Fi fallback at the judging table). Always labelled as a replay |
 
 ## Accuracy
 
-_TODO (Saturday night): fill in from the tap-labelled recordings._
+Every real paced-breathing check and every tap-labelled recording is saved as a calibration
+(`src/lib/accuracy.ts`); `npx convex run accuracy:summary` recomputes this table. Checks written
+by our test scripts are excluded, and a check where the camera couldn't start (simulated
+signal) is never saved.
 
-| Check | Result |
+| Check | Result so far |
 | --- | --- |
-| Paced-breathing check (true rate 6 breaths/min) | _TODO: mean reading ± error over N runs_ |
-| Breath detection vs. a teammate tapping every inhale (~20 recordings) | _TODO: precision, recall, mean timing offset (`matchBreaths` in `shared/scoring.ts`)_ |
-| Breath-rate error | _TODO: mean absolute error, breaths/min_ |
-| Self-awareness across weekend sessions | _TODO: gap from Y to Z (weekend data, labelled as such)_ |
+| Paced-breathing check (true rate 6 breaths/min) | Mean reading **5.29** breaths/min over **2** real runs (SD 0.07); mean absolute error **0.71**; 2/2 within 1 breath/min |
+| Breath detection vs. a teammate tapping every inhale | Not recorded this weekend; `matchBreaths` in `shared/scoring.ts` and `accuracy:summary` are ready to score such recordings |
+| Self-awareness across weekend sessions | Too few sessions to show a trend yet; weekend data only, labelled as such |
+
+These are small samples from one weekend, not a validation study.
+
+## Cost per user
+
+What one coached session costs to run, from our own usage and each provider's published prices
+(October 2026). Camera processing is free: it runs on the phone.
+
+| Part | Per session (4 min, 3 Feel Checks) | Source |
+| --- | --- | --- |
+| **CREAO coach** (Session Analyst + Coach & Plan Designer, on Claude Sonnet 5.5) | _TODO: credits per run, measured in CREAO_ | CREAO credits ($0.15 each as a top-up) |
+| **Cartesia** Sonic 3.6 + Ink 2 | ~$0.02: ~310 new characters of speech (~1 credit each; fixed lines are generated once and cached for everyone) + up to 27 s of listening (3 credits/s) | Startup plan overage, $45 per 1M credits |
+| **Claude** (unclear spoken answers only) | under $0.01: at most a few short calls, most answers are read by keywords | Claude Opus 5.5 pricing, $4 / $20 per 1M tokens |
+| **Convex** | under $0.01: ~1 reading per second plus queries | 1M function calls free per month, then $2.20 per 1M |
+| **Apify** research library refresh | ~$0.003 per daily run, shared by all users (~$0.09 a month in total) | Measured on our Actor runs |
+
+The cost levers: the coach runs once per session and never on its own; spoken lines are cached and
+shared; Claude only runs when keywords can't read an answer; the research library refreshes daily,
+not per session.
+
+## From prototype to production
+
+TIDE runs end to end today: camera → breath signal → voice Feel Checks → Calm Map → CREAO coach
+(78–135 s) → next session, live at the link above and tested on a phone. What it would take to
+put it in front of real students:
+
+- **Already production-shaped:** a deployed web app (installable, no app store) on a managed
+  backend; every API key server-side; on-device video; failures handled and shown (coach retry,
+  "not saved" notice, labelled simulated signal, offline replay); cost per session measured (see
+  [Cost per user](#cost-per-user)); users can delete everything they've recorded (`users.remove`,
+  from the profile screen).
+- **Before real users:** sign-in (today users are picked by name, see Known limitations), a
+  separate production Convex deployment, consent and data-retention settings, and rate limits on
+  the public functions.
+- **Validation:** the 4-week pilot in [How we measure impact](#how-we-measure-impact), comparing
+  breath-counting accuracy and self-awareness at week 0 and week 4, and retention against the
+  4.7% baseline for meditation apps.
+
+## How we use Claude
+
+**In development:** TIDE was built with Claude Code (Claude Opus 5.5 and Sonnet 5.5), which wrote and tested
+much of the backend, voice and coach integration; commits it helped with are co-authored in the
+git history.
+
+Claude (`claude-opus-5-5`, called from `convex/claude.ts`) reads spoken Feel Check answers that
+keyword matching can't place, e.g. "uh… kind of floaty?" → drifting. It only returns a label
+(focused, drifting, sleepy or unclear), never advice.
+
+Claude is also the coach's model: both CREAO agents (Session Analyst and Coach & Plan Designer)
+run on Claude Sonnet 5.5. So Claude analyzes every session and designs every session after the
+first, citing the sessions and research papers behind each choice.
+
+**Where it could go wrong, and what we do about it:**
+- It can misread sarcasm or a mumbled transcript. Answers it marks "unclear" are left
+  unscored rather than guessed.
+- Camera-based drift detection is noisy, and calm can be misread as drowsy. That's why the
+  spoken Feel Checks and the breath-counting test are the main measures.
+- The coach could over-read a few noisy sessions. Every pattern it claims must cite the sessions
+  behind it, and the plan shows those reasons to the user.
 
 ## Sponsor tracks
 
@@ -178,43 +284,61 @@ Apify) live only in Convex environment variables.
 
 ### Cartesia: voice in both directions
 
-Your eyes are closed, so voice is the only interface.
+Your eyes are closed, so voice is the only interface. Cartesia speaks every cue and question,
+hears your answer, and tells you the result, all without you opening your eyes. **Without
+Cartesia the session is silent and can't hear you:** you would have to open your eyes to read
+the cues and tap your answers, which breaks the meditation.
 
 | Feature | Where | How TIDE uses it |
 | --- | --- | --- |
-| **Sonic 3.5** text-to-speech (`/tts/bytes`) | `convex/voice.ts` (`speak`, `prefetch`) | Speaks the coach's cues and Feel Check questions in a slow, calm voice (`speed 0.9`, `emotion: calm`). Each cue is generated once, stored in Convex file storage and replayed from there |
-| **Ink 2** streaming speech-to-text (WebSocket) | `convex/voice.ts` (`sttToken`), app mic capture | Hears the spoken Feel Check answer. Ink 2's built-in turn detection and noise handling suit a loud hackathon hall |
+| **Sonic 3.6** text-to-speech (`/tts/bytes`) | `convex/voice.ts` (`speak`, `prefetch`) | A slow, calm guide voice (`speed 0.8`, `emotion: calm`) speaks the coach's intro and cues, the "Focused, or drifting?" question, the spoken result ("You caught it.") and the closing line |
+| **Cues timed to your breath** | `src/screens/Session.tsx` | Each coach cue carries `onBreath` (inhale or exhale). TIDE waits for that breath, detected by the camera, and speaks the cue as it begins, so the voice follows your body, not a timer |
+| **Pre-generated, cached audio** | `convex/voice.ts`, `src/lib/voice.ts` | Every line of the coming session is generated during the 30 s paced-breathing check, stored in Convex file storage and decoded on the phone, so nothing waits on the network once your eyes are closed (Cartesia's "caching audio for stock responses" pattern) |
+| **Ink 2** realtime speech-to-text with **turn detection** (`/stt/turns/websocket`) | `src/lib/voice.ts` (`listen`) | Hears the spoken Feel Check answer. Semantic turn detection waits through a hesitant "uh… kind of floaty?" instead of cutting it off, and ends the turn soon after a short answer. Falls back to `/stt/websocket` + `finalize` if needed |
+| **Keyterm prompting** | `src/lib/voice.ts` | Biases Ink 2 toward the words people actually answer with (focused, drifting, sleepy, wandering…), for a noisy hall |
 | **Access tokens** (`/access-token`) | `convex/voice.ts` (`sttToken`) | Convex mints a 10-minute, STT-only token, so the browser connects to Ink 2 without ever seeing the API key |
 
-**Known limitations:** Ink 2 is English-only and streaming-only, so it needs mic permission and
-HTTPS on the phone. A very noisy room can still garble an answer: a headset mic helps, unclear
-transcripts go to Claude, and two on-screen buttons are the fallback. The first time a new cue
-is spoken there is a short generation delay; after that it plays from the cache.
+After Ink 2 hears an answer, Convex reads it (keywords, then Claude for anything unclear), scores
+it against what the sensors saw, and TIDE speaks the result back.
 
-### Anthropic: Claude
+**Edge cases handled:** no answer is logged as "quiet" (possible drowsiness or deep focus) and
+acknowledged out loud; an answer nobody can read is left unscored, not guessed; listening starts
+only after the question finishes, so Ink 2 never hears TIDE's own voice; audio is unlocked by the
+last tap before eyes close (iOS blocks sound otherwise); the mic is requested at that tap too, so
+the permission prompt never appears mid-meditation; with no mic, the screen says so and the two
+answer buttons stay open.
 
-Claude (`claude-opus-5-5`, called from `convex/claude.ts`) reads spoken Feel Check answers that
-keyword matching can't place, e.g. "uh… kind of floaty?" → drifting. It only returns a label
-(focused, drifting, sleepy or unclear), never advice.
+**Privacy and accessibility:** the microphone is only listened to during the roughly 9 s answer
+window and is muted the rest of the session. Audio is streamed to Cartesia for transcription
+and never stored; only the transcript is kept. The whole session works eyes-closed, so it is
+usable by blind and low-vision users.
 
-Claude is also the coach's model: both CREAO agents (Session Analyst and Coach & Plan Designer)
-run on Claude Sonnet 5.5. So Claude analyzes every session and designs every session after the
-first, citing the sessions and research papers behind each choice.
-
-**Where it could go wrong, and what we do about it:**
-- It can misread sarcasm or a mumbled transcript. Answers it marks "unclear" are left
-  unscored rather than guessed.
-- Camera-based drift detection is noisy, and calm can be misread as drowsy. That's why the
-  spoken Feel Checks and the breath-counting test are the main measures.
-- The coach could over-read a few noisy sessions. Every pattern it claims must cite the sessions
-  behind it, and the plan shows those reasons to the user.
+**Known limitations:** English only. Streaming speech-to-text needs mic permission and HTTPS.
+A very loud room can still garble an answer: a headset mic helps, and the on-screen buttons
+remain. There is no browser-speech fallback: if Cartesia can't be reached, the session screen
+says "Voice unavailable" and shows cues and questions on screen instead, so it is always clear
+what Cartesia contributes.
 
 ### Apify
 
 | Actor | Where it's used |
 | --- | --- |
-| [TIDE Meditation Research Library](apify/tide-research) (our own, built this weekend). Store link: _TODO after publishing_ | Collects open-access research on breath-focused meditation, mind wandering and breath counting from Europe PMC and PubMed. A daily Convex cron (`convex/crons.ts`) starts it; `convex/research.ts` imports the dataset into the `techniques` table. The CREAO coach searches it through `GET /research` (`convex/http.ts`), so every technique in a plan carries a citation, shown as "Why this session". |
-| _TODO: Apify Store app-review scraper_ | Reasons beginners quit meditation apps (counts on Devpost). |
+| [TIDE Meditation Research Library](apify/tide-research) (our own, built this weekend; runs on our Apify account, source in this repo) | Collects open-access research on breath-focused meditation, mind wandering and breath counting from Europe PMC and PubMed, and keeps only papers about a practice someone can learn (relevance rules in `apify/tide-research/src/extract.js`, with tests). A daily Convex cron (`convex/crons.ts`) starts it; `convex/research.ts` imports the dataset into the `techniques` table and removes papers the latest run no longer returns. The CREAO coach searches it through `GET /research` (`convex/http.ts`), and Convex rejects any plan that cites no paper from it, so every technique in a plan carries a citation, shown as "Why this session". |
+| [neatrat/google-play-store-reviews-scraper](https://apify.com/neatrat/google-play-store-reviews-scraper) (Apify Store) | `convex/reviews.ts` runs it on the newest one-star Google Play reviews of five meditation apps, and Claude sorts each into one fixed reason. Results below. Counts only: no review text or reviewer names are kept. |
+
+#### What 484 one-star reviews of meditation apps complain about
+
+![Bar chart: crashes, login or playback bugs 156 (32%); too expensive or paywalled 102 (21%); charged unexpectedly or can't cancel 87 (18%); an update made it worse 67 (14%); other 41 (8%); repetitive or generic content 30 (6%); couldn't tell if it was working 1; hard to keep the habit 0](docs/evidence/quit-reasons.svg)
+
+Data: [`docs/evidence/quit-reasons.json`](docs/evidence/quit-reasons.json) (100 newest one-star reviews each of
+Headspace, Calm, Insight Timer, Balance and Medito, collected 2026-10-25).
+
+**What this does and doesn't show.** Angry reviews are about the *app*: bugs, paywalls and billing
+make up 71%. Almost none say "I couldn't tell if it was working" or "I couldn't keep the habit",
+but that is a selection effect, not evidence that those don't matter: people who quietly drift
+away from meditating rarely write a one-star review. So the reviews shape what TIDE avoids (no
+account wall, no paywall, no subscription, nothing to cancel), and our case for training
+self-awareness rests on the research (Levinson et al., 2014) and on our interviews instead.
 
 ## Known limitations
 
@@ -226,20 +350,27 @@ first, citing the sessions and research papers behind each choice.
   short sessions recorded this weekend, labelled as such.
 - **Agent output is free text.** If an agent's JSON doesn't parse, the run is marked failed
   (visible in `coachRuns.error`) and can be retried with `coach.retry`.
-- **CREAO runs take minutes.** The app shows a progress card meanwhile; the next plan arrives
-  reactively when the run finishes.
+- **CREAO runs take minutes.** In our runs the whole pipeline took 78 to 111 s. The app shows a
+  progress card meanwhile, and the next plan arrives reactively when the run finishes. If a run
+  fails, the app says so and offers to run it again.
+- **Cartesia free plan.** It allows 2 concurrent requests, so a session's lines are generated two
+  at a time during the paced check (with retries), not all at once.
+- **Replay mode is a recording.** `/replay` plays one real session from this weekend and says so on
+  screen; it is a fallback for a dropped connection, not a live reading.
 
-## For the team
+## Developer notes
 
-**Where each lane plugs in:**
-
-- **Person 1 (signal):** implement `SignalSource` from `src/lib/signal.ts` with MediaPipe, then swap `createFakeSignal` in `src/screens/Session.tsx` and `src/screens/Calibrate.tsx`. Replace the timed checks in `src/screens/Setup.tsx` with real ones.
-- **Person 3 (backend):** the Convex side is done ([docs/BACKEND.md](docs/BACKEND.md)). To wire the app:
-  - `src/lib/live.ts`: phone → laptop feed. Today it's BroadcastChannel (same browser only). Swap for `sessions.addReading` + the `live.*` queries.
-  - `src/lib/store.tsx` `finishSession`: replace the fake 6 s coach run with `sessions.end`; read `plan` and insights from `sessions.nextPlan` and `sessions.calmMap`.
-  - `src/lib/voice.ts`: `speak` → `voice.prefetch`/`speak`, `listen` → Ink 2 with `voice.sttToken`, `interpret` → `feel.answer`.
-
-**Commands:** `npm run convex` (Convex dev), `npm run typecheck`, `npx tsx scripts/smoke-convex.ts`.
+| Command | What it does |
+| --- | --- |
+| `npm run dev` / `npm run phone` | Web app (phone mode serves HTTPS for the camera) |
+| `npm run typecheck`, `npm test` | Typecheck everything; unit tests (signal, scoring, voice, uplink) |
+| `npx convex dev` | Push `convex/` on every save |
+| `npx tsx scripts/smoke-convex.ts` | End-to-end test of the backend |
+| `npx convex run devCoach:checkCreao` | Check the CREAO app IDs and keys without starting a run |
+| `npx convex run accuracy:summary` | The accuracy table above |
+| `npx tsx scripts/export-replay.ts <sessionId> [name]` | Snapshot a coached session for `/replay` |
+| `npx convex run research:refresh` | Re-run the Research Actor and refresh the library |
+| `cd apify/tide-research && npm test` | The Actor's relevance rules |
 
 ## Team
 

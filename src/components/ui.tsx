@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
+import { fmt } from '../lib/metrics'
 import { requestTilt, useTideCtl } from '../lib/tide'
 import type { FeelCheck, MindState, Reading } from '../lib/types'
 
@@ -335,11 +336,11 @@ export function CalmMap({ readings, feelChecks = [], lanes = ['rate', 'stillness
       {feelChecks.map((f, i) => (
         <g key={i}>
           <line x1={x(f.t)} x2={x(f.t)} y1={0} y2={bandY + 15} stroke="rgba(255,255,255,.5)" strokeDasharray="2 3" />
-          <circle cx={x(f.t)} cy={bandY + 9} r={4} fill={f.match ? '#6fd6a8' : '#f07a8a'} stroke="#0f1428" />
+          <circle cx={x(f.t)} cy={bandY + 9} r={4} fill={f.answer === 'none' || f.unscored ? 'rgba(234,243,247,.4)' : f.match ? '#6fd6a8' : '#f07a8a'} stroke="#0f1428" />
         </g>
       ))}
       {[0, 0.25, 0.5, 0.75, 1].map((p) => (
-        <text key={p} x={x(T * p)} y={H - 6} textAnchor="middle" className="calmmap__tick">{Math.round((T * p) / 60)}:{String(Math.round((T * p) % 60)).padStart(2, '0')}</text>
+        <text key={p} x={x(T * p)} y={H - 6} textAnchor={p === 0 ? 'start' : p === 1 ? 'end' : 'middle'} className="calmmap__tick">{fmt(Math.round(T * p))}</text>
       ))}
     </svg>
   )
