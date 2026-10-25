@@ -23,6 +23,47 @@ app and gave up. That's us.
 - **Cited research and memory:** a daily cron, full text search over the research library, and vector search for similar sessions.
 - Details and the files behind each feature: [hackathon.md](hackathon.md).
 
+## Who it's for, and the problem
+
+**Community:** first-year college students under exam stress who tried a meditation app and
+gave up. That's us: we built TIDE for ourselves and tested it on each other all weekend.
+
+**The problem, with data:**
+
+- **Students prefer to cope alone.** In a WHO survey of 13,984 first-year college students in
+  eight countries, only 24.6% said they would definitely seek treatment for a future emotional
+  problem; the most common reason not to was preferring to handle it alone (56.4%)
+  ([Ebert et al., 2019](https://doi.org/10.1002/mpr.1782)). A self-guided practice meets them
+  where they are. TIDE is a wellness and training tool, not a substitute for care.
+- **People quit these apps.** Across 93 popular mental-health apps, median 30-day retention was
+  3.3%, and 4.7% for mindfulness and meditation apps
+  ([Baumel et al., 2019](https://doi.org/10.2196/14567)).
+- **You don't notice your own drifting.** When people count breaths, only 29% of their counting
+  errors are self-caught; most lapses go unnoticed. Breath-counting skill goes with more
+  meta-awareness and less mind wandering, and 4 weeks of breath-counting training improved
+  mindfulness and reduced mind wandering
+  ([Levinson et al., 2014](https://doi.org/10.3389/fpsyg.2014.01202)). That blind spot is what
+  TIDE trains, with the camera checking what you report.
+- **What app users complain about:** our own scrape of 484 one-star reviews (see
+  [Apify](#apify)): bugs, paywalls and billing. TIDE has no paywall, no subscription and nothing
+  to cancel.
+
+## How we measure impact
+
+TIDE already records, per user and per session, what we would measure in a study:
+
+| Outcome | Measure in TIDE | Where |
+| --- | --- | --- |
+| Noticing your own drift (the core skill) | Self-awareness: share of Feel Checks where your answer matched the sensors | `shared/scoring.ts`, scores screen |
+| Attention | Breath-counting accuracy against camera-detected breaths (the Levinson et al. task) | `/breath-test`, `scoreBreathCount` |
+| Needing the app less | Fading level the coach reaches (0 to 3, fewer cues) | each coach plan |
+| Sticking with it | Sessions per week, and 30-day retention against the 4.7% baseline | `sessions` table |
+| Measurement quality | Breath-rate error on the paced check (true rate 6/min) | `accuracy:summary` |
+
+**Next step:** a 4-week pilot with first-year students at our university, mirroring the 4-week
+training in Levinson et al.: breath-counting accuracy and self-awareness at week 0 and week 4,
+plus retention. This weekend's numbers are from our own team and are labelled as weekend data.
+
 ## What it does
 
 | Feature | What happens |
@@ -239,6 +280,11 @@ says "Voice unavailable" and shows cues and questions on screen instead, so it i
 what Cartesia contributes.
 
 ### Anthropic: Claude
+
+**In development:** TIDE was built with Claude Code (Claude Opus 5.5 and Sonnet 5.5), which wrote and tested
+much of the backend, voice and coach integration; commits it helped with are co-authored in the
+git history.
+
 
 Claude (`claude-opus-5-5`, called from `convex/claude.ts`) reads spoken Feel Check answers that
 keyword matching can't place, e.g. "uh… kind of floaty?" → drifting. It only returns a label
