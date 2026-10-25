@@ -302,6 +302,33 @@ first, citing the sessions and research papers behind each choice.
 - The coach could over-read a few noisy sessions. Every pattern it claims must cite the sessions
   behind it, and the plan shows those reasons to the user.
 
+### Microsoft: a production-minded agent
+
+The agent is TIDE's CREAO coach: after every session it analyses what happened and designs the
+next session, without being asked. How TIDE covers the five capabilities:
+
+| Capability | Evidence |
+| --- | --- |
+| **Customer understanding** | A named community, published data on how first-year students cope and why app users quit, and our own analysis of 484 one-star reviews. See [Who it's for](#who-its-for-and-the-problem) and [Apify](#apify) |
+| **Measurable usefulness** | Self-awareness, breath-counting accuracy, fading level and retention are recorded for every user; the paced check measures our own error against a known rate. See [How we measure impact](#how-we-measure-impact) and [Accuracy](#accuracy) |
+| **Path to production** | Below |
+| **Responsible design** | Video never leaves the phone; audio is never stored; wellness only, not a substitute for care; support fades so users don't depend on it; every plan must cite research; unclear answers are left unscored, not guessed; simulated readings are labelled. See [Privacy and responsible design](#privacy-and-responsible-design) |
+| **End-to-end functionality** | Camera → breath signal → voice Feel Checks → Calm Map → CREAO coach (78–135 s) → next session, live at the link above and tested on a phone |
+
+**Path from prototype to production**
+
+- **Already production-shaped:** a deployed web app (installable, no app store) on a managed
+  backend; every API key server-side; on-device video; failures handled and shown (coach retry,
+  "not saved" notice, labelled simulated signal, offline replay); cost per session measured (see
+  [Cost per user](#cost-per-user)); users can delete everything they've recorded (`users.remove`,
+  from the profile screen).
+- **Before real users:** sign-in (today users are picked by name, see Known limitations), a
+  separate production Convex deployment, consent and data-retention settings, and rate limits on
+  the public functions.
+- **Validation:** the 4-week pilot in [How we measure impact](#how-we-measure-impact), comparing
+  breath-counting accuracy and self-awareness at week 0 and week 4, and retention against the
+  4.7% baseline for meditation apps.
+
 ### Apify
 
 | Actor | Where it's used |
