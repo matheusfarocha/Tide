@@ -10,7 +10,7 @@ attention. An AI coach (CREAO agents) designs every session after the first, and
 support as you improve.
 
 Built at Cal Hacks 13.0 for first-year college students with exam stress who tried a meditation
-app and gave up. That's us.
+app and gave up.
 
 - **Try it:** https://tide-eosin.vercel.app (laptop coach view: https://tide-eosin.vercel.app/coach)
 - **Demo video:** _TODO_
@@ -26,7 +26,7 @@ app and gave up. That's us.
 ## Who it's for, and the problem
 
 **Community:** first-year college students under exam stress who tried a meditation app and
-gave up. That's us: we built TIDE for ourselves and tested it on each other all weekend.
+gave up. We tested TIDE on ourselves throughout the weekend.
 
 **The problem, with data:**
 
