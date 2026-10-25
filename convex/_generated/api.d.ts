@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as accuracy from "../accuracy.js";
 import type * as agentApi from "../agentApi.js";
 import type * as claude from "../claude.js";
 import type * as coach from "../coach.js";
@@ -36,6 +37,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  accuracy: typeof accuracy;
   agentApi: typeof agentApi;
   claude: typeof claude;
   coach: typeof coach;

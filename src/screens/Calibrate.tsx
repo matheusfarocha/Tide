@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Icon, Screen, TopBar } from '../components/ui'
 import { createSignal } from '../lib/realSignal'
 import { useStore } from '../lib/store'
 import { useTide, useTideCtl } from '../lib/tide'
 import { prepareMic, prepareVoice, unlockAudio } from '../lib/voice'
+import { savePacedCheck } from '../lib/accuracy'
 import { voiceLines } from '../lib/voiceLines'
 
 // Paced-breathing check. The tide itself is the pacer: it rises for 5 s and falls for 5 s,
@@ -25,6 +26,7 @@ export function Calibrate() {
   const [rate, setRate] = useState<number | null>(null)
   const [inhale, setInhale] = useState(true)
   const [simulated, setSimulated] = useState(false)
+  const saved = useRef(false)
   const done = left === 0
 
   useEffect(() => {
@@ -45,7 +47,14 @@ export function Calibrate() {
     return () => { off(); signal.stop(); clearInterval(pace); clearInterval(tick) }
   }, [signal, tide])
 
-  useEffect(() => { if (done && rate && !simulated) setCalibration(rate) }, [done, rate, simulated, setCalibration])
+  useEffect(() => {
+    // Readings keep arriving after the 30 s: record the check once, with the reading at the end.
+    if (!done || !rate || simulated || saved.current) return
+    saved.current = true
+    setCalibration(rate)
+    // Every real paced check is also accuracy evidence (README): true pace 6 vs what TIDE read.
+    void savePacedCheck(rate, DURATION)
+  }, [done, rate, simulated, setCalibration])
 
   return (
     <Screen>

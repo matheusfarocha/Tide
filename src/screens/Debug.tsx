@@ -5,6 +5,7 @@ import type { ChestInfo, SignalSource } from '../lib/signal'
 import type { Reading } from '../lib/types'
 import type { Frame, SignalReading } from '../signal/types'
 import { scoreTapLabels } from '../signal/validation'
+import { saveAccuracyCheck } from '../lib/accuracy'
 
 // TEMPORARY debug page for Person 1's signal. Not part of the product; delete before submitting.
 // Starts the real signal source and shows every number the engine produces.
@@ -186,7 +187,15 @@ export function Debug() {
     label.current = null; setLabelling(false)
     const inh = inhaleTimes.current.filter((t) => t >= l.start)
     const r = scoreTapLabels(l.taps, inh)
-    setLabelMsg(`${r.tapCount} taps vs ${r.detectedCount} detected, ${r.matched} matched, count error ${r.countErrorFrac === null ? '–' : Math.round(r.countErrorFrac * 100) + '%'}, mean offset ${f(r.meanOffsetSec)} s`)
+    const msg = `${r.tapCount} taps vs ${r.detectedCount} detected, ${r.matched} matched, count error ${r.countErrorFrac === null ? '–' : Math.round(r.countErrorFrac * 100) + '%'}, mean offset ${f(r.meanOffsetSec)} s`
+    setLabelMsg(`${msg} · saving…`)
+    // Saved for the README's accuracy table (rates are per minute over the 60 s recording).
+    const secs = (performance.now() / 1000) - l.start
+    void saveAccuracyCheck({
+      kind: 'tapLabel', durationSec: secs,
+      trueRate: (l.taps.length * 60) / secs, measuredRate: (inh.length * 60) / secs,
+      tapsSec: l.taps.map((t) => t - l.start), detectedSec: inh.map((t) => t - l.start),
+    }).then((ok) => setLabelMsg(`${msg} · ${ok ? 'saved' : 'NOT saved (no connection)'}`))
   }
 
   const row = (k: string, v: string) => <tr key={k}><td style={{ opacity: 0.6, paddingRight: 16 }}>{k}</td><td style={{ color: '#fff' }}>{v}</td></tr>
