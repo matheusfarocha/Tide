@@ -1,0 +1,11 @@
+# Vercel only needs what `vite build` reads: the web app, shared types and Convex's generated API types.
+apify/
+scripts/
+docs/
+dist/
+node_modules/
+.convex/
+.agents/
+.claude/
+*.md
+!README.md

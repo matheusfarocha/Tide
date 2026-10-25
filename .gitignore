@@ -9,3 +9,4 @@ dist/
 graphify-out
 tide-*-raw-*.json
 scripts/.tmp/
+.env*

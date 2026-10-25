@@ -12,7 +12,7 @@ support as you improve.
 Built at Cal Hacks 13.0 for first-year college students with exam stress who tried a meditation
 app and gave up. That's us.
 
-- **Try it:** _TODO: deployed link_
+- **Try it:** https://tide-eosin.vercel.app (laptop coach view: https://tide-eosin.vercel.app/coach)
 - **Demo video:** _TODO_
 - **Devpost:** _TODO_
 
