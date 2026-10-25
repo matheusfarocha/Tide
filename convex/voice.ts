@@ -70,6 +70,10 @@ export const saveCached = internalMutation({
 
 /** A slow, calm guide voice. Part of the cache key, so changing it regenerates every line. */
 const GENERATION = { speed: 0.8, emotion: "calm" } as const;
+/** Cartesia's concurrency limit on our plan; more parallel requests get HTTP 429. */
+const MAX_PARALLEL = 2;
+const RETRIES = 4;
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 async function speakOne(ctx: ActionCtx, text: string): Promise<string> {
   const voice = voiceId();
@@ -77,8 +81,18 @@ async function speakOne(ctx: ActionCtx, text: string): Promise<string> {
   const hit: string | null = await ctx.runQuery(internal.voice.cached, { key });
   if (hit) return hit;
 
-  const res = await fetch(`${CARTESIA}/tts/bytes`, {
-    method: "POST",
+  const res = await tts(text, voice);
+  const storageId = await ctx.storage.store(new Blob([await res.arrayBuffer()], { type: "audio/mpeg" }));
+  const url: string | null = await ctx.runMutation(internal.voice.saveCached, { key, text, storageId });
+  if (!url) throw new Error("Stored speech has no URL");
+  return url;
+}
+
+/** One Sonic request, retried with back-off when Cartesia is busy (429) or briefly failing (5xx). */
+async function tts(text: string, voice: string): Promise<Response> {
+  for (let attempt = 0; ; attempt++) {
+    const res = await fetch(`${CARTESIA}/tts/bytes`, {
+      method: "POST",
     headers: {
       authorization: `Bearer ${cartesiaKey()}`,
       "cartesia-version": API_VERSION,
@@ -92,12 +106,15 @@ async function speakOne(ctx: ActionCtx, text: string): Promise<string> {
       output_format: { container: "mp3", sample_rate: 44100, bit_rate: 128000 },
       generation_config: GENERATION,
     }),
-  });
-  if (!res.ok) throw new Error(`Cartesia TTS: HTTP ${res.status} ${await res.text()}`);
-  const storageId = await ctx.storage.store(new Blob([await res.arrayBuffer()], { type: "audio/mpeg" }));
-  const url: string | null = await ctx.runMutation(internal.voice.saveCached, { key, text, storageId });
-  if (!url) throw new Error("Stored speech has no URL");
-  return url;
+    });
+    if (res.ok) return res;
+    const body = await res.text();
+    if ((res.status === 429 || res.status >= 500) && attempt < RETRIES) {
+      await sleep(400 * 2 ** attempt + Math.random() * 200);
+      continue;
+    }
+    throw new Error(`Cartesia TTS: HTTP ${res.status} ${body}`);
+  }
 }
 
 /** Sonic 3.6 audio for one line. Returns a playable mp3 URL. */
@@ -117,9 +134,18 @@ export const prefetch = action({
   returns: v.record(v.string(), v.string()),
   handler: async (ctx, { texts }) => {
     const unique = [...new Set(texts.map((t) => t.trim()).filter((t) => t && t.length <= 500))].slice(0, 30);
-    const urls = await Promise.all(unique.map((t) => speakOne(ctx, t)));
+    // At most MAX_PARALLEL generations at once (cached lines return straight away). A line that
+    // still fails is left out, and the app generates it on demand, instead of losing every line.
     const out: Record<string, string> = {};
-    unique.forEach((t, i) => (out[t] = urls[i]));
+    const queue = [...unique];
+    const failures: string[] = [];
+    await Promise.all(Array.from({ length: MAX_PARALLEL }, async () => {
+      for (let t = queue.shift(); t !== undefined; t = queue.shift()) {
+        try { out[t] = await speakOne(ctx, t); } catch (e) { failures.push(`${t}: ${String(e)}`); }
+      }
+    }));
+    if (failures.length) console.warn(`Sonic prefetch: ${failures.length} line(s) failed`, failures);
+    if (unique.length && !Object.keys(out).length) throw new Error(failures[0] ?? "Sonic prefetch failed");
     return out;
   },
 });

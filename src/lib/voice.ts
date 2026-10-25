@@ -240,7 +240,8 @@ function stream(path: 'turns' | 'manual', token: string, timeoutMs: number): Pro
         if (msg.transcript) transcript = msg.transcript
         if (msg.type === 'turn.end') finish(transcript || null)
       } else {
-        if (msg.type === 'transcript' && msg.text && msg.is_final) transcript = `${transcript} ${msg.text}`.trim()
+        // Final pieces carry their own spacing (" Um", ", I think I"): join them as they come.
+        if (msg.type === 'transcript' && msg.text && msg.is_final) transcript = `${transcript}${msg.text}`.trimStart()
         if (msg.type === 'flush_done' || msg.type === 'done') finish(transcript || null)
       }
     }
