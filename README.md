@@ -192,7 +192,7 @@ What one coached session costs to run, from our own usage and each provider's pu
 
 | Part | Per session (4 min, 3 Feel Checks) | Source |
 | --- | --- | --- |
-| **CREAO coach** (Session Analyst + Coach & Plan Designer, on Claude Sonnet 5.5) | _TODO: credits per run, measured in CREAO_ | CREAO credits ($0.15 each as a top-up) |
+| **CREAO coach** (Session Analyst + Coach & Plan Designer, on Claude Sonnet 5.5) | At most ~12 credits: our 72 credits so far covered building both agents in chat plus 6 coached sessions (12 agent runs). Under $1.00 on the Pro Plus plan, under $1.80 at the top-up rate. The biggest cost | CREAO Pro Plus ($50 for 600 credits); top-ups $0.15 per credit |
 | **Cartesia** Sonic 3.6 + Ink 2 | ~$0.02: ~310 new characters of speech (~1 credit each; fixed lines are generated once and cached for everyone) + up to 27 s of listening (3 credits/s) | Startup plan overage, $45 per 1M credits |
 | **Claude** (unclear spoken answers only) | under $0.01: at most a few short calls, most answers are read by keywords | Claude Opus 5.5 pricing, $4 / $20 per 1M tokens |
 | **Convex** | under $0.01: ~1 reading per second plus queries | 1M function calls free per month, then $2.20 per 1M |
@@ -371,7 +371,3 @@ self-awareness rests on the research (Levinson et al., 2014) and on our intervie
 | `npx tsx scripts/export-replay.ts <sessionId> [name]` | Snapshot a coached session for `/replay` |
 | `npx convex run research:refresh` | Re-run the Research Actor and refresh the library |
 | `cd apify/tide-research && npm test` | The Actor's relevance rules |
-
-## Team
-
-_TODO: names, roles, links._
