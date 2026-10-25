@@ -16,6 +16,13 @@ app and gave up. That's us.
 - **Demo video:** _TODO_
 - **Devpost:** _TODO_
 
+## How we use Convex
+
+- **Live coach view:** the phone streams breath readings through mutations; the laptop updates via realtime `useQuery`.
+- **AI coach loop:** scheduled actions start the CREAO agents; HTTP actions give them data and receive their plan by webhook.
+- **Cited research and memory:** a daily cron, full text search over the research library, and vector search for similar sessions.
+- Details and the files behind each feature: [hackathon.md](hackathon.md).
+
 ## What it does
 
 | Feature | What happens |
