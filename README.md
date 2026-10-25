@@ -145,10 +145,12 @@ coach off (`/profile`) and TIDE is just a breathing graph: no next session, no i
 
 | Agent | Agent ID | What it does |
 | --- | --- | --- |
-| Session Analyst | _TODO_ | Fetches the finished session through `GET /session`, runs Python (numpy, scipy) to compute time in each state, drift onsets, self-awareness and breath-count accuracy, and writes the Calm Map highlights |
-| Coach & Plan Designer | _TODO_ | Reads the user's history (`GET /history`) and research (`GET /research`), finds patterns that each cite their sessions, and designs the next session as JSON: cue times, Feel Check times, fading level, technique, length |
+| Session Analyst | `81845eb1-3a40-41d9-87e5-4f337e3fb2d1` | Fetches the finished session through `GET /session`, runs Python (numpy, scipy) to compute time in each state, drift onsets, self-awareness and breath-count accuracy, and writes the Calm Map highlights |
+| Coach & Plan Designer | `3a59c633-38ea-4ec2-8f31-8c88d64b1ad2` | Reads the user's history (`GET /history`) and research (`GET /research`), finds patterns that each cite their sessions, and designs the next session as JSON: cue times, Feel Check times, fading level, technique, length |
 
 - **Example run (share link):** _TODO_
+- **Measured on our dev deployment:** a full pipeline run (Analyst 49 s, then Coach 57 s) took
+  about 1 min 50 s from the end of a session to a new plan in the app, delivered by webhook.
 - **How Convex drives them:** `sessions.end` schedules `coach.start` (`convex/coach.ts`), which
   calls each agent's API Trigger asynchronously. Results come back to the `/creao/webhook` HTTP
   endpoint, with polling every 30 s as a fallback. No request ever waits on a run.
