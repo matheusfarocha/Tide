@@ -202,6 +202,24 @@ The cost levers: the coach runs once per session and never on its own; spoken li
 shared; Claude only runs when keywords can't read an answer; the research library refreshes daily,
 not per session.
 
+## From prototype to production
+
+TIDE runs end to end today: camera → breath signal → voice Feel Checks → Calm Map → CREAO coach
+(78–135 s) → next session, live at the link above and tested on a phone. What it would take to
+put it in front of real students:
+
+- **Already production-shaped:** a deployed web app (installable, no app store) on a managed
+  backend; every API key server-side; on-device video; failures handled and shown (coach retry,
+  "not saved" notice, labelled simulated signal, offline replay); cost per session measured (see
+  [Cost per user](#cost-per-user)); users can delete everything they've recorded (`users.remove`,
+  from the profile screen).
+- **Before real users:** sign-in (today users are picked by name, see Known limitations), a
+  separate production Convex deployment, consent and data-retention settings, and rate limits on
+  the public functions.
+- **Validation:** the 4-week pilot in [How we measure impact](#how-we-measure-impact), comparing
+  breath-counting accuracy and self-awareness at week 0 and week 4, and retention against the
+  4.7% baseline for meditation apps.
+
 ## Sponsor tracks
 
 ### CREAO: the coach
@@ -301,33 +319,6 @@ first, citing the sessions and research papers behind each choice.
   spoken Feel Checks and the breath-counting test are the main measures.
 - The coach could over-read a few noisy sessions. Every pattern it claims must cite the sessions
   behind it, and the plan shows those reasons to the user.
-
-### Microsoft: a production-minded agent
-
-The agent is TIDE's CREAO coach: after every session it analyses what happened and designs the
-next session, without being asked. How TIDE covers the five capabilities:
-
-| Capability | Evidence |
-| --- | --- |
-| **Customer understanding** | A named community, published data on how first-year students cope and why app users quit, and our own analysis of 484 one-star reviews. See [Who it's for](#who-its-for-and-the-problem) and [Apify](#apify) |
-| **Measurable usefulness** | Self-awareness, breath-counting accuracy, fading level and retention are recorded for every user; the paced check measures our own error against a known rate. See [How we measure impact](#how-we-measure-impact) and [Accuracy](#accuracy) |
-| **Path to production** | Below |
-| **Responsible design** | Video never leaves the phone; audio is never stored; wellness only, not a substitute for care; support fades so users don't depend on it; every plan must cite research; unclear answers are left unscored, not guessed; simulated readings are labelled. See [Privacy and responsible design](#privacy-and-responsible-design) |
-| **End-to-end functionality** | Camera → breath signal → voice Feel Checks → Calm Map → CREAO coach (78–135 s) → next session, live at the link above and tested on a phone |
-
-**Path from prototype to production**
-
-- **Already production-shaped:** a deployed web app (installable, no app store) on a managed
-  backend; every API key server-side; on-device video; failures handled and shown (coach retry,
-  "not saved" notice, labelled simulated signal, offline replay); cost per session measured (see
-  [Cost per user](#cost-per-user)); users can delete everything they've recorded (`users.remove`,
-  from the profile screen).
-- **Before real users:** sign-in (today users are picked by name, see Known limitations), a
-  separate production Convex deployment, consent and data-retention settings, and rate limits on
-  the public functions.
-- **Validation:** the 4-week pilot in [How we measure impact](#how-we-measure-impact), comparing
-  breath-counting accuracy and self-awareness at week 0 and week 4, and retention against the
-  4.7% baseline for meditation apps.
 
 ### Apify
 
