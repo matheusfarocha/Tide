@@ -16,9 +16,6 @@ app and gave up. That's us.
 - **Demo video:** _TODO_
 - **Devpost:** _TODO_
 
-> **Status (TODO: delete once wired):** the app and the backend are both built but not yet
-> connected. The app currently runs on fake data. See [For the team](#for-the-team).
-
 ## What it does
 
 | Feature | What happens |
@@ -119,22 +116,43 @@ npx tsx scripts/smoke-convex.ts                  # end-to-end test of the backen
 | `/calm-map/:id` | Calm Map timeline + key moments |
 | `/insights` | AI coach summary, takeaways, patterns |
 | `/plan` | Next session designed by the coach, with the fading support meter |
-| `/progress` | Self-awareness, focus, stillness trends + session history |
 | `/scores` | Scoreboard: level, records, milestones, today's table leaderboard |
 | `/breath-test` | 60 s breath-counting focus test (Levinson et al., 2014) |
 | `/profile` | Coach on/off switch, privacy, reset demo data |
 | `/coach` | **Laptop coach view** for the judging table (live wave, stats, Feel Checks) |
+| `/replay` | **Replay mode**: a real recorded session played back on the coach view, then the coach's notes and plan. Bundled into the app, so it works with no connection (our Wi-Fi fallback at the judging table). Always labelled as a replay |
 
 ## Accuracy
 
-_TODO (Saturday night): fill in from the tap-labelled recordings._
+Every real paced-breathing check and every tap-labelled recording is saved as a calibration
+(`src/lib/accuracy.ts`); `npx convex run accuracy:summary` recomputes this table. Checks written
+by our test scripts are excluded, and a check where the camera couldn't start (simulated
+signal) is never saved.
 
-| Check | Result |
+| Check | Result so far |
 | --- | --- |
-| Paced-breathing check (true rate 6 breaths/min) | _TODO: mean reading ± error over N runs_ |
-| Breath detection vs. a teammate tapping every inhale (~20 recordings) | _TODO: precision, recall, mean timing offset (`matchBreaths` in `shared/scoring.ts`)_ |
-| Breath-rate error | _TODO: mean absolute error, breaths/min_ |
-| Self-awareness across weekend sessions | _TODO: gap from Y to Z (weekend data, labelled as such)_ |
+| Paced-breathing check (true rate 6 breaths/min) | Mean reading **5.29** breaths/min over **2** real runs (SD 0.07); mean absolute error **0.71**; 2/2 within 1 breath/min |
+| Breath detection vs. a teammate tapping every inhale | Not yet recorded. Tool: `/debug`, "tap-label recorder" (precision, recall and timing offset via `matchBreaths` in `shared/scoring.ts`) |
+| Self-awareness across weekend sessions | Too few sessions to show a trend yet; weekend data only, labelled as such |
+
+These are small samples from one weekend, not a validation study.
+
+## Cost per user
+
+What one coached session costs to run, from our own usage and each provider's published prices
+(October 2026). Camera processing is free: it runs on the phone.
+
+| Part | Per session (4 min, 3 Feel Checks) | Source |
+| --- | --- | --- |
+| **CREAO coach** (Session Analyst + Coach & Plan Designer, on Claude Sonnet 5.5) | _TODO: credits per run, measured in CREAO_ | CREAO credits ($0.15 each as a top-up) |
+| **Cartesia** Sonic 3.6 + Ink 2 | ~$0.02: ~310 new characters of speech (~1 credit each; fixed lines are generated once and cached for everyone) + up to 27 s of listening (3 credits/s) | Startup plan overage, $45 per 1M credits |
+| **Claude** (unclear spoken answers only) | under $0.01: at most a few short calls, most answers are read by keywords | Claude Opus 5.5 pricing, $4 / $20 per 1M tokens |
+| **Convex** | under $0.01: ~1 reading per second plus queries | 1M function calls free per month, then $2.20 per 1M |
+| **Apify** research library refresh | ~$0.003 per daily run, shared by all users (~$0.09 a month in total) | Measured on our Actor runs |
+
+The cost levers: the coach runs once per session and never on its own; spoken lines are cached and
+shared; Claude only runs when keywords can't read an answer; the research library refreshes daily,
+not per session.
 
 ## Sponsor tracks
 
@@ -262,20 +280,27 @@ self-awareness rests on the research (Levinson et al., 2014) and on our intervie
   short sessions recorded this weekend, labelled as such.
 - **Agent output is free text.** If an agent's JSON doesn't parse, the run is marked failed
   (visible in `coachRuns.error`) and can be retried with `coach.retry`.
-- **CREAO runs take minutes.** The app shows a progress card meanwhile; the next plan arrives
-  reactively when the run finishes.
+- **CREAO runs take minutes.** In our runs the whole pipeline took 78 to 111 s. The app shows a
+  progress card meanwhile, and the next plan arrives reactively when the run finishes. If a run
+  fails, the app says so and offers to run it again.
+- **Cartesia free plan.** It allows 2 concurrent requests, so a session's lines are generated two
+  at a time during the paced check (with retries), not all at once.
+- **Replay mode is a recording.** `/replay` plays one real session from this weekend and says so on
+  screen; it is a fallback for a dropped connection, not a live reading.
 
-## For the team
+## Developer notes
 
-**Where each lane plugs in:**
-
-- **Person 1 (signal):** implement `SignalSource` from `src/lib/signal.ts` with MediaPipe, then swap `createFakeSignal` in `src/screens/Session.tsx` and `src/screens/Calibrate.tsx`. Replace the timed checks in `src/screens/Setup.tsx` with real ones.
-- **Person 3 (backend):** the Convex side is done ([docs/BACKEND.md](docs/BACKEND.md)). To wire the app:
-  - `src/lib/live.ts`: phone → laptop feed. Today it's BroadcastChannel (same browser only). Swap for `sessions.addReading` + the `live.*` queries.
-  - `src/lib/store.tsx` `finishSession`: replace the fake 6 s coach run with `sessions.end`; read `plan` and insights from `sessions.nextPlan` and `sessions.calmMap`.
-  - `src/lib/voice.ts`: `speak` → `voice.prefetch`/`speak`, `listen` → Ink 2 with `voice.sttToken`, `interpret` → `feel.answer`.
-
-**Commands:** `npm run convex` (Convex dev), `npm run typecheck`, `npx tsx scripts/smoke-convex.ts`.
+| Command | What it does |
+| --- | --- |
+| `npm run dev` / `npm run phone` | Web app (phone mode serves HTTPS for the camera) |
+| `npm run typecheck`, `npm test` | Typecheck everything; unit tests (signal, scoring, voice, uplink) |
+| `npx convex dev` | Push `convex/` on every save |
+| `npx tsx scripts/smoke-convex.ts` | End-to-end test of the backend |
+| `npx convex run devCoach:checkCreao` | Check the CREAO app IDs and keys without starting a run |
+| `npx convex run accuracy:summary` | The accuracy table above |
+| `npx tsx scripts/export-replay.ts <sessionId> [name]` | Snapshot a coached session for `/replay` |
+| `npx convex run research:refresh` | Re-run the Research Actor and refresh the library |
+| `cd apify/tide-research && npm test` | The Actor's relevance rules |
 
 ## Team
 
