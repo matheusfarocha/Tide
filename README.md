@@ -220,6 +220,28 @@ put it in front of real students:
   breath-counting accuracy and self-awareness at week 0 and week 4, and retention against the
   4.7% baseline for meditation apps.
 
+## How we use Claude
+
+**In development:** TIDE was built with Claude Code (Claude Opus 5.5 and Sonnet 5.5), which wrote and tested
+much of the backend, voice and coach integration; commits it helped with are co-authored in the
+git history.
+
+Claude (`claude-opus-5-5`, called from `convex/claude.ts`) reads spoken Feel Check answers that
+keyword matching can't place, e.g. "uh… kind of floaty?" → drifting. It only returns a label
+(focused, drifting, sleepy or unclear), never advice.
+
+Claude is also the coach's model: both CREAO agents (Session Analyst and Coach & Plan Designer)
+run on Claude Sonnet 5.5. So Claude analyzes every session and designs every session after the
+first, citing the sessions and research papers behind each choice.
+
+**Where it could go wrong, and what we do about it:**
+- It can misread sarcasm or a mumbled transcript. Answers it marks "unclear" are left
+  unscored rather than guessed.
+- Camera-based drift detection is noisy, and calm can be misread as drowsy. That's why the
+  spoken Feel Checks and the breath-counting test are the main measures.
+- The coach could over-read a few noisy sessions. Every pattern it claims must cite the sessions
+  behind it, and the plan shows those reasons to the user.
+
 ## Sponsor tracks
 
 ### CREAO: the coach
@@ -296,29 +318,6 @@ A very loud room can still garble an answer: a headset mic helps, and the on-scr
 remain. There is no browser-speech fallback: if Cartesia can't be reached, the session screen
 says "Voice unavailable" and shows cues and questions on screen instead, so it is always clear
 what Cartesia contributes.
-
-### Anthropic: Claude
-
-**In development:** TIDE was built with Claude Code (Claude Opus 5.5 and Sonnet 5.5), which wrote and tested
-much of the backend, voice and coach integration; commits it helped with are co-authored in the
-git history.
-
-
-Claude (`claude-opus-5-5`, called from `convex/claude.ts`) reads spoken Feel Check answers that
-keyword matching can't place, e.g. "uh… kind of floaty?" → drifting. It only returns a label
-(focused, drifting, sleepy or unclear), never advice.
-
-Claude is also the coach's model: both CREAO agents (Session Analyst and Coach & Plan Designer)
-run on Claude Sonnet 5.5. So Claude analyzes every session and designs every session after the
-first, citing the sessions and research papers behind each choice.
-
-**Where it could go wrong, and what we do about it:**
-- It can misread sarcasm or a mumbled transcript. Answers it marks "unclear" are left
-  unscored rather than guessed.
-- Camera-based drift detection is noisy, and calm can be misread as drowsy. That's why the
-  spoken Feel Checks and the breath-counting test are the main measures.
-- The coach could over-read a few noisy sessions. Every pattern it claims must cite the sessions
-  behind it, and the plan shows those reasons to the user.
 
 ### Apify
 
