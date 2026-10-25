@@ -1,0 +1,134 @@
+{
+  "byApp": {
+    "Balance": {
+      "billing_problems": 49,
+      "bugs_login": 21,
+      "consistency": 0,
+      "content_quality": 6,
+      "design_changes": 0,
+      "no_progress": 0,
+      "other": 5,
+      "price_paywall": 17
+    },
+    "Calm": {
+      "billing_problems": 19,
+      "bugs_login": 21,
+      "consistency": 0,
+      "content_quality": 2,
+      "design_changes": 3,
+      "no_progress": 1,
+      "other": 10,
+      "price_paywall": 37
+    },
+    "Headspace": {
+      "billing_problems": 12,
+      "bugs_login": 36,
+      "consistency": 0,
+      "content_quality": 12,
+      "design_changes": 5,
+      "no_progress": 0,
+      "other": 6,
+      "price_paywall": 28
+    },
+    "Insight Timer": {
+      "billing_problems": 6,
+      "bugs_login": 28,
+      "consistency": 0,
+      "content_quality": 1,
+      "design_changes": 42,
+      "no_progress": 0,
+      "other": 7,
+      "price_paywall": 16
+    },
+    "Medito": {
+      "billing_problems": 1,
+      "bugs_login": 50,
+      "consistency": 0,
+      "content_quality": 9,
+      "design_changes": 17,
+      "no_progress": 0,
+      "other": 13,
+      "price_paywall": 4
+    }
+  },
+  "classifiedBy": "claude-opus-5-5, one fixed category per review",
+  "collectedAt": "2026-10-25T06:40:37.350Z",
+  "dateRange": {
+    "newest": "2026-10-24",
+    "oldest": "2023-11-30"
+  },
+  "perApp": {
+    "Balance": {
+      "reviews": 100,
+      "used": 98
+    },
+    "Calm": {
+      "reviews": 100,
+      "used": 93
+    },
+    "Headspace": {
+      "reviews": 100,
+      "used": 99
+    },
+    "Insight Timer": {
+      "reviews": 100,
+      "used": 100
+    },
+    "Medito": {
+      "reviews": 100,
+      "used": 94
+    }
+  },
+  "reasons": [
+    {
+      "count": 156,
+      "key": "bugs_login",
+      "label": "Crashes, login, playback or download problems"
+    },
+    {
+      "count": 102,
+      "key": "price_paywall",
+      "label": "Too expensive, paywalled, or too little free content"
+    },
+    {
+      "count": 87,
+      "key": "billing_problems",
+      "label": "Unexpected charges, trouble cancelling, refunds"
+    },
+    {
+      "count": 67,
+      "key": "design_changes",
+      "label": "An update or redesign made it worse, cluttered or harder to use"
+    },
+    {
+      "count": 41,
+      "key": "other",
+      "label": "Anything else, or not a reason for leaving"
+    },
+    {
+      "count": 30,
+      "key": "content_quality",
+      "label": "Content feels repetitive, generic, AI-made or not personal"
+    },
+    {
+      "count": 1,
+      "key": "no_progress",
+      "label": "Couldn't tell if it was working, no feedback or progress, didn't help"
+    },
+    {
+      "count": 0,
+      "key": "consistency",
+      "label": "Hard to keep the habit: no time, sessions too long, lost motivation"
+    }
+  ],
+  "reviewsAnalyzed": 484,
+  "source": "Newest one-star Google Play reviews (US, English) via the Apify Store actor neatrat/google-play-store-reviews-scraper",
+  "apifyDatasets": {
+    "Headspace": "hKzYhafCBv3htgzOU",
+    "Balance": "GCO5xLNJxXf0guf9O",
+    "Calm": "ajXYulM9tfF0PmMBz",
+    "Insight Timer": "gXRZCd3rzmPybXVG0",
+    "Medito": "lkjXhmGkefKJFxyoo"
+  },
+  "reproduce": "npx convex run reviews:analyze '{\"datasets\": <apifyDatasets>}'"
+}

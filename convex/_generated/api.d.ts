@@ -22,6 +22,7 @@ import type * as leaderboard from "../leaderboard.js";
 import type * as live from "../live.js";
 import type * as plans from "../plans.js";
 import type * as research from "../research.js";
+import type * as reviews from "../reviews.js";
 import type * as sessions from "../sessions.js";
 import type * as similar from "../similar.js";
 import type * as users from "../users.js";
@@ -49,6 +50,7 @@ declare const fullApi: ApiFromModules<{
   live: typeof live;
   plans: typeof plans;
   research: typeof research;
+  reviews: typeof reviews;
   sessions: typeof sessions;
   similar: typeof similar;
   users: typeof users;

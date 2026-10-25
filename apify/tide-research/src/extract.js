@@ -15,6 +15,26 @@ const TECHNIQUES = [
   ],
 ];
 
+/**
+ * The paper must be about a practice someone can learn: meditation, mindfulness, a breathing
+ * practice, or the attention skills TIDE trains. Needed in the title, or at least twice in the
+ * abstract, so a passing mention ("participants also did slow breathing") is not enough.
+ */
+const PRACTICE =
+  /meditat|mindful|pranayama|anapanasati|breathwork|breath(?:ing)?[- ](?:practice|exercise|training|technique|awareness|focus|attention|count)|(?:slow|paced|resonan(?:t|ce)|diaphragmatic) breathing|body[- ]scan|open[- ]monitoring|mind[- ]wander|meta[- ]?awareness|focused[- ]attention/gi;
+
+/** Settings TIDE's users are never in: hospital procedures, infants, hypnosis, competitive sport. */
+const OFF_TOPIC =
+  /intubat|neonat|\binfants?\b|surg(?:ery|ical)|arthroplast|an(?:a)?esthe|intraocular|ventilat(?:or|ed)\b|hypnos|\btrance\b|athletes?\b|\bsports?\b|taekwondo|hockey|footballer/gi;
+
+const hits = (re, s) => (s.match(re) ?? []).length;
+
+/** Is this paper about a practice TIDE can teach, in a setting its users are in? */
+export function isRelevant(title, abstract) {
+  if (hits(OFF_TOPIC, title) > 0 || hits(OFF_TOPIC, abstract) >= 2) return false;
+  return hits(PRACTICE, title) > 0 || hits(PRACTICE, abstract) >= 2;
+}
+
 const TAGS = [
   ["mindWandering", /mind[- ]wander|task[- ]unrelated thought|off[- ]task/i],
   ["metaAwareness", /meta[- ]?awareness|metacogniti|interocepti/i],
@@ -79,6 +99,7 @@ function clip(s, max) {
   return s.length <= max ? s : s.slice(0, max - 1).replace(/\s+\S*$/, "") + "…";
 }
 
+/** The technique named in the title, else the one the abstract names most. */
 export function classifyTechnique(title, abstract) {
   for (const [name, re] of TECHNIQUES) if (re.test(title)) return name;
   let best = null;
@@ -158,11 +179,12 @@ export function urlFor(r) {
   return `https://europepmc.org/article/${r.source}/${r.id}`;
 }
 
-/** @returns a ResearchFinding, or null when the paper has no abstract or no recognised technique. */
+/** @returns a ResearchFinding, or null when the paper has no abstract, is off-topic, or has no central technique. */
 export function toFinding(r, foundVia = ["europepmc"]) {
   const title = stripHtml(r.title);
   const abstract = stripHtml(r.abstractText);
   if (!title || abstract.length < 200) return null;
+  if (!isRelevant(title, abstract)) return null;
 
   const technique = classifyTechnique(title, abstract);
   if (!technique) return null;

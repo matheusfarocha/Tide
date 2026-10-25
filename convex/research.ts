@@ -3,7 +3,9 @@
  *
  * refresh (cron or `npx convex run research:refresh`) starts an Actor run and
  * returns at once; checkRun polls every 30 s and imports the dataset when the run
- * succeeds. The coach searches the library through GET /research (convex/http.ts).
+ * succeeds, then removes papers that run no longer returns (the Actor's relevance rules
+ * decide what belongs). Plans keep their citations: applyCoach copies citation and link.
+ * The coach searches the library through GET /research (convex/http.ts).
  *
  * Env: APIFY_TOKEN, APIFY_RESEARCH_ACTOR (e.g. "yourname~tide-research").
  */
@@ -19,6 +21,8 @@ const APIFY = "https://api.apify.com/v2";
 const POLL_MS = 30_000;
 const MAX_POLLS = 20;
 const BATCH = 50;
+/** A run with fewer findings than this is treated as broken: import it, but don't prune. */
+const MIN_FOR_PRUNE = 30;
 
 function apifyEnv() {
   const token = env.APIFY_TOKEN;
@@ -85,8 +89,29 @@ export const checkRun = internalAction({
     for (let i = 0; i < findings.length; i += BATCH) {
       await ctx.runMutation(internal.research.upsertBatch, { items: findings.slice(i, i + BATCH), fetchedAt });
     }
-    console.log(`Imported ${findings.length} findings from Apify run ${runId}`);
+    let pruned = 0;
+    if (findings.length >= MIN_FOR_PRUNE) {
+      for (let n = -1; n !== 0; ) {
+        n = await ctx.runMutation(internal.research.pruneStale, { fetchedAt });
+        pruned += n;
+      }
+    } else {
+      console.warn(`Apify run ${runId} returned only ${findings.length} findings; not pruning the library`);
+    }
+    console.log(`Imported ${findings.length} findings from Apify run ${runId}, removed ${pruned} no longer returned`);
     return null;
+  },
+});
+
+/** Deletes up to 100 papers not refreshed by the run at `fetchedAt`. Returns how many it deleted. */
+export const pruneStale = internalMutation({
+  args: { fetchedAt: v.number() },
+  returns: v.number(),
+  handler: async (ctx, { fetchedAt }) => {
+    // The library is a few hundred rows, so a scan is fine.
+    const stale = (await ctx.db.query("techniques").take(2000)).filter((r) => r.fetchedAt < fetchedAt).slice(0, 100);
+    for (const r of stale) await ctx.db.delete("techniques", r._id);
+    return stale.length;
   },
 });
 

@@ -235,8 +235,22 @@ first, citing the sessions and research papers behind each choice.
 
 | Actor | Where it's used |
 | --- | --- |
-| [TIDE Meditation Research Library](apify/tide-research) (our own, built this weekend). Store link: _TODO after publishing_ | Collects open-access research on breath-focused meditation, mind wandering and breath counting from Europe PMC and PubMed. A daily Convex cron (`convex/crons.ts`) starts it; `convex/research.ts` imports the dataset into the `techniques` table. The CREAO coach searches it through `GET /research` (`convex/http.ts`), so every technique in a plan carries a citation, shown as "Why this session". |
-| _TODO: Apify Store app-review scraper_ | Reasons beginners quit meditation apps (counts on Devpost). |
+| [TIDE Meditation Research Library](apify/tide-research) (our own, built this weekend). Store link: _TODO after publishing_ | Collects open-access research on breath-focused meditation, mind wandering and breath counting from Europe PMC and PubMed, and keeps only papers about a practice someone can learn (relevance rules in `apify/tide-research/src/extract.js`, with tests). A daily Convex cron (`convex/crons.ts`) starts it; `convex/research.ts` imports the dataset into the `techniques` table and removes papers the latest run no longer returns. The CREAO coach searches it through `GET /research` (`convex/http.ts`), and Convex rejects any plan that cites no paper from it, so every technique in a plan carries a citation, shown as "Why this session". |
+| [neatrat/google-play-store-reviews-scraper](https://apify.com/neatrat/google-play-store-reviews-scraper) (Apify Store) | `convex/reviews.ts` runs it on the newest one-star Google Play reviews of five meditation apps, and Claude sorts each into one fixed reason. Results below. Counts only: no review text or reviewer names are kept. |
+
+#### What 484 one-star reviews of meditation apps complain about
+
+![Bar chart: crashes, login or playback bugs 156 (32%); too expensive or paywalled 102 (21%); charged unexpectedly or can't cancel 87 (18%); an update made it worse 67 (14%); other 41 (8%); repetitive or generic content 30 (6%); couldn't tell if it was working 1; hard to keep the habit 0](docs/evidence/quit-reasons.svg)
+
+Data: [`docs/evidence/quit-reasons.json`](docs/evidence/quit-reasons.json) (100 newest one-star reviews each of
+Headspace, Calm, Insight Timer, Balance and Medito, collected 2026-10-25).
+
+**What this does and doesn't show.** Angry reviews are about the *app*: bugs, paywalls and billing
+make up 71%. Almost none say "I couldn't tell if it was working" or "I couldn't keep the habit",
+but that is a selection effect, not evidence that those don't matter: people who quietly drift
+away from meditating rarely write a one-star review. So the reviews shape what TIDE avoids (no
+account wall, no paywall, no subscription, nothing to cancel), and our case for training
+self-awareness rests on the research (Levinson et al., 2014) and on our interviews instead.
 
 ## Known limitations
 

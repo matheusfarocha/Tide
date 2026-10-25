@@ -10,7 +10,7 @@ Builds a small, cited library of open-access research on **breath-focused medita
 
 It stores short summaries and links only, never full text or abstracts.
 
-Built at Cal Hacks 13.0 for [TIDE](../../docs/PLAN.md), a meditation coach that trains you to notice when your mind wanders. TIDE's coach agent may only choose techniques it can cite from this library, so every coached session can show "Why this session" with a real paper behind it.
+Built at Cal Hacks 13.0 for [TIDE](https://github.com/matheusfarocha/Tide), a meditation coach that trains you to notice when your mind wanders. TIDE's coach agent may only choose techniques it can cite from this library, so every coached session can show "Why this session" with a real paper behind it.
 
 ## How it works
 
@@ -18,7 +18,8 @@ Built at Cal Hacks 13.0 for [TIDE](../../docs/PLAN.md), a meditation coach that 
 2. Runs the same query on PubMed (NCBI E-utilities, free full text), then fetches those records from Europe PMC.
 3. Merges both sources by Europe PMC ID and records which source(s) found each paper (`foundVia`).
 4. Rule-based extraction (no LLM, no API keys): keyword rules for technique and tags, regexes for population and sample size, publication types for study type, and the Conclusions section (or the most result-like sentences) for the summary.
-5. Drops papers that don't map to a TIDE technique, and always includes `seedPmids` (default: Levinson et al. 2014, the breath-counting validation study).
+5. **Relevance rules** keep the library on topic. A paper must be about a practice someone can learn (meditation, mindfulness, a breathing practice, body scan, mind wandering, meta-awareness), named in the title or at least twice in the abstract, so a passing mention isn't enough. Papers set in hospital procedures, infants, hypnosis or competitive sport are dropped. Papers that don't map to a TIDE technique are dropped too.
+6. Always includes `seedPmids` (default: Levinson et al. 2014, the breath-counting validation study).
 
 ## Input
 
@@ -55,16 +56,22 @@ One dataset item per paper:
 }
 ```
 
-The `OUTPUT` record in the default key-value store holds per-query hit counts and totals by technique. A default run takes about a minute and returns about 170 findings.
+The `OUTPUT` record in the default key-value store holds per-query hit counts and totals by technique. A default run takes about a minute and returns about 150 findings.
 
 ## Known limitations
 
 - Extraction is keyword-based, so population and study type are sometimes wrong or `"not stated"`. Check the linked paper before quoting a finding.
 - `clinical` is a keyword flag. TIDE is a wellness tool and excludes clinical studies by default; it makes no medical claims.
 
+## Use it for
+
+- Grounding an AI coach or chatbot in cited research instead of model memory (this is what TIDE does: its coach may only recommend techniques it can cite from this dataset).
+- A quick, structured literature scan of breath-focused meditation for students, researchers or app builders.
+
 ## Run locally
 
 ```bash
 npm install
 node src/main.js        # input from storage/key_value_stores/default/INPUT.json, or the defaults
+npm test                # relevance and technique rules
 ```
