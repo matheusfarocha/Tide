@@ -149,6 +149,7 @@ coach off (`/profile`) and TIDE is just a breathing graph: no next session, no i
 | Coach & Plan Designer | `3a59c633-38ea-4ec2-8f31-8c88d64b1ad2` | Reads the user's history (`GET /history`) and research (`GET /research`), finds patterns that each cite their sessions, and designs the next session as JSON: cue times, Feel Check times, fading level, technique, length |
 
 - **Example run (share link):** [a Coach & Plan Designer run](https://agent.creao.ai/share/fa3c6c1d352e6edd1a65c57397b4feee)
+- **Model:** both agents run on Claude Sonnet 5.5 (each agent's default model on CREAO).
 - **Measured on our dev deployment:** a full pipeline run (Analyst 49 s, then Coach 57 s) took
   about 1 min 50 s from the end of a session to a new plan in the app, delivered by webhook.
 - **How Convex drives them:** `sessions.end` schedules `coach.start` (`convex/coach.ts`), which
@@ -195,6 +196,10 @@ is spoken there is a short generation delay; after that it plays from the cache.
 Claude (`claude-opus-5-5`, called from `convex/claude.ts`) reads spoken Feel Check answers that
 keyword matching can't place, e.g. "uh… kind of floaty?" → drifting. It only returns a label
 (focused, drifting, sleepy or unclear), never advice.
+
+Claude is also the coach's model: both CREAO agents (Session Analyst and Coach & Plan Designer)
+run on Claude Sonnet 5.5. So Claude analyzes every session and designs every session after the
+first, citing the sessions and research papers behind each choice.
 
 **Where it could go wrong, and what we do about it:**
 - It can misread sarcasm or a mumbled transcript. Answers it marks "unclear" are left
