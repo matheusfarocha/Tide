@@ -81,7 +81,7 @@ export function BreathTest() {
         <li>Lost count? Tap <b>Lost count</b> and restart at 1.</li>
       </ol>
       <div className="card">
-        <p className="muted small">TIDE sees your real breaths, so it can check your count. People who lose count miss it about two-thirds of the time. That’s the blind spot this trains.</p>
+        <p className="muted small">TIDE sees your real breaths, so it can check your count. People who lose count notice only about 3 in 10 of their slips (Levinson et al., 2014). That’s the blind spot this trains.</p>
         <p className="fine">Based on Levinson et al., Frontiers in Psychology, 2014.</p>
       </div>
       <div className="spacer" />
