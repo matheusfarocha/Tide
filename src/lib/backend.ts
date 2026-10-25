@@ -28,7 +28,7 @@ export function toAppPlan(p: SessionPlan): Plan {
   return {
     lengthSec: p.lengthSec,
     cueTimes: p.cues.map((c) => c.atSec),
-    cues: p.cues.map((c) => ({ atSec: c.atSec, text: c.text })),
+    cues: p.cues.map((c) => ({ atSec: c.atSec, text: c.text, onBreath: c.onBreath })),
     feelCheckTimes: p.feelChecks.map((f) => f.atSec),
     fadingLevel: Math.max(0, Math.min(1, p.fadingLevel / 3)),
     technique: TECHNIQUE[p.technique] ?? p.technique,

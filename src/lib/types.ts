@@ -30,7 +30,7 @@ export interface Plan {
   lengthSec: number
   cueTimes: number[]
   /** What each cue says, when the coach wrote it. Without it the session uses a default line. */
-  cues?: { atSec: number; text: string }[]
+  cues?: { atSec: number; text: string; onBreath?: 'inhale' | 'exhale' | 'any' }[]
   /** Spoken at the start, e.g. "Last time you drifted around minute 4." */
   intro?: string
   feelCheckTimes: number[]

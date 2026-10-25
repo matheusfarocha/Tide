@@ -178,18 +178,40 @@ Apify) live only in Convex environment variables.
 
 ### Cartesia: voice in both directions
 
-Your eyes are closed, so voice is the only interface.
+Your eyes are closed, so voice is the only interface. Cartesia speaks every cue and question,
+hears your answer, and tells you the result, all without you opening your eyes. **Without
+Cartesia the session is silent and can't hear you:** you would have to open your eyes to read
+the cues and tap your answers, which breaks the meditation.
 
 | Feature | Where | How TIDE uses it |
 | --- | --- | --- |
-| **Sonic 3.5** text-to-speech (`/tts/bytes`) | `convex/voice.ts` (`speak`, `prefetch`) | Speaks the coach's cues and Feel Check questions in a slow, calm voice (`speed 0.9`, `emotion: calm`). Each cue is generated once, stored in Convex file storage and replayed from there |
-| **Ink 2** streaming speech-to-text (WebSocket) | `convex/voice.ts` (`sttToken`), app mic capture | Hears the spoken Feel Check answer. Ink 2's built-in turn detection and noise handling suit a loud hackathon hall |
+| **Sonic 3.6** text-to-speech (`/tts/bytes`) | `convex/voice.ts` (`speak`, `prefetch`) | A slow, calm guide voice (`speed 0.8`, `emotion: calm`) speaks the coach's intro and cues, the "Focused, or drifting?" question, the spoken result ("You caught it.") and the closing line |
+| **Cues timed to your breath** | `src/screens/Session.tsx` | Each coach cue carries `onBreath` (inhale or exhale). TIDE waits for that breath, detected by the camera, and speaks the cue as it begins, so the voice follows your body, not a timer |
+| **Pre-generated, cached audio** | `convex/voice.ts`, `src/lib/voice.ts` | Every line of the coming session is generated during the 30 s paced-breathing check, stored in Convex file storage and decoded on the phone, so nothing waits on the network once your eyes are closed (Cartesia's "caching audio for stock responses" pattern) |
+| **Ink 2** realtime speech-to-text with **turn detection** (`/stt/turns/websocket`) | `src/lib/voice.ts` (`listen`) | Hears the spoken Feel Check answer. Semantic turn detection waits through a hesitant "uh… kind of floaty?" instead of cutting it off, and ends the turn soon after a short answer. Falls back to `/stt/websocket` + `finalize` if needed |
+| **Keyterm prompting** | `src/lib/voice.ts` | Biases Ink 2 toward the words people actually answer with (focused, drifting, sleepy, wandering…), for a noisy hall |
 | **Access tokens** (`/access-token`) | `convex/voice.ts` (`sttToken`) | Convex mints a 10-minute, STT-only token, so the browser connects to Ink 2 without ever seeing the API key |
 
-**Known limitations:** Ink 2 is English-only and streaming-only, so it needs mic permission and
-HTTPS on the phone. A very noisy room can still garble an answer: a headset mic helps, unclear
-transcripts go to Claude, and two on-screen buttons are the fallback. The first time a new cue
-is spoken there is a short generation delay; after that it plays from the cache.
+After Ink 2 hears an answer, Convex reads it (keywords, then Claude for anything unclear), scores
+it against what the sensors saw, and TIDE speaks the result back.
+
+**Edge cases handled:** no answer is logged as "quiet" (possible drowsiness or deep focus) and
+acknowledged out loud; an answer nobody can read is left unscored, not guessed; listening starts
+only after the question finishes, so Ink 2 never hears TIDE's own voice; audio is unlocked by the
+last tap before eyes close (iOS blocks sound otherwise); the mic is requested at that tap too, so
+the permission prompt never appears mid-meditation; with no mic, the screen says so and the two
+answer buttons stay open.
+
+**Privacy and accessibility:** the microphone is only listened to during the roughly 9 s answer
+window and is muted the rest of the session. Audio is streamed to Cartesia for transcription
+and never stored; only the transcript is kept. The whole session works eyes-closed, so it is
+usable by blind and low-vision users.
+
+**Known limitations:** English only. Streaming speech-to-text needs mic permission and HTTPS.
+A very loud room can still garble an answer: a headset mic helps, and the on-screen buttons
+remain. There is no browser-speech fallback: if Cartesia can't be reached, the session screen
+says "Voice unavailable" and shows cues and questions on screen instead, so it is always clear
+what Cartesia contributes.
 
 ### Anthropic: Claude
 

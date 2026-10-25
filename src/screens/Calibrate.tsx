@@ -4,6 +4,8 @@ import { Icon, Screen, TopBar } from '../components/ui'
 import { createSignal } from '../lib/realSignal'
 import { useStore } from '../lib/store'
 import { useTide, useTideCtl } from '../lib/tide'
+import { prepareMic, prepareVoice, unlockAudio } from '../lib/voice'
+import { voiceLines } from '../lib/voiceLines'
 
 // Paced-breathing check. The tide itself is the pacer: it rises for 5 s and falls for 5 s,
 // exactly 6 breaths/min. Because the true rate is known, TIDE's reading proves accuracy live.
@@ -15,7 +17,7 @@ const PACE = 6
 
 export function Calibrate() {
   const nav = useNavigate()
-  const { setCalibration } = useStore()
+  const { setCalibration, plan } = useStore()
   const tide = useTideCtl()
   useTide(0.42)
   const signal = useMemo(() => createSignal({ lengthSec: DURATION, targetRate: PACE + (Math.random() - 0.5) * 0.6 }), [])
@@ -27,6 +29,8 @@ export function Calibrate() {
 
   useEffect(() => {
     signal.start()
+    // Generate every line of the coming session now, so the voice is instant once eyes close.
+    void prepareVoice(voiceLines(plan))
     const off = signal.onReading((r) => {
       setSimulated(signal.mode?.() === 'demo')
       if (r.t >= 8) setRate(r.rate)
@@ -62,7 +66,12 @@ export function Calibrate() {
           <div><span>{simulated ? 'simulated' : 'tide reads'}</span><strong>{rate ? rate.toFixed(1) : '—'}</strong></div>
           <div><span>error</span><strong>{rate ? Math.abs(rate - PACE).toFixed(1) : '—'}</strong></div>
         </div>
-        <button className="btn btn--primary" disabled={!done} onClick={() => nav('/session')}>
+        <button className="btn btn--primary" disabled={!done} onClick={() => {
+          // This tap is the last one before eyes close: unlock audio (iOS) and ask for the mic now.
+          unlockAudio()
+          void prepareMic()
+          nav('/session')
+        }}>
           {done ? <>begin <Icon name="arrow" size={16} /></> : 'calibrating…'}
         </button>
       </div>
