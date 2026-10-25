@@ -77,8 +77,17 @@ export async function nextPlanFor(ctx: QueryCtx, user: Doc<"users">): Promise<Ne
     .withIndex("by_userId_and_createdAt", (q) => q.eq("userId", user._id))
     .order("desc")
     .first();
-  if (!latest) return { source: "waiting", plan: null, planId: null };
-  return { source: "coach", plan: planFromDoc(latest), planId: latest._id };
+  if (latest) return { source: "coach", plan: planFromDoc(latest), planId: latest._id };
+  // No plan yet: wait only while a coach run is actually in progress. If every earlier session
+  // ended without one (coach failed, or ran with the coach off), start over from the baseline
+  // instead of refusing new sessions forever.
+  const newest = await ctx.db
+    .query("sessions")
+    .withIndex("by_userId_and_startedAt", (q) => q.eq("userId", user._id))
+    .order("desc")
+    .first();
+  if (newest?.status === "analyzing") return { source: "waiting", plan: null, planId: null };
+  return { source: "baseline", plan: BASELINE_PLAN, planId: null };
 }
 
 /** The plan a session actually ran. */
